@@ -36,15 +36,15 @@ bot.on('message', message => {
 		console.log(message.author.username +'#'+ message.author.discriminator + ' issued no-prefix command anti-B.');
 		message.channel.send('<@'+ message.author.id +'> end yourself, filthy normie');
 	}
-	if (message.content.includes('broken') === true || message.content.includes('Broken') === true) {
+	if (((message.content).toLowerCase()).includes('broken') === true) {
 		console.log(message.author.username +'#'+ message.author.discriminator + ' issued no-prefix command broken.');
 		message.channel.send('<@'+ message.author.id +'> ur broken');
 	}
-	if (message.content.includes('tomato') === true || message.content.includes('Tomato') === true) {
+	if (((message.content).toLowerCase()).includes('tomato') === true) {
 		console.log(message.author.username+'#'+message.author.discriminator+' issued no-prefix command tomato.');
 		message.react('🍅');
 	}
-	if (message.content.includes('birb') === true || message.content.includes('Birb') === true || message.content.includes('BIRB') === true) {
+	if (((message.content).toLowerCase()).includes('birb') === true) {
 		console.log(message.author.username+'#'+message.author.discriminator+' issued no-prefix command birb.');
 		message.react('🐦');
 //		message.react('🕊️'); :dove: is broken óvó
@@ -52,11 +52,38 @@ bot.on('message', message => {
 		message.react('🦆');
 		message.react('🦉');
 	}
-	if (message.content.includes('kek') === true || message.content.includes('Kek') === true || message.content.includes('KEK') === true) {
+	if (((message.content).toLowerCase()).includes('kek') === true) {
 		console.log(message.author.username+'#'+message.author.discriminator+' issued no-prefix command kek.');
 		message.react('🐸');
 	}
-
+	if (((message.content).toLowerCase()).includes('japan store') === true) {
+		if (message.author.bot) return;
+		console.log(message.author.username+'#'+message.author.discriminator+' issued no-prefix command japan Store.');
+		message.channel.send('Go to japan Store download, download the beta & and Go back :smiley:');
+		message.react('🆗');
+	}
+	if (((message.content).toLowerCase()).includes('autist') === true) {
+		console.log(message.author.username+'#'+message.author.discriminator+' issued no-prefix command autist.');
+		message.reply('no u');
+	}
+	if (((message.content).toLowerCase()).includes('silk') === true) {
+		if (message.author.bot) return;
+		console.log(message.author.username+'#'+message.author.discriminator+' issued no-prefix command silk.');
+		message.reply('did you know <@144605767541063680> is gay?');
+	}
+	if (((message.content).toLowerCase()).includes('explode') === true) {
+		console.log(message.author.username+'#'+message.author.discriminator+' issued no-prefix command explode.');
+		message.reply('allahu akbar');
+	}
+	if (((message.content).toLowerCase()).includes('gay') === true) {
+		if (message.author.bot) return;
+		console.log(message.author.username+'#'+message.author.discriminator+' issued no-prefix command gay.');
+		message.react('🏳️‍🌈');
+	}
+	if (message.author.id == 273932044868780033) {
+		message.react('🇬🇧');
+	}
+	
 	// Check for Prefix here
 	if (message.author.bot || !message.content.startsWith(prefix)) return;
 
@@ -98,18 +125,6 @@ bot.on('message', message => {
 		}
 	}
 	
-	if (command === 'say') {
-		if (message.author.id != 211227683466641408) {
-			console.log('Denied //say request by '+message.author.username+'#'+message.author.discriminator+'.');
-			console.log('Text was "'+ args.join(" ")+'"');
-			return;
-		}
-		else {
-			console.log(message.author.username+'#'+message.author.discriminator+' made me say "' + args.join(" ")+'"');
-			message.delete();
-			message.channel.send(args.join(" ")); // thanks Shibo~
-		}
-	}
 	
 	if (command === 'invite') {
 		console.log(message.author.username+'#'+message.author.discriminator+' requested the invite link!');
@@ -132,6 +147,20 @@ bot.on('message', message => {
 		message.channel.send("`//ping`, `//id`, `//avatar`, `//status`, `//source`");
 		message.channel.send("I can also do a few other things that don't require a specific command, but those are secret!");
 		message.channel.send("I'll get more commands as time goes by, so keep checking!");
+	}
+	
+	// Owner-only commands
+	if (command === 'say') {
+		if (message.author.id != 211227683466641408) {
+			console.log('Denied //say request by '+message.author.username+'#'+message.author.discriminator+'.');
+			console.log('Text was "'+ args.join(" ")+'"');
+			return;
+		}
+		else {
+			console.log(message.author.username+'#'+message.author.discriminator+' made me say "' + args.join(" ")+'"');
+			message.delete();
+			message.channel.send(args.join(" ")); // thanks Shibo~
+		}
 	}
 });
 
