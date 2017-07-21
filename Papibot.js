@@ -23,13 +23,13 @@ bot.on('message', message => {
 	
 	// Add flags to users
 	if (message.author.id == 273932044868780033 || message.author.id == 328544500882604042) {
-		message.react('ðŸ‡¬ðŸ‡§');
+		message.react('🇬🇧');
 	}
 	if (message.author.id == 144605767541063680) {
-		message.react('ðŸ³ï¸â€ðŸŒˆ');
+		message.react('🏳️‍🌈');
 	}
 	if (message.author.id == 305794406781550602) {
-		message.react('ðŸ‡¦ðŸ‡´');
+		message.react('🇦🇴');
 	}
 	
 	// Text commands that should work without the prefix
@@ -45,7 +45,7 @@ bot.on('message', message => {
 	if (message.content.includes('Pwah') === true) { //made by Kitsu pls no steal
         message.channel.send('PWAP');
 	}
-	if (message.content.includes('ðŸ…±') === true) {
+	if (message.content.includes('🅱') === true) {
 		message.channel.send('<@'+ message.author.id +'> end yourself, filthy normie');
 		return;
 	}
@@ -54,24 +54,24 @@ bot.on('message', message => {
 		return;
 	}
 	if (((message.content).toLowerCase()).includes('tomato') === true) {
-		message.react('ðŸ…');
+		message.react('🍅');
 		return;
 	}
 	if (((message.content).toLowerCase()).includes('birb') === true) {
-		message.react('ðŸ¦');
-		message.react('ðŸ¦…');
-		message.react('ðŸ¦†');
-		message.react('ðŸ¦‰');
+		message.react('🐦');
+		message.react('🦅');
+		message.react('🦆');
+		message.react('🦉');
 		return;
 	}
 	if (((message.content).toLowerCase()).includes('kek') === true) {
-		message.react('ðŸ¸');
+		message.react('🐸');
 		return;
 	}
 	if (((message.content).toLowerCase()).includes('japan store') === true) {
 		if (message.author.bot) return;
 		message.channel.send('Go to japan Store download, download the beta & and Go back :smiley:');
-		message.react('ðŸ†—');
+		message.react('🆗');
 		return;
 	}
 	if (((message.content).toLowerCase()).includes('autist') === true) {
@@ -88,7 +88,7 @@ bot.on('message', message => {
 		return;
 	}
 	if (((message.content).toLowerCase()).includes('gay') === true) {
-		message.react('ðŸ³ï¸â€ðŸŒˆ');
+		message.react('🏳️‍🌈');
 		return;
 	}
 	if (message.content.includes('because ur a fucking cunt') === true) {
