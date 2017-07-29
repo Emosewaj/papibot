@@ -21,6 +21,9 @@ bot.on('message', message => {
 		return;
 	}
 	
+	//self
+	if (message.author == bot.user) return;
+	
 	// Add flags to users
 	if (message.author.id == 273932044868780033 || message.author.id == 328544500882604042) {
 		message.react('🇬🇧');
@@ -32,18 +35,39 @@ bot.on('message', message => {
 		message.react('🇦🇴');
 	}
 	
+	// remove the text commands if the message begins with the prefix
+	if (message.content.startsWith(prefix)) return;
+	
 	// Text commands that should work without the prefix
-	if (message.content.includes('caw') === true) {
+	if (message.content.includes('caw') === true && message.author.bot == false) {
 		message.channel.send('chirp');return;
 	}
-	if (message.content.includes('Caw') === true) {
+	if (message.content.includes('Caw') === true && message.author.bot == false) {
 		message.channel.send('Chirp');return;
 	}
-	if (message.content.includes('CAW') === true) {
+	if (message.content.includes('CAW') === true && message.author.bot == false) {
 		message.channel.send('CHIRP');return;
+	}
+	if (message.content.includes('chirp') === true && message.author.bot == false) {
+		message.channel.send('caw');return;
+	}
+	if (message.content.includes('Chirp') === true && message.author.bot == false) {
+		message.channel.send('Caw');return;
+	}
+	if (message.content.includes('CHIRP') === true && message.author.bot == false) {
+		message.channel.send('CAW');return;
 	}
 	if (message.content.includes('Pwah') === true) { //made by Kitsu pls no steal
         message.channel.send('PWAP');return;
+	}
+	if (message.content.startsWith("I'm ") || message.content.startsWith('Im ') || message.content.startsWith('im ') || message.content.startsWith("i'm ")) {
+		let command = message.content.split(" ")[0];
+		command = command.slice (prefix.length);
+		let args = message.content.split(" ").slice(1);
+		command = (command).toLowerCase();
+		if (args.length > 10 || args[0] == undefined) return;
+		
+		message.channel.send('Hi '+args.join(" ")+"!\nI'm Papi!");
 	}
 	if (message.content.includes('🅱') === true) {
 		message.channel.send('<@'+ message.author.id +'> end yourself, filthy normie');return;
@@ -264,11 +288,11 @@ Enter `//helpext` to get extended information on all the commands!";
 		var helpext = "`//ping`: Pings me, I will reply with one of various answers depending on a randomly generated number.\n\
 `//id <@user>`: Returns the Discord ID of the tagged user, or yours if noone was tagged.\n\
 `//avatar <@user>`: Shows the tagged user's avatar, or yours if noone was tagged.\n\
-`//status <@user>`: Shows the status of a user and what they are playing, if anything, or yours if noone was tagged.\n\
+`//status [@user]`: Shows the status of a user and what they are playing, if anything.\n\
 `//source`: Links the github repository of my sourcecode.\n\
 `//invite`: Makes me send my invite link so you can have me on your very own server!.\n\
 `//roll <length> <text>`: Rolls a random number with the requested amount of digits, or nine digits if none was specified.";
-		message.reply('here are my commands:\n'+helpext+"\n[necessary parameter]\n<optional parameter>");
+		message.reply('here are my commands:\n'+helpext+"\n\n[necessary parameter]\n<optional parameter>");
 	}
 
 	// Owner-only commands
@@ -289,23 +313,78 @@ Enter `//helpext` to get extended information on all the commands!";
 	// Cheekily copying that command from god
 	else {
 		if (args[0] == undefined) return;
+		console.log(args)
+		for (i=0; i < args.length; i++) {
+			if (args[i] == "yourself") args[i] = "myself";
+			if (args[i] == "you") args[i] = "me";
+			if (args[i] == "your") args[i] = "my";
+		}
+		
+		switch (Math.floor((Math.random() * 10) + 1)) {
+			case 1:
+				var ending = ", pal!";break;
+			case 2:
+				var ending = ", fam!";break;
+			case 3:
+				var ending = ", bro!";break;
+			case 4:
+				var ending = ", bud!";break;
+			case 5:
+				var ending = ", dude!";break;
+			case 6:
+				var ending = ", comrade!";break;
+			case 7:
+				var ending = ", partner!";break;
+			case 8:
+				var ending = ", mate!";break;
+			case 9:
+				var ending = ", goy!";break;
+			case 10:
+				var ending = ", gurl!";break;
+		}
 		
 		if (command == "eat") {
-			message.reply("ate "+args.join(" ")+", pal!");return;
+			message.reply("ate "+args.join(" ")+ending);return;
 		}
 		if (command == "be") {
-			message.reply("been "+args.join(" ")+", pal!");return;
+			message.reply("been "+args.join(" ")+ending);return;
 		} 
 		if (command == "sleep") {
-			message.reply("slept "+args.join(" ")+", pal!");return;
+			message.reply("slept "+args.join(" ")+ending);return;
+		}
+		if (command == "do") {
+			message.reply("did "+args.join(" ")+ending);return;
+		}
+		if (command == "poop") {
+			message.reply("pooped "+args.join(" ")+ending);return;
+		}
+		if (command == "make") {
+			message.reply("made "+args.join(" ")+ending);return;
+		}
+		if (command == "have") {
+			message.reply("had "+args.join(" ")+ending);return;
+		}
+		if (command == "go") {
+			let argsstring = args.join(" ").toString();
+			let args2 = argsstring.split(" ").slice(1);
+			message.reply("gone "+args[0]+"ed "+args2.join(" ")+ending);return;
 		}
 		if (command.endsWith("n") == true) {
-			message.reply(command+"ned "+args.join(" ")+", pal!");return;
+			message.reply(command+"ned "+args.join(" ")+ending);return;
 		}
 		if (command.endsWith("p") == true) {
-			message.reply(command+"ped "+args.join(" ")+", pal!");return;
+			message.reply(command+"ped "+args.join(" ")+ending);return;
+		} 
+		if (command.endsWith("e") == true) {
+			message.reply(command+"d "+args.join(" ")+ending);return;
+		}
+		if (command.endsWith("b") == true) {
+			message.reply(command+"bed "+args.join(" ")+ending);return;
+		}
+		if (command.endsWith("s") == true) {
+			message.reply(command+"sed "+args.join(" ")+ending);return;
 		} else {
-			message.reply(command+"ed "+args.join(" ")+", pal!");return;
+			message.reply(command+"ed "+args.join(" ")+ending);return;
 		}
 	}
 });
