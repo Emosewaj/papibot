@@ -4,25 +4,32 @@
 
 // Also fix message.react() pls thx
 
+const fs = require('fs');
 const Discord = require('discord.js');
-const bot = new Discord.Client();
+const self = new Discord.Client();
 const token = 'TOKEN REMOVED'
 const prefix = '//';
 
-bot.on('ready', () => {
-	console.log("Ready for work!");
+self.on('ready', () => {
+	console.log("Papi-Bot v2017.07.30 online in "+self.guilds.array().length+" guilds\nLogged in as "+self.user.tag+"\n");
 });
 
-bot.on('message', message => {
+function log(command, guild, usertag, args) {
+	var date = new Date();
+	var hour = date.getHours();
+	var minute = date.getMinutes();
+	var second = date.getSeconds();
+	console.log("["+hour+":"+minute+":"+second+"] in "+guild+": User "+usertag+" issued \""+command+"\" with arguments \""+args.join(" ")+"\".");
+}
+
+self.on('message', message => {
 	
 	// Blocked users
-	// Hentai God#2638, Silk#5473
-	if (message.author.id == 244608898881945600 || message.author.id == 144605767541063680) {
-		return;
-	}
+	// None rn
+//	if (message.author.id == none rn) return;
 	
 	//self
-	if (message.author == bot.user) return;
+	if (message.author == self.user) return;
 	
 	// Add flags to users
 	if (message.author.id == 273932044868780033 || message.author.id == 328544500882604042) {
@@ -39,22 +46,22 @@ bot.on('message', message => {
 	if (message.content.startsWith(prefix)) return;
 	
 	// Text commands that should work without the prefix
-	if (message.content.includes('caw') === true && message.author.bot == false) {
+	if (message.content.includes('caw') === true) {
 		message.channel.send('chirp');return;
 	}
-	if (message.content.includes('Caw') === true && message.author.bot == false) {
+	if (message.content.includes('Caw') === true) {
 		message.channel.send('Chirp');return;
 	}
-	if (message.content.includes('CAW') === true && message.author.bot == false) {
+	if (message.content.includes('CAW') === true) {
 		message.channel.send('CHIRP');return;
 	}
-	if (message.content.includes('chirp') === true && message.author.bot == false) {
+	if (message.content.includes('chirp') === true) {
 		message.channel.send('caw');return;
 	}
-	if (message.content.includes('Chirp') === true && message.author.bot == false) {
+	if (message.content.includes('Chirp') === true) {
 		message.channel.send('Caw');return;
 	}
-	if (message.content.includes('CHIRP') === true && message.author.bot == false) {
+	if (message.content.includes('CHIRP') === true) {
 		message.channel.send('CAW');return;
 	}
 	if (message.content.includes('Pwah') === true) { //made by Kitsu pls no steal
@@ -67,12 +74,12 @@ bot.on('message', message => {
 		command = (command).toLowerCase();
 		if (args.length > 10 || args[0] == undefined) return;
 		
-		message.channel.send('Hi '+args.join(" ")+"!\nI'm Papi!");
+		message.channel.send('Hi '+args.join(" ")+"!\nI'm Papi!");return;
 	}
 	if (message.content.includes('🅱') === true) {
 		message.channel.send('<@'+ message.author.id +'> end yourself, filthy normie');return;
 	}
-	if (((message.content).toLowerCase()).includes('broken') === true && message.author.bot == false) {
+	if (((message.content).toLowerCase()).includes('broken') === true) {
 		message.channel.send('<@'+ message.author.id +'> ur broken');return;
 	}
 	if (((message.content).toLowerCase()).includes('tomato') === true) {
@@ -88,7 +95,6 @@ bot.on('message', message => {
 		message.react('🐸');return;
 	}
 	if (((message.content).toLowerCase()).includes('japan store') === true) {
-		if (message.author.bot) return;
 		message.channel.send('Go to japan Store download, download the beta & and Go back :smiley:');
 		message.react('🆗');return;
 	}
@@ -96,7 +102,6 @@ bot.on('message', message => {
 		message.reply('no u');return;
 	}
 	if (((message.content).toLowerCase()).includes('silk') === true) {
-		if (message.author.bot) return;
 		if (Math.floor((Math.random() * 100) + 1) == 50) {
 			message.reply('did you know Silk is gay?');return;
 		}
@@ -121,25 +126,25 @@ bot.on('message', message => {
 	}
 });
 
-bot.on('message', message => {
+self.on('message', message => {
 	
 	// Blocked users
-	// Hentai God#2638, Silk?
-	if (message.author.id == 244608898881945600 || message.author.id == 237705549737623555) return;
+	// None rn
+//	if (message.author.id == none rn) return;
 	
 	// Check for Prefix here
 	if (message.author.bot || !message.content.startsWith(prefix)) return;
-
 	let command = message.content.split(" ")[0];
 	command = command.slice (prefix.length);
-
 	let args = message.content.split(" ").slice(1);
-
 	command = (command).toLowerCase();
+	let guild = message.guild.name;
+	let usertag = message.author.tag;
+	
+	log(command, guild, usertag, args);
   
 	// Actual // commands here
 	if (command === 'ping') {
-		console.log(message.author.username +'#'+ message.author.discriminator + ' issued command //ping');
 		switch (Math.floor((Math.random() * 10) + 1)) {
 			case 1:
 				message.channel.send('Hello');break;
@@ -161,61 +166,48 @@ bot.on('message', message => {
 				message.channel.send("Papi-Bot, at your service");break;
 			case 10:
 				message.channel.send("Online and ready");break;
-		}
+		} return;
 	}
-	
 	if (command === 'id') {
-		console.log(message.author.username +'#'+ message.author.discriminator + ' issued command //id');
 		if (message.mentions.users.first() == undefined) {
 			message.reply("Your Discord ID is "+message.author.id+"!");
 		}
 		else {
 			message.reply("<@"+message.mentions.users.first().id+">'s Discord ID is "+message.mentions.users.first().id);
-		}
-		return;
+		} return;
 	}
-	
 	if (command === 'avatar') {
-		console.log(message.author.username+'#'+message.author.discriminator+' issued command //avatar');
 		if (message.mentions.users.first() == undefined) {
 			message.reply("This is your avatar!\n"+message.author.displayAvatarURL);
 		}
 		else {
 			message.reply("This is <@"+message.mentions.users.first().id+">'s Avatar!\n"+message.mentions.users.first().displayAvatarURL);
-		}
-		return;
+		} return;
 	}
-
+	if (command === 'guildavatar') {
+		message.reply("This is "+guild+"'s Guild Icon!\n"+message.guild.iconURL);return;
+	}
 	if (command === 'status') {
-		console.log(message.author.username+'#'+message.author.discriminator+' issued command //status');
 		if (message.mentions.users.first() == undefined) {
-			message.reply('You need to tag a user for this command to work, dummy.');
-			return;
+			message.reply('You need to tag a user for this command to work, dummy.');return;
 		}
 		if (message.mentions.users.first().presence.game !== null) {
 			message.reply(message.mentions.users.first().username+' is currently '+message.mentions.users.first().presence.status+' and is playing '+message.mentions.users.first().presence.game.name+'.');
 		}
 		else {
 			message.reply(message.mentions.users.first().username+' is currently '+message.mentions.users.first().presence.status+'.');
-		}
-		return;
+		} return;
 	}
-	
-	
 	if (command === 'invite') {
-		console.log(message.author.username+'#'+message.author.discriminator+' requested the invite link!');
-		message.reply("Here's my invite link: \nhttps://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=523328");
+		message.reply("Here's my invite link: \nhttps://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70773825");
 		message.channel.send('<@211227683466641408> says thanks!');return;
 	}
-	
 	if (command === 'source') {
-		console.log(message.author.username+'#'+message.author.discriminator+' requested the bot source code.')
 		var source = "Here is my source code:\n\
 https://github.com/Jawesome99/papibot";
 		message.reply(source)
 		message.channel.send("But please don't stare too much >.<;");return;
 	}
-	
 	if (command === 'roll') {
 		let numbers = [];
 		if (args[0] > 25) {message.reply("sorry, I don't like spam. Can you try that again but with maximum of 25 digits, please?");
@@ -224,8 +216,7 @@ https://github.com/Jawesome99/papibot";
 			return;}
 		if (args[0] != undefined) {var length = parseInt(args[0]);}
 		else {var length = 9;}
-		if (isNaN(length) == true) {message.reply("oops, you did something wrong. Did you enter letters or something? I can only take whole numbers as an input here.");
-			return;}
+		if (isNaN(length) == true) {message.reply("oops, you did something wrong. Did you enter letters or something? I can only take whole numbers as an input here.");return;}
 		do {
 			for (i=0; i < length; i++) {
 				numbers[i] = Math.floor((Math.random() * 10) + 0);
@@ -271,55 +262,140 @@ https://github.com/Jawesome99/papibot";
 		}
 		message.reply(numbers.join("")+get+"\n"+argtext.join(" "));return;
 	}
-	
 	if (command === 'help') {
-		console.log(message.author.username+'#'+message.author.discriminator+' issued command help.');
-		var help = "Hi, I'm Papi and I can do a lot of things!\n\
-I can currently do the following commands:\n\
-`//ping`, `//id`, `//avatar`, `//status`, `//source`, `//invite` and `//roll`\n\
-I can also do a few other things that don't require a specific command, but those are secret!\n\
-I'll get more commands as time goes by, so keep checking!\n\
-Enter `//helpext` to get extended information on all the commands!";
-		message.reply(help);return;
+		var help = "hello! Thanks for using Emosewaj's Papi-Bot!\n\
+\n\
+To get help for commands, use either of these sub-commands:\n\
+```\n\
+//help general ............ Get information about general-use commands.\n\
+//help technical .......... Get information on more technical, development-oriented commands.\n\
+//help music .............. Get information on how to use Papi-Bot for music.\n\
+```";
+		var general = "these are the general-use commands:\n\
+```\n\
+//avatar <@user> ........... Shows the tagged user's avatar, or yours if noone was tagged.\n\
+//guildavatar .............. Shows this guild's avatar.\n\
+//invite ................... Makes me send my invite link so you can have me on your very own server!.\n\
+//roll <length> <text> ..... Rolls a random number with the requested amount of digits, or nine if none were specified.\n\
+//status [@user] ........... Shows the status of a user and what they are playing, if anything.\n\
+```";
+		var technical = "these are the more technical commands:\n\
+```\n\
+//id <@user> ..... Returns the Discord ID of the tagged user, or yours if noone was tagged.\n\
+//ping ........... Pings me, I will reply with one of various answers!\n\
+//source ......... Links the github repo of my source code (note: might not be 100% recent).\n\
+```";
+		var music = "these are all music-related commands:\n\
+```\n\
+//join .................... Joins the channel you are currently in.\n\
+//leave ................... Leaves the channel I'm currently in.\n\
+//list .................... Lists all local-playable files (YouTube audio-stream coming soon™!).\n\
+//play [file] ............. Plays the specified file.\n\
+//upload [attachment] ..... Upload a file to the userupload directory.\n\
+```";
+
+		if (args[0] === undefined) {message.reply(help);return;}
+		if (args[0] == "general") {message.reply(general);return;}
+		if (args[0] == "technical") {message.reply(technical);return;}
+		if (args[0] == "music") {message.reply(music);return;}
+		else {message.reply("I don't know that category, sorry!");}
 	}
 	
-	if (command === 'helpext') {
-		console.log(message.author.username+'#'+message.author.discriminator+' issued command helpext.');
-		var helpext = "`//ping`: Pings me, I will reply with one of various answers depending on a randomly generated number.\n\
-`//id <@user>`: Returns the Discord ID of the tagged user, or yours if noone was tagged.\n\
-`//avatar <@user>`: Shows the tagged user's avatar, or yours if noone was tagged.\n\
-`//status [@user]`: Shows the status of a user and what they are playing, if anything.\n\
-`//source`: Links the github repository of my sourcecode.\n\
-`//invite`: Makes me send my invite link so you can have me on your very own server!.\n\
-`//roll <length> <text>`: Rolls a random number with the requested amount of digits, or nine digits if none was specified.";
-		message.reply('here are my commands:\n'+helpext+"\n\n[necessary parameter]\n<optional parameter>");
+	// Voice & Music related
+	if (command === 'join') {
+		voiceChannel = message.member.voiceChannel
+		if (message.member.voiceChannel) {
+				voiceChannel.join().then(connection => {
+					message.channel.send("Joined channel "+message.guild.voiceConnection.channel.name+"!");
+				})
+				.catch(console.log);
+		} else { message.reply("Couldn't connect to the voice channel!"); }
+		return;
 	}
-
-	// Owner-only commands
-	if (command === 'say') {
-		if (message.author.id != 211227683466641408) {
-			console.log('Denied //say request by '+message.author.username+'#'+message.author.discriminator+'.');
-			console.log('Text was "'+ args.join(" ")+'"');
-			return;
+	if (command === 'leave') {
+		if (message.guild.voiceConnection === null) {message.channel.send("I'm not in a voice channel!");return;}
+		voiceChannel = message.guild.voiceConnection.channel;
+		voiceChannel.leave();
+		message.channel.send("Left channel "+voiceChannel.name+"!");return;
+	}
+	if (command === 'play') {
+		if (args[0] === undefined) {message.reply("You need to specify a valid filename!");return;}
+		if (fs.readdirSync('D:/botmusic/default').includes(args.join(" "))) {
+			message.guild.voiceConnection.playFile("D:/botmusic/default/"+args.join(" "));
+			message.reply("playing "+args.join(" "));return;
 		}
+		if (fs.readdirSync('D:/botmusic/userupload').includes(args.join(" "))) {
+			message.guild.voiceConnection.playFile("D:/botmusic/userupload/"+args.join(" "));
+			message.reply("playing "+args.join(" ")+" from userupload");return;
+		} else {
+			message.reply(args[0]+" is not a valid filename!");return;
+		}			
+	}
+	if (command === 'list') {
+		var files = fs.readdirSync('D:/botmusic/default');
+		var userfiles = fs.readdirSync('D:/botmusic/userupload');
+		message.reply("these are the currently available files to play:\n```\n"+files.join("\n")+"\n"+userfiles.join("\n")+"\n```");
+	}
+	if (command === 'upload' && message.attachments !== undefined) {
+		//Dependencies
+		var url = require('url');
+		var http = require('http');
+		var exec = require('child_process').exec;
+		var spawn = require('child_process').spawn;
+		// App variables
+		var file_url = message.attachments.first().url;
+		var DOWNLOAD_DIR = 'D:/botmusic/userupload';
+		
+		var download_file_wget = function(file_url) {
+			var file_name = message.attachments.first().filename;
+			message.channel.send("Downloading "+file_name+"...");
+			var wget = 'wget --no-check-certificate -P ' + DOWNLOAD_DIR + ' ' + file_url;
+			var child = exec(wget, function(err,stdout,stderr) {
+				if (err) throw err;
+				else {console.log(file_name + ' downloaded to ' + DOWNLOAD_DIR);message.reply("file "+file_name+" downloaded successfully!");return;}
+			});
+		}
+		if (file_url.endsWith(".mp3") || file_url.endsWith(".wav") || file_url.endsWith(".ogg") || file_url.endsWith(".flac") || file_url.endsWith(".wma")){download_file_wget(file_url);}
+		else { message.reply("sorry, I can only accept audio files! Please keep your upload to one of the most used formats! Thank you~!");return;}
+	}
+	// Owner only
+	if (command === 'say') {
+		if (message.author.id != 211227683466641408) return;
 		else {
-			console.log(message.author.username+'#'+message.author.discriminator+' made me say "' + args.join(" ")+'"');
 			message.delete();
 			message.channel.send(args.join(" ")); // thanks Shibo~
+		} return;
+	}
+	if (command === 'getguilds') {
+		if (message.author.id != 211227683466641408) return;
+		else {
+			if (args[0] === undefined) {message.channel.send("```\n"+self.guilds.array().join("\n")+"\n```");return;}
 		}
-		return;
+	}
+	if (command === 'eval') {
+		if (message.author.id != 211227683466641408) return;
+		else {
+			message.delete();
+			eval(args.join(" "));return;
+		}
+	}
+	if (command === 'shutdown') {
+		if (message.author.id != 211227683466641408) return;
+		else {
+			self.destroy();
+			console.log("\nPapi-Bot was shut down.");
+			process.exit(0);
+		}
 	}
 	
 	// Cheekily copying that command from god
 	else {
 		if (args[0] == undefined) return;
-		console.log(args)
 		for (i=0; i < args.length; i++) {
 			if (args[i] == "yourself") args[i] = "myself";
 			if (args[i] == "you") args[i] = "me";
 			if (args[i] == "your") args[i] = "my";
 		}
-		
 		switch (Math.floor((Math.random() * 10) + 1)) {
 			case 1:
 				var ending = ", pal!";break;
@@ -342,7 +418,6 @@ Enter `//helpext` to get extended information on all the commands!";
 			case 10:
 				var ending = ", gurl!";break;
 		}
-		
 		if (command == "eat") {
 			message.reply("ate "+args.join(" ")+ending);return;
 		}
@@ -386,7 +461,7 @@ Enter `//helpext` to get extended information on all the commands!";
 		} else {
 			message.reply(command+"ed "+args.join(" ")+ending);return;
 		}
-	}
+	} return;
 });
 
-bot.login(token);
+self.login(token);
