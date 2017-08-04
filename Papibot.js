@@ -12,6 +12,7 @@ const prefix = '//';
 
 self.on('ready', () => {
 	console.log("Papi-Bot v2017.07.30 online in "+self.guilds.array().length+" guilds\nLogged in as "+self.user.tag+"\n");
+	self.user.setGame("Type //help to begin!");
 });
 
 function log(command, guild, usertag, args) {
@@ -34,9 +35,6 @@ self.on('message', message => {
 	// Add flags to users
 	if (message.author.id == 273932044868780033 || message.author.id == 328544500882604042) {
 		message.react('🇬🇧');
-	}
-	if (message.author.id == 144605767541063680) {
-		message.react('🏳️‍🌈');
 	}
 	if (message.author.id == 305794406781550602) {
 		message.react('🇦🇴');
@@ -77,7 +75,12 @@ self.on('message', message => {
 		message.channel.send('Hi '+args.join(" ")+"!\nI'm Papi!");return;
 	}
 	if (message.content.includes('🅱') === true) {
-		message.channel.send('<@'+ message.author.id +'> end yourself, filthy normie');return;
+		message.channel.send('<@'+ message.author.id +'> end yourself, filthy normie');
+		message.react('🇰').then(function() {
+			message.react('🇾').then(function() {
+				message.react('🇸').then(function(){});
+			});
+		});
 	}
 	if (((message.content).toLowerCase()).includes('broken') === true) {
 		message.channel.send('<@'+ message.author.id +'> ur broken');return;
@@ -94,17 +97,8 @@ self.on('message', message => {
 	if (((message.content).toLowerCase()).includes('kek') === true) {
 		message.react('🐸');return;
 	}
-	if (((message.content).toLowerCase()).includes('japan store') === true) {
-		message.channel.send('Go to japan Store download, download the beta & and Go back :smiley:');
-		message.react('🆗');return;
-	}
 	if (((message.content).toLowerCase()).includes('autist') === true) {
 		message.reply('no u');return;
-	}
-	if (((message.content).toLowerCase()).includes('silk') === true) {
-		if (Math.floor((Math.random() * 100) + 1) == 50) {
-			message.reply('did you know Silk is gay?');return;
-		}
 	}
 	if (((message.content).toLowerCase()).includes('explode') === true) {
 		message.reply('allahu akbar');return;
@@ -287,18 +281,19 @@ To get help for commands, use either of these sub-commands:\n\
 ```";
 		var music = "these are all music-related commands:\n\
 ```\n\
-//join .................... Joins the channel you are currently in.\n\
-//leave ................... Leaves the channel I'm currently in.\n\
-//list .................... Lists all local-playable files (YouTube audio-stream coming soon™!).\n\
-//play [file] ............. Plays the specified file.\n\
-//upload [attachment] ..... Upload a file to the userupload directory.\n\
+//join ...................... Joins the channel you are currently in.\n\
+//leave ..................... Leaves the channel I'm currently in.\n\
+//list ...................... Lists all local-playable files (YouTube audio-stream coming soon™!).\n\
+//play [file or yt url] ..... Plays the specified file.\n\
+//upload [attachment] ....... Upload a file to the userupload directory.\n\
+//download [filename] ....... Sends a file from the filelist to the channel for you to download.\n\
 ```";
 
 		if (args[0] === undefined) {message.reply(help);return;}
 		if (args[0] == "general") {message.reply(general);return;}
 		if (args[0] == "technical") {message.reply(technical);return;}
 		if (args[0] == "music") {message.reply(music);return;}
-		else {message.reply("I don't know that category, sorry!");}
+		else {message.reply("I don't know that category, sorry!");return;}
 	}
 	
 	// Voice & Music related
@@ -319,17 +314,19 @@ To get help for commands, use either of these sub-commands:\n\
 		message.channel.send("Left channel "+voiceChannel.name+"!");return;
 	}
 	if (command === 'play') {
-		if (args[0] === undefined) {message.reply("You need to specify a valid filename!");return;}
+		var yt = require('ytdl-core');
+		if (args[0] === undefined) {message.reply("you need to specify a valid filename or YouTube URL!");return;}
+		if (args[0].startsWith("https://www.youtu")) {message.guild.voiceConnection.playStream(yt(args[0], { audioonly: true }), { passes: 5 });return;}
 		if (fs.readdirSync('D:/botmusic/default').includes(args.join(" "))) {
-			message.guild.voiceConnection.playFile("D:/botmusic/default/"+args.join(" "));
+			message.guild.voiceConnection.playFile("D:/botmusic/default/"+args.join(" "), { passes: 5 });
 			message.reply("playing "+args.join(" "));return;
 		}
 		if (fs.readdirSync('D:/botmusic/userupload').includes(args.join(" "))) {
-			message.guild.voiceConnection.playFile("D:/botmusic/userupload/"+args.join(" "));
+			message.guild.voiceConnection.playFile("D:/botmusic/userupload/"+args.join(" "), { passes: 5 });
 			message.reply("playing "+args.join(" ")+" from userupload");return;
 		} else {
-			message.reply(args[0]+" is not a valid filename!");return;
-		}			
+			message.reply(args.join(" ")+" is not a valid filename!");return;
+		}
 	}
 	if (command === 'list') {
 		var files = fs.readdirSync('D:/botmusic/default');
@@ -358,7 +355,35 @@ To get help for commands, use either of these sub-commands:\n\
 		if (file_url.endsWith(".mp3") || file_url.endsWith(".wav") || file_url.endsWith(".ogg") || file_url.endsWith(".flac") || file_url.endsWith(".wma")){download_file_wget(file_url);}
 		else { message.reply("sorry, I can only accept audio files! Please keep your upload to one of the most used formats! Thank you~!");return;}
 	}
+	if (command === 'download') {
+		if (args[0] === undefined) {message.reply("You need to specify a valid filename!");return;}
+		if (fs.readdirSync('D:/botmusic/default').includes(args.join(" "))) {
+			message.reply("uploading "+args.join(" ")+"...");
+			message.channel.send("Here you go!",{files:["D:/botmusic/default/"+args.join(" ")]}).then(function(){},function(){message.channel.send("I couldn't send that file! Sorry!")});return;
+		}
+		if (fs.readdirSync('D:/botmusic/userupload').includes(args.join(" "))) {
+			message.reply("uploading "+args.join(" ")+"...");
+			message.channel.send("Here you go!",{files:["D:/botmusic/userupload/"+args.join(" ")]}).then(function(){},function(){message.channel.send("I couldn't send that file! Sorry!")});return;
+		} else {
+			message.reply(args[0]+" is not a valid filename!");return;
+		}
+	}
 	// Owner only
+	if (command === 'delete') {
+		if (message.author.id != 211227683466641408) return;
+		else {
+			if (fs.readdirSync('D:/botmusic/default').includes(args.join(" "))) {
+				fs.unlink("D:/botmusic/default/"+args.join(" "));
+				message.reply("deleted "+args.join(" ")+"!");return;
+			}
+			if (fs.readdirSync('D:/botmusic/userupload').includes(args.join(" "))) {
+				fs.unlink("D:/botmusic/userupload/"+args.join(" "));
+				message.reply("deleted "+args.join(" ")+"!");return;
+			} else {
+				message.reply(args[0]+" is not a valid filename!");return;
+			}
+		}
+	}
 	if (command === 'say') {
 		if (message.author.id != 211227683466641408) return;
 		else {
@@ -368,8 +393,25 @@ To get help for commands, use either of these sub-commands:\n\
 	}
 	if (command === 'getguilds') {
 		if (message.author.id != 211227683466641408) return;
-		else {
+		if (args[0] == 'id') {
+			let argstring = args.toString();
+			let argtext = argstring.split(",").slice(1);
+			message.channel.send("```\n"+self.guilds.find('name',argtext.join(" ")).id+"\n```");return;
+		} else {
 			if (args[0] === undefined) {message.channel.send("```\n"+self.guilds.array().join("\n")+"\n```");return;}
+		}
+	}
+	if (command === 'setname') {
+		if (message.author.id != 211227683466641408) return;
+		else {
+			message.guild.me.setNickname(args.join(" ")).then(function(){message.channel.send("Successfully set my name!")},function(){message.channel.send("Couldn't set my name!")});return;
+		}
+	}
+	if (command === 'react') {
+		if (message.author.id != 211227683466641408) return;
+		else {
+			message.guild.channels.find("name",args[0]).fetchMessage(args[1]).then(message => message.react(args[2])).catch(console.log);
+			message.delete();return;
 		}
 	}
 	if (command === 'eval') {
@@ -382,6 +424,7 @@ To get help for commands, use either of these sub-commands:\n\
 	if (command === 'shutdown') {
 		if (message.author.id != 211227683466641408) return;
 		else {
+			message.channel.send("Papi-Bot was shut down");
 			self.destroy();
 			console.log("\nPapi-Bot was shut down.");
 			process.exit(0);
@@ -455,6 +498,12 @@ To get help for commands, use either of these sub-commands:\n\
 		}
 		if (command.endsWith("b") == true) {
 			message.reply(command+"bed "+args.join(" ")+ending);return;
+		}
+		if (command.endsWith("g") == true) {
+			message.reply(command+"ged "+args.join(" ")+ending);return;
+		}
+		if (command.endsWith("ss") == true) {
+			message.reply(command+"ed "+args.join(" ")+ending);return;
 		}
 		if (command.endsWith("s") == true) {
 			message.reply(command+"sed "+args.join(" ")+ending);return;
