@@ -14,6 +14,7 @@ exports.getcmd = function(content) {
 	if (cmd.startsWith("//")){cmd = cmd.slice (2);}
 	return cmd;
 }
+
 exports.getargs = function(content) {
 	let args = content.split(" ").slice(1);
 	return args;
@@ -97,15 +98,18 @@ exports.getHelp = function(array){
 	switch(array.join(" ")){
 		case "general": var text = "these are the general-use commands:\n\
 ```\n\
-//avatar <@user> ........... Shows the tagged user's avatar, or yours if noone was tagged.\n\
-//guildavatar .............. Shows this guild's avatar.\n\
-//invite ................... Makes me send my invite link so you can have me on your very own server!.\n\
-//roll <text> <length> ..... Rolls a random number with the requested amount of digits, or nine if none were specified.\n\
-//status [@user] ........... Shows the status of a user and what they are playing, if anything.\n\
+//avatar [@user] ................................... Shows the tagged user's avatar, or yours if noone was tagged.\n\
+//calc <equation> .................................. Calculates the given equation and returns the result. Any JS Math.* operation supported.\n\
+//decide <option> or <option> [or [option]...] ..... Randomly decides from the given options for you.\n\
+//guildinfo ........................................ Shows information about this guild.\n\
+//invite ........................................... Makes me send my invite link so you can have me on your very own server!.\n\
+//reverse <text> ................................... Reverse some text!\n\
+//roll [text] [length] ............................. Rolls a random number with the requested amount of digits, or nine if none were specified.\n\
+//status [@user] ................................... Shows the status of a user and what they are playing, if anything.\n\
 ```";break;
 		case "technical": var text = "these are the more technical commands:\n\
 ```\n\
-//id <@user> ..... Returns the Discord ID of the tagged user, or yours if noone was tagged.\n\
+//id [@user] ..... Returns the Discord ID of the tagged user, or yours if noone was tagged.\n\
 //ping ........... Pings me, I will reply with one of various answers!\n\
 //source ......... Links the github repo of my source code (note: might not be 100% recent).\n\
 ```";break;
@@ -114,15 +118,22 @@ exports.getHelp = function(array){
 //join ...................... Joins the channel you are currently in.\n\
 //leave ..................... Leaves the channel I'm currently in.\n\
 //list ...................... Lists all local-playable files (YouTube audio-stream coming soon™!).\n\
-//play [file or yt url] ..... Plays the specified file.\n\
-//upload [attachment] ....... Upload a file to the userupload directory.\n\
-//download [filename] ....... Sends a file from the filelist to the channel for you to download.\n\
+//play <file or yt url> ..... Plays the specified file.\n\
+//upload <attachment> ....... Upload a file to the userupload directory.\n\
+//download <filename> ....... Sends a file from the filelist to the channel for you to download.\n\
+```";break;
+		case "administrative": var text = "these are the administrative commands:\n\
+```\n\
+//kick <@user> [reason] ..... Kicks the specified user, as long as you and the bot have the permission to do so.\n\
+//ban <@user> [reason] ...... Bans the specified user, permission-rule as above applies here as well.\n\
+//toggle <wt|im> ............ Toggles word triggers and the I'm-dadjoke trigger for your server respectively.\n\
 ```";break;
 		default: var text = "hello! Thanks for using Emosewaj's Papi-Bot!\n\
 \n\
 To get help for commands, use either of these sub-commands:\n\
 ```\n\
 //help general ............ Get information about general-use commands.\n\
+//help administrative ..... Get information on administrative commands.\n\
 //help technical .......... Get information on more technical, development-oriented commands.\n\
 //help music .............. Get information on how to use Papi-Bot for music.\n\
 ```";break;
@@ -176,7 +187,40 @@ exports.getguilds = function(array) {
 	if (array[0] == "id") {cb = 1;return cb;} else {cb = 0;return cb;}
 }
 
+exports.eightball = function() {
+	return (Math.floor(Math.random()*(20-1+1)+1));
+}
+
+exports.reverse = function(string) {
+	array = string.split("").slice(10);
+	let reverseArray = [];
+	let repeat = array.length;
+	for (i = 0;i < repeat;i++) {
+		reverseArray[i] = array.pop();
+	}
+	return reverseArray.join("");
+}
+
+exports.decideForMe = function(array) {
+	let decisions = array.join(" ").split(" or ");
+	return ("I'd say "+decisions[Math.floor(Math.random()*((decisions.length-1)-0+1)+0)]+" sounds good to me!");
+}
+
 exports.commandCheck = function(cmd) {
-	let cmdlist = ["ping","id","avatar","guildavatar","status","invite","source","roll","help","join","leave","list","play","upload","download","delete","say","eval","setname","getguilds","react","shutdown","dm"];
+	let cmdlist = ["ping","id","avatar","guildinfo","status","invite","source","roll","help","join","leave","list","play","upload","download","delete","say","eval","setname","getguilds","react","shutdown","dm","bug","8ball","kick","ban","reverse","sendnudes","calc","decide","sendintro","toggle"];
 	if (cmdlist.includes(cmd)){cb = 1;return cb} else {cb = 0;return cb;}
+}
+
+exports.explainOwnerCMD = function(cmd) {
+	switch(cmd){
+		case "say": var text = "Since others may use this command to make me say bad things or even to anonymously bully others, my master cannot allow others to use this command.";break;
+		case "eval": var text = "Letting everyone be able to execute Javascript code through me is dangerous, therefore it's just logical for my master to disallow this command.";break;
+		case "setname": var text = "This is for my master to be able to rename me at will (in servers they are in). If you want to rename me, just go ahead and do so (required you have the necessary permission, which is Manage Nicknames)!";break;
+		case "getguilds": var text = "My master decided to not make the list of servers I'm in public.";break;
+		case "dm": var text = "Since others may use this command to make me say bad things or even to anonymously bully others, my master cannot allow others to use this command.";break;
+		case "react": var text = "Making me react to certain messages as a joke is only something my master is allowed to do.";break;
+		case "sendnudes": var text = "Since my master sees sentimental value in me due to the time and energy they invested into developing me, they fear others might use me only for the porn, they therefore decided to keep this command for themselfes.";break;
+		case "shutdown": var text = "I don't really need to explain why this command is owner-only, do I?";break;
+	}
+	return ("Oops! Looks like you've sent an owner-only command! Here's why this command is restriced to my master:\n"+text);
 }
