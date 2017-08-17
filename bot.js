@@ -8,8 +8,10 @@ const disc = require("./depen/index.js");
 const rem = require("./depen/rem.js");
 const blocked = require("./depen/blocked.js");
 const math = require("./depen/math.js");
-const Discord = require("discord.js");
-const self = new Discord.Client();
+const { Cleint } = require('discord.js');
+const self = new Client({
+   disableEveryone: true // So your bot send a @everyone msg.
+});
 const token = "TOKEN REMOVED";
 const prefix = "//";
 var cb;
