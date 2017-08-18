@@ -8,8 +8,8 @@ const disc = require("./depen/index.js");
 const rem = require("./depen/rem.js");
 const blocked = require("./depen/blocked.js");
 const math = require("./depen/math.js");
-const Discord = require("discord.js");
-const self = new Discord.Client();
+const { Client, RichEmbed } = require("discord.js");
+const self = new Client();
 const token = "TOKEN REMOVED";
 const prefix = "//";
 var cb;
@@ -107,7 +107,7 @@ self.on("message", msg => {
 				case undefined: reply("this is your avatar!\n"+msg.author.displayAvatarURL);break;
 				default: reply("this is "+mention.displayName+"'s avatar!\n"+msg.mentions.users.first().displayAvatarURL);break;
 			} break;
-		case "guildinfo": const embed = new Discord.RichEmbed()
+		case "guildinfo": const embed = new RichEmbed()
 			.setTitle("Guild Information")
 			.setAuthor(msg.guild.name, msg.guild.iconURL)
 			.setColor("RANDOM")
