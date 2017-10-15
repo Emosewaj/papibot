@@ -59,3 +59,18 @@ exports.calc = function(array) {
 		return ("I couldn't get a numerical result from that!");
 	}
 }
+
+exports.randomNo = function(min,max) {
+	return Math.floor(Math.random()*(max-min+1)+min);
+}
+
+exports.round = function(value, decimals) {
+	let number = Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+	if (isNaN(number)) {return 0;} else {return number;}
+}
+
+exports.dice = function(sides) {
+	if (!parseInt(sides)) {return("Please give me the amount of sides the die has.")}
+	let thrw = Math.floor(Math.random()*((parseInt(sides))-1+1)+1);
+	return ("You roll a "+sides+"-sided dice, it shows a "+thrw+"!");
+}
