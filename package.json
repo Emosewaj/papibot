@@ -1,8 +1,8 @@
 {
-  "name": "emosewaj",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "Papi-Bot",
+  "version": "2017.10.15",
+  "description": "A discord Bot",
+  "main": "main.js",
   "dependencies": {
     "discord.js": "^11.2.1",
     "opusscript": "^0.0.3",
