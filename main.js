@@ -23,7 +23,7 @@ self.on("ready", () => {
 	console.log(`Papi-Bot v2017.10.15 online in ${self.guilds.array().length} guilds\nLogged in as ${self.user.tag}\n`);
 	self.user.setPresence({ "game":{"name":"Type //help to begin!","url":"https://discordbots.org/bot/337217642660233217"} });
 	self.guilds.get("292040520648228864").channels.get("292040520648228864").send(`Papi-Bot v2017.09.15 online in ${self.guilds.array().length} guilds\nLogged in as ${self.user.tag}\n`);
-	self.lastUpdate = "15/10/2017";
+	self.lastUpdate = "30/10/2017";
 });
 
 // Word triggers
@@ -144,8 +144,8 @@ self.on("message", msg => {
 		break;
 		case "avatar": {
 			switch(mention){
-				case undefined: msg.reply("this is your avatar!",{files: [msg.author.displayAvatarURL]});break;
-				default: msg.reply(`this is ${mention.displayName}'s avatar!`,{files: [msg.mentions.users.first().displayAvatarURL]});break;
+				case undefined: msg.reply("this is your avatar!",{embed: {author: {name: "Click here for the full size!", url: msg.author.displayAvatarURL}, image: {url: msg.author.displayAvatarURL}}});break;
+				default: msg.reply(`this is ${mention.displayName}'s avatar!`,{embed: {author: {name: "Click here for the full size!", url: msg.mentions.users.first().displayAvatarURL}, image: {url: msg.mentions.users.first().displayAvatarURL}}});break;
 			}
 		} 
 		break;
@@ -408,6 +408,11 @@ self.on("message", msg => {
 					msg.guild.voiceConnection.playStream(yt(args[0], { audioonly: true }), { passes: 1 });
 					msg.channel.startTyping();
 					yt.getInfo(args[0], (err, info) => {
+						if (err) {
+							msg.channel.send(`An error occured: ${err.message}`);
+							msg.channel.stopTyping(true);
+							return;
+						}
 						msg.reply(`playing ${info.title} by ${info.author.name}!`);
 						msg.channel.stopTyping(true);
 						msg.delete().then(()=>{},reason => {
@@ -484,7 +489,7 @@ self.on("message", msg => {
 						if (!welcomeChannel) {msg.channel.send("I couldn't find a channel with that name! Please try again!");return;}
 						if (!welcomeChannel.permissionsFor(m.guild.me).has("SEND_MESSAGES")) {msg.channel.send("I can't send messages to that channel, command aborted!");return;}
 					}
-					msg.channel.send("Please send me the message you would like me to display! You can use the following operators: `$MEMBER_NAME`, `$GUILD_NAME`, `$GUILD_MEMBERCOUNT`!\nType `cancel` to abort!\nExample:\n`Hello, $MEMBER_NAME, welcome to $GUILD_NAME!`");
+					msg.channel.send("Please send me the message you would like me to display! You can use the following operators: `$MEMBER_NAME`, `$MEMBER_TAG`, `MEMBER_MENTION`, `$GUILD_NAME`, `$GUILD_MEMBERCOUNT`!\nType `cancel` to abort!\nExample:\n`Hello, $MEMBER_NAME, welcome to $GUILD_NAME!`");
 					let collector2 = m.channel.createMessageCollector(m2 => m2.author == msg.author,{ time: 60000 });
 					collector2.on("collect",m2 => {
 						if (m2.content == "cancel") {collector2.stop();msg.channel.send("Command was cancelled.")}
@@ -611,7 +616,12 @@ self.on("message", async msg => {
 				case "exec": {
 					try {
 						let result = eval(args.join(" "));
-						msg.channel.send(`\`\`\`typeof ${typeof result}\`\`\`\n\`\`\`\n${result}\`\`\``);
+						if (result instanceof Promise) {
+							result = await result;
+							msg.channel.send(`\`\`\`typeof ${typeof result}\ninstanceof ${result.constructor.toString().split("{")[0]}\`\`\`\n\`\`\`\n${result}\`\`\``);
+						} else {
+							msg.channel.send(`\`\`\`typeof ${typeof result}\ninstanceof ${result.constructor.toString().split("{")[0]}\`\`\`\n\`\`\`\n${result}\`\`\``);
+						}
 					} catch(err) {
 						msg.channel.send(`Error: ${err.message}`);
 					};
@@ -708,7 +718,7 @@ self.on("message", async msg => {
 								text = text.replace("$PREFIX",prefix)
 							}
 							GuildChannel.send(text).then(Msg => {
-								console.log(`Message sent to ${Msg.channel.name} in ${Msg.guild.name}`);
+								console.log(`Message sent to #${Msg.channel.name} in ${Msg.guild.name}`);
 							}, err => {
 								console.error(`Couldn't send a message: ${err}`);
 							})
@@ -830,12 +840,16 @@ self.on("guildMemberAdd",member => {
 		var channel = member.guild.channels.get(welcomeData.channel);
 	}
 	let toSend = welcomeData.message;
-	while (toSend.includes("$MEMBER_NAME" || "$GUILD_NAME" || "$GUILD_MEMBERCOUNT")) {
+	while (toSend.includes("$MEMBER_NAME") || toSend.includes("$GUILD_NAME") || toSend.includes("$GUILD_MEMBERCOUNT") || toSend.includes("$MEMBER_TAG") || toSend.includes("$MEMBER_MENTION")) {
 		toSend = toSend.replace("$MEMBER_NAME",member.user.username);
 		toSend = toSend.replace("$GUILD_NAME",member.guild.name);
 		toSend = toSend.replace("$GUILD_MEMBERCOUNT",member.guild.memberCount);
+		toSend = toSend.replace("$MEMBER_TAG",member.user.tag);
+		toSend = toSend.replace("$MEMBER_MENTION",`<@${member.id}>`);
 	}
 	channel.send(toSend.toString());
+	console.log(toSend);
+	console.log(toSend.toString());
 })
 
 /**
@@ -1003,12 +1017,12 @@ process.on("uncaughtException", err => {
 self.on("message", msg => {
 	if (msg.channel.type == "dm") return;
 	if (msg.author == self.user) return;
-	cmd = disc.getcmd(msg.content);
-	args = disc.getargs(msg.content);
+	toscmd = disc.getcmd(msg.content);
+	tosargs = disc.getargs(msg.content);
 
-	if (cmd == "tos") {
+	if (toscmd == "tos") {
 		if (!msg.member.permissions.has("MANAGE_GUILD")) {msg.channel.send("You do not have the required permission for this command!");return;}
-		switch(args.join(" ")){
+		switch(tosargs.join(" ")){
 			case "read": msg.channel.send(tos.read());break;
 			case "accept": msg.channel.send(tos.accept(msg.guild.id));break;
 			case "deny": msg.channel.send(tos.deny(msg.guild.id));msg.guild.leave();break;
