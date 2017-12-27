@@ -3,14 +3,6 @@ const fs = require("fs");
 const math = require("./math.js");
 const config = require("./config.js");
 
-exports.log = function(command, guild, usertag, args) {
-	var date = new Date();
-	var hour = date.getHours().toString();if(hour.length == 1){hour = ("0"+hour)}
-	var minute = date.getMinutes().toString();if(minute.length == 1){minute = ("0"+minute)}
-	var second = date.getSeconds().toString();if(second.length == 1){second = ("0"+second)}
-	console.log("["+hour+":"+minute+":"+second+"] in "+guild+": User "+usertag+" issued \""+command+"\" with arguments \""+args.join(" ")+"\".");
-}
-
 exports.getcmd = function(content,id,name) {
 	let cmd = content.split(" ")[0];
 	if (cmd.startsWith("//")){cmd = cmd.slice (2);}
@@ -23,7 +15,8 @@ exports.getargs = function(content) {
 }
 
 exports.ownerCheck = function(id) {
-	if (id == "211227683466641408" || id == "297556557774979072") {return 1;} else {return 0;}
+	if (id == "211227683466641408" || id == "297556557774979072") return true;
+	return false;
 }
 
 exports.checkBirb = function(content,id) {
@@ -34,27 +27,26 @@ exports.checkBirb = function(content,id) {
 	if (content.includes("Chirp")){return 4;}
 	if (content.includes("CHIRP")){return 5;}
 	if (content.includes("chirp")){return 6;}
-	if (content.includes("Pwah")){return 7;}
 	else {return 0;}
 }
 
-exports.checkIm = function(cmd,guildID) {
-	if (guildID === 337401886699290626) {return 0;}
+exports.checkIm = function(cmd,args) {
 	cmdLC = cmd.toLowerCase();
-	if (cmdLC == "i'm" || cmdLC == "im"){return 1;}
-	else {return 0;}
+	if (args.length > 9) return 0;
+	if (cmdLC == "i'm" || cmdLC == "im") {return 1} else {return 0}
 }
 
 exports.checkMisc = function(content) {
-	if (content.includes("🅱")){return 1;}
-	if (content == "wew"){return 2;}
-	if (content.includes("birb")){return 3;}
-	if (content.includes("gay")){return 4;}
-	if (content.includes("kek")){return 5;}
-	if (content == "delete"){return 6;}
-	if (content.includes("explode")){return 7;}
-	if (content.includes("phoon")){return 8;}
-	else {return 0;}
+	if (content.includes("🅱")) return 1;
+	if (content == "wew") return 2;
+	if (content.includes("birb")) return 3;
+	if (content.includes("gay")) return 4;
+	if (content.includes("kek")) return 5;
+	if (content == "delete") return 6;
+	if (content.includes("explode")) return 7;
+	if (content.includes("phoon")) return 8;
+	if (content == "k") return 9;
+	return 0;
 }
 
 exports.roll = function(number,array,boolean){
@@ -95,17 +87,22 @@ exports.getHelp = function(array,guild_id){
 "+prefix+"8ball [text] ..................................... The magic 8ball has all the answers you need.\n\
 "+prefix+"avatar [@user] ................................... Shows the tagged user's avatar, or yours if noone was tagged.\n\
 "+prefix+"calc <equation> .................................. Calculates the given equation and returns the result. Any JS Math.* operation supported.\n\
+"+prefix+"convert <amount> <source unit> <target unit> ..... Convert two units!\n\
 "+prefix+"decide <option> or <option> [or [option]...] ..... Randomly decides from the given options for you.\n\
+"+prefix+"die <sides> ...................................... Roll a die!\n\
 "+prefix+"fact ............................................. Get an interesting fact from a big list of facts available.\n\
 "+prefix+"guildinfo ........................................ Shows information about this guild.\n\
 "+prefix+"info ............................................. Reveals info about the bot.\n\
 "+prefix+"invite ........................................... Makes me send my invite link so you can have me on your very own server!\n\
+"+prefix+"morse <text or morse> ............................ Converts the given text into morse code or vice versa!\n\
 "+prefix+"randcap <text> || rc <text> ...................... Randomly capitalize the given text.\n\
 "+prefix+"report <@User> <reason> .......................... Report a user for abusing any of this bot's features. Please also provide evidence!\n\
 "+prefix+"reverse <text> ................................... Reverse some text!\n\
 "+prefix+"roll [text] [length] ............................. Rolls a random number with the requested amount of digits, or nine if none were specified.\n\
+"+prefix+"sendnoots ........................................ Noot noot!\n\
 "+prefix+"superscript <text> || ss <text> .................. Turn some text into unicode superscript (most letters supported)\n\
 "+prefix+"status [@user] ................................... Shows the status of a user and what they are playing, if anything.\n\
+"+prefix+"userinfo [@user] ................................. Display extensive information about you or whoever you mentioned.\n\
 ```";break;
 		case "technical": var text = "these are the more technical commands:\n\
 ```\n\
@@ -128,12 +125,17 @@ exports.getHelp = function(array,guild_id){
 "+prefix+"setprefix <new prefix> ..... Sets a new server-wide prefix for the bot.\n\
 "+prefix+"setwelcome ................. Activate or deactivate welcome messages for the server.\n\
 ```";break;
+		case "nsfw": var text = "these are the non-worksafe commands:\n\
+```\n\
+"+prefix+"sendnudes ..... Only looking, no touching allowed!\n\
+```All of these commands are restricted to channels **marked as NSFW!**";break;
 		default: var text = "hello! Thanks for using Emosewaj's Papi-Bot!\n\
 \n\
 To get help for commands, use either of these sub-commands:\n\
 ```\n\
 "+prefix+"help general ............ Get information about general-use commands.\n\
 "+prefix+"help administrative ..... Get information on administrative commands.\n\
+"+prefix+"help nsfw ............... Get information on lewd commands.\n\
 "+prefix+"help technical .......... Get information on more technical, development-oriented commands.\n\
 "+prefix+"help music .............. Get information on how to use Papi-Bot for music.\n\
 ```";break;
@@ -155,46 +157,17 @@ exports.leave = function(connection) {
 	}
 }
 
-exports.play = function(connection,userconnection,array) {
+exports.play = function(connection,userconnection) {
 	switch(connection){
 		case undefined:
 		case null: return 0;
 		default: switch(userconnection.voiceChannel){
 			case undefined:
 			case null: return 0;
-			default: if (array[0] == undefined) {return 0;}
-				if (array[0].startsWith("https://www.youtu")) {return 1;}
-				/*if (def.includes(array.join(" "))){return 2;}
-				if (uu.includes(array.join(" "))){return 3;}
-				if (array[0] == "random") {return 4;}*/
-				else {return 0;}
+			default: return 1;
 		}
 	}
 }
-
-/*
-exports.playRandom = function() {
-	let totalsongs = (fs.readdirSync("D:/botmusic/default"),fs.readdirSync("D:/botmusic/userupload"))
-	let song = math.randomNo(0,totalsongs.length-1)
-	let directory;
-	if (song <= fs.readdirSync("D:/botmusic/default").length-1) {directory = "D:/botmusic/default/"} else {directory = "D:/botmusic/userupload/"}
-	return ([directory+totalsongs[song].toString(),totalsongs[song]]);
-}
-
-exports.upload = function(attachment) {
-	if (attachment.first() == undefined) {return -1;}
-	var url = attachment.first().url;
-	if (!url.endsWith(".mp3") && !url.endsWith(".wav") && !url.endsWith(".ogg") && !url.endsWith(".wma")) {return 0;}
-	else {return 1;}
-}
-
-exports.download = function(array,def,uu) {
-	if (array == undefined){return 0;}
-	if (def.includes(array.join(" "))){return 1;}
-	if (uu.includes(array.join(" "))){return 2;}
-	else {return 0;}
-}
-*/
 
 exports.getguilds = function(array) {
 	if (array[0] == "id") {return 1;}
@@ -218,7 +191,7 @@ exports.reverse = function(string) {
 
 exports.decideForMe = function(array) {
 	let decisions = array.join(" ").split(" or ");
-	return ("I'd say "+decisions[math.randomNo(0,decisions.length-1)]+" sounds good to me!");
+	return ("I'd say "+decisions[math.randomNo(0,decisions.length-1)]+"!");
 }
 
 exports.superscript = function(args) {
@@ -247,28 +220,63 @@ exports.randCap = function(args) {
 	return text.join("");
 }
 
+exports.parseUptime = function(uptime) {
+	let days = 0;
+	let hours = 0;
+	let minutes = 0;
+	let seconds = Math.round(uptime);
+	
+	while ((seconds - 60) > 1) {
+		seconds -= 60;
+		minutes++;
+	}
+	while ((minutes - 60) > 1) {
+		minutes -= 60;
+		hours++;
+	}
+	while ((hours - 24) > 1) {
+		hours -= 24;
+		days++;
+	}
+	
+	if (days == 0) {
+		if (hours == 0) {
+			if (minutes == 0) {
+				return `${seconds} Seconds`;
+			} else {
+				return `${minutes} Minutes, ${seconds} Seconds`;
+			}
+		} else {
+			return `${hours} Hours, ${minutes} Minutes, ${seconds} Seconds`;
+		}
+	} else {
+		return `${days} Days, ${hours} Hours, ${minutes} Minutes, ${seconds} Seconds`;
+	}
+}
+
 exports.commandCheck = function(cmd) {
-	let cmdlist = ["ping","id","avatar","guildinfo","status","invite","source","roll","help","join","leave","list","play","upload","download","delete","say","eval","setname","getguilds",
+	let cmdlist = ["ping","id","avatar","guildinfo","status","invite","source","roll","help","join","leave","play", "say","eval","setname","getguilds",
 	"react","shutdown","dm","bug","8ball","kick","ban","reverse","sendnudes","calc","decide","sendintro","toggle","sendnoots","tos","info","setprefix","broadcast","superscript","rpg",
-	"setwelcome","shutdown","block","unblock","report","randcap","ss","rc","dice","setlog","exec","fact","reply"];
+	"setwelcome","shutdown","block","unblock","report","randcap","ss","rc","die","setlog","exec","fact","reply", "morse", "cleanup", "userinfo", "convert"];
 	if (cmdlist.includes(cmd)){return 1;} else {return 0;}
 }
 
 exports.explainOwnerCMD = function(cmd) {
+	var text;
 	switch(cmd){
-		case "say": var text = "Since others may use this command to make me say bad things or even to anonymously bully others, my master cannot allow others to use this command.";break;
-		case "eval": var text = "Letting everyone be able to execute Javascript code through me is dangerous, therefore it's just logical for my master to disallow this command.";break;
-		case "setname": var text = "This is for my master to be able to rename me at will (in servers they are in). If you want to rename me, just go ahead and do so (required you have the necessary permission, which is Manage Nicknames)!";break;
-		case "getguilds": var text = "My master decided to not make the list of servers I'm in public.";break;
-		case "dm": var text = "Since others may use this command to make me say bad things or even to anonymously bully others, my master cannot allow others to use this command.";break;
-		case "react": var text = "Making me react to certain messages as a joke is only something my master is allowed to do.";break;
-		case "sendnudes": var text = "Since my master sees sentimental value in me due to the time and energy they invested into developing me, they fear others might use me only for the porn, they therefore decided to keep this command for themselfes.";break;
-		case "restart":
-		case "shutdown": var text = "I don't really need to explain why this command is owner-only, do I?";break;
-		case "broadcast": var text = "Broadcasts are used to notify servers of new commands or any information that would need to be spread.";break;
+		case "say": text = "Since others may use this command to make me say bad things or even to anonymously bully others, my owner cannot allow others to use this command.";break;
+		case "eval": text = "Letting everyone be able to execute Javascript code through me is dangerous, therefore it's just logical for my owner to disallow this command.";break;
+		case "setname": text = "This is for my owner to be able to rename me at will (in servers they are in). If you want to rename me, just go ahead and do so (required you have the necessary permission, which is Manage Nicknames)!";break;
+		case "getguilds": text = "My owner decided to not make the list of servers I'm in public.";break;
+		case "dm": text = "Since others may use this command to make me say bad things or even to anonymously bully others, my owner cannot allow others to use this command.";break;
+		case "react": text = "Making me react to certain messages as a joke is only something my owner is allowed to do.";break;
+		case "sendnudes": text = "Since my owner sees sentimental value in me due to the time and energy they invested into developing me, they fear others might use me only for the porn, they therefore decided to keep this command for themselfes.";break;
+		case "shutdown": text = "I don't really need to explain why this command is owner-only, do I?";break;
+		case "broadcast": text = "Broadcasts are used to notify servers of new commands or any information that would need to be spread.";break;
 		case "block":
-		case "unblock": var text = "The blocking system is used to restrict abusive users the access to the bot.";break;
-		case "reply": var text = "Replying is used to reply to direct messages I receive, this is easier than using the `dm` command for the same purpose, as for `dm`, an ID has to be found first.";break;
+		case "unblock": text = "The blocking system is used to restrict abusive users the access to the bot.";break;
+		case "reply": text = "Replying is used to reply to direct messages I receive, this is easier than using the `dm` command for the same purpose, as for `dm`, an ID has to be found first.";break;
+		default: text = "No reason yet stated.";break;
 	}
-	return ("Oops! Looks like you've sent an owner-only command! Here's why this command is restriced to my master:\n"+text);
+	return ("Oops! Looks like you've sent an owner-only command! Here's why this command is restriced to my owner:\n"+text);
 }
