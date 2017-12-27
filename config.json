@@ -1,0 +1,8 @@
+{
+    "mode":"test/main",
+    "tokens": {
+        "main":"REMOVED",
+        "test":"REMOVED"
+    },
+    "defaultPrefix":"//"
+}
