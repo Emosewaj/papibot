@@ -1,8 +1,6 @@
 const fs = require("fs");
 const url = require("url");
 const http = require("http");
-const exec = require("child_process").exec;
-const spawn = require("child_process").spawn;
 const yt = require("ytdl-core");
 const disc = require("./depen/index.js");
 const rem = require("./depen/rem.js");
@@ -10,31 +8,50 @@ const blocked = require("./depen/blocked.js");
 const math = require("./depen/math.js");
 const tos = require("./depen/tos.js");
 const config = require("./depen/config.js");
+const convert = require("./depen/converter.js");
+
+const cfg = require("./config.json");
 const Discord = require("discord.js");
-const self = new Discord.Client();
-const token = "TOKEN REMOVED";
-const prefix = "//";
+const self = new Discord.Client({
+    messageCacheLifetime: 90, // A message becomes sweepable after 90 seconds
+    messageSweepInterval: 300, // The message cache is emptied every 5 minutes
+    disabledEvents: [
+        "TYPING_START" // We don't need to listen for users starting or stopping to type.
+    ]
+});
+const prefix = cfg.defaultPrefix;
+var token;
+switch(cfg.mode) {
+	case "main": token = cfg.tokens.main; break;
+	case "test": token = cfg.tokens.test; break;
+}
+
 var cb;
 var cmd;
 var args = [];
-const facts = JSON.parse(fs.readFileSync("./data/didyouknow.json"));
+const facts = require("./data/didyouknow.json");
 
 self.on("ready", () => {
-	console.log(`Papi-Bot v2017.10.15 online in ${self.guilds.array().length} guilds\nLogged in as ${self.user.tag}\n`);
-	self.user.setPresence({ "game":{"name":"Type //help to begin!","url":"https://discordbots.org/bot/337217642660233217"} });
-	self.guilds.get("292040520648228864").channels.get("292040520648228864").send(`Papi-Bot v2017.09.15 online in ${self.guilds.array().length} guilds\nLogged in as ${self.user.tag}\n`);
-	self.lastUpdate = "30/10/2017";
+	self.version = "27/12/2017";
+	self.user.setPresence({"game":{"name":"Type //help to begin!"}});
+	self.channels.get("292040520648228864").send({embed:new Discord.RichEmbed().setTitle(`Papi-Bot v${self.version}`)
+    .addField("Status",self.user.presence.status,true)
+    .addField("Version",self.version,true)
+    .addField("Guilds",self.guilds.size,true)
+    .addField("RAM Usage",`${(process.memoryUsage().heapUsed/1024/1024).toFixed(2)} MB`,true)
+    .setColor(self.guilds.get("292040520648228864").me.displayHexColor)
+    .setThumbnail(self.user.displayAvatarURL)}); // Notify that we're online
 });
 
 // Word triggers
 self.on("message", msg => {
-	if (msg.channel.type == "dm"){return;}
-	if (msg.author == self.user) {return;}
-	if (tos.check(msg.guild.id) == false) {return;}
-	let wtcmd = config.getcmd(msg.content,msg.guild.id,msg.guild.name);;
+	if (msg.channel.type == "dm") return;
+	if (msg.author == self.user) return;
+	if (tos.check(msg.guild.id) == false) return;
+	let wtcmd = config.getcmd(msg.content,msg.guild.id,msg.guild.name);
 	let wtargs = disc.getargs(msg.content);
 	
-	//These are very specific but work regardless of server setting
+	//These are very specific and work regardless of server setting
 	if (msg.content.toLowerCase() == "goodnight, papi" || msg.content.toLowerCase() == "good night, papi"){
 		let gn;
 		let ending;
@@ -60,9 +77,9 @@ self.on("message", msg => {
 	}
 
 	//Check for blocked Servers
-	if (blocked.check(msg.guild.id)){return;}
+	if (blocked.check(msg.guild.id)) return;
 	//Check for blocked Users
-	if (blocked.checkUser(msg.author.id)){return;}
+	if (blocked.checkUser(msg.author.id)) return;
 
 	switch(disc.checkBirb(msg.content,msg.guild.id)){
 		case 0: break;
@@ -84,11 +101,11 @@ self.on("message", msg => {
 		case 6: msg.channel.send("yourself");break;
 		case 7: msg.channel.send("allahu akbar");break;
 		case 8: msg.channel.send("Admin he's doing it sideways");break;
+		case 9: msg.react("🇰");break;
 	}
 
-	//Because the Im thing can be annoying, I understand that
 	if (blocked.checkIm(msg.guild.id)){return;}
-	switch(disc.checkIm(wtcmd,msg.guild.id)){
+	switch(disc.checkIm(wtcmd,wtargs)){
 		case 0: break;
 		case 1: msg.channel.send(`Hi ${wtargs.join(" ")}!\nI'm Papi!`);msg.react(self.emojis.find("name","heheXD")).catch(console.warn);break;
 	}
@@ -105,7 +122,6 @@ self.on("message", msg => {
 	args = disc.getargs(msg.content);
 	mention = msg.mentions.members.first();
 	if (!cmd) {return;}
-	disc.log(cmd,msg.guild.name,msg.author.tag,args);
 	let logEmbed = new Discord.RichEmbed()
 	.setAuthor("Command",msg.author.displayAvatarURL)
 	.setTimestamp()
@@ -126,33 +142,26 @@ self.on("message", msg => {
 	// Commands
 	switch(cmd){
 		case "ping": {
-			switch(math.randomNo(1,5)){
-				case 1: msg.channel.send("Hello!");break;
-				case 2: msg.channel.send("Hi there!");break;
-				case 3: msg.channel.send("How are you?");break;
-				case 4: msg.channel.send("Good to see you!");break;
-				case 5: msg.channel.send("Online and ready!");break;
-			}
+			msg.channel.send(`Pong!\n📶 Websocket ping: ${self.pings[0]}`).then(m => {
+				return m.edit(`${m.content}\n📨 Message ping: ${m.createdTimestamp-msg.createdTimestamp}`);
+			});
 		}
-		break;
 		case "id": {
 			switch(mention){
-				case undefined: msg.reply(`your Discord ID is ${msg.author.id}!`);break;
-				default: msg.reply(`${msg.mentions.members.first().displayName}'s Discord ID is ${mention.id}!`);break;
+				case undefined: return msg.reply(`your Discord ID is \`${msg.author.id}\`!`);break;
+				default: return msg.reply(`${msg.mentions.members.first().displayName}'s Discord ID is \`${mention.id}\`!`);break;
 			}
 		}
-		break;
 		case "avatar": {
 			switch(mention){
-				case undefined: msg.reply("this is your avatar!",{embed: {author: {name: "Click here for the full size!", url: msg.author.displayAvatarURL}, image: {url: msg.author.displayAvatarURL}}});break;
-				default: msg.reply(`this is ${mention.displayName}'s avatar!`,{embed: {author: {name: "Click here for the full size!", url: msg.mentions.users.first().displayAvatarURL}, image: {url: msg.mentions.users.first().displayAvatarURL}}});break;
+				case undefined: return msg.reply("this is your avatar!",{embed: {author: {name: "Click here for the full size!", url: msg.author.displayAvatarURL}, image: {url: msg.author.displayAvatarURL}}});break;
+				default: return msg.reply(`this is ${mention.displayName}'s avatar!`,{embed: {author: {name: "Click here for the full size!", url: msg.mentions.users.first().displayAvatarURL}, image: {url: msg.mentions.users.first().displayAvatarURL}}});break;
 			}
 		} 
-		break;
 		case "guildinfo": {
 			embed.setTitle("Guild Information")
 			.setAuthor(msg.guild.name, msg.guild.iconURL)
-			  .setFooter(`Info requested by ${msg.author.tag}`, msg.author.displayAvatarURL)
+			.setFooter(`Info requested by ${msg.author.tag}`, msg.author.displayAvatarURL)
   			.setTimestamp()
 			.addField("Owner:", msg.guild.owner.user.tag, true)
 			.addField("Member count:", msg.guild.memberCount, true)
@@ -162,35 +171,71 @@ self.on("message", msg => {
 			.addField("My prefix:",config.getprefix(msg.guild.id),true)
 			.addField("Created at:", msg.guild.createdAt)
 			.addField("Guild icon:",msg.guild.iconURL.toString())
+			.setColor(msg.guild.me.displayHexColor)
 			.setThumbnail(msg.guild.iconURL);
-			msg.channel.send({embed});
+			return msg.channel.send({embed});
 		}
-		break;
+		case "userinfo": {
+			let member;
+			switch(mention) {
+				case undefined: member = msg.member; break;
+				default: member = msg.mentions.members.first(); break;
+			}
+			let sharedServers = 0;
+			self.guilds.forEach(Guild => {
+				if (Guild.members.has(member.id)) {
+					sharedServers++;
+				}
+			})
+			embed.setTitle("User Information")
+			.setAuthor(member.user.tag, member.user.displayAvatarURL)
+			.setFooter(`Info requested by ${msg.author.tag}`, msg.author.displayAvatarURL)
+			.setTimestamp()
+			.addField("Username:",member.user.username,true)
+			.addField("Discriminator:",member.user.discriminator,true)
+			.addField("Discord ID:",member.id,true)
+			.addField("Account created at:",member.user.createdAt,true)
+			.addField("Is a bot:",member.user.bot.toString().replace("true","Yes").replace("false","No"),true);
+			let status = member.user.presence.status.replace("online","Online").replace("offline","Offline").replace("idle","AFK").replace("dnd","Do Not Disturb");
+			if (member.user.presence.game != null) {
+				embed.addField("Presence:",`Status: ${status} | Playing: ${member.user.presence.game.name}`,true);
+			} else {
+				embed.addField("Presence:",`Status: ${status}`,true);
+			}
+			embed.addField("Servers shared with Papi-Bot:",sharedServers,true)
+			.addField("\u200B","**Guild Member Information**")
+			.addField("Joined at:",member.joinedAt,true)
+			.addField("Nickname:",new String(member.nickname).replace("null","None"),true)
+			.addField("Highest Role:",member.highestRole.name,true)
+			.addField("Name Colour (hex):","`"+member.displayHexColor+"`",true)
+			.addField("\u200B","**Avatar**")
+			.addField("Avatar URL:",member.user.displayAvatarURL)
+			.setColor(member.displayHexColor)
+			.setThumbnail(member.user.displayAvatarURL);
+			return msg.channel.send({embed});
+		}
 		case "status": {
-			switch(mention){
+			switch(mention){ // TODO: Make this code better
 				case undefined: switch(msg.author.presence.game){
-						case null: msg.reply(`you are currently ${msg.author.presence.status}!`);break;
-						default: msg.reply(`you are currently ${msg.author.presence.status} and are playing ${msg.author.presence.game.name}!`);break;
-					}break;
+						case null: return msg.reply(`you are currently ${msg.author.presence.status}!`);
+						default: return msg.reply(`you are currently ${msg.author.presence.status} and are playing ${msg.author.presence.game.name}!`);
+					}
 				default: switch(mention.presence.game){
-						case null: msg.reply(`${msg.mentions.members.first().displayName} is currently ${mention.presence.status}!`);break;
-						default: msg.reply(`${msg.mentions.members.first().displayName} is currently ${mention.presence.status} and is playing ${mention.presence.game.name}!`);break;
-					}break;
+						case null: return msg.reply(`${msg.mentions.members.first().displayName} is currently ${mention.presence.status}!`);
+						default: return msg.reply(`${msg.mentions.members.first().displayName} is currently ${mention.presence.status} and is playing ${mention.presence.game.name}!`);
+					}
 			}
 		}
-		break;
 		case "invite": {
 			embed.setAuthor("Click here for my invite link!",self.user.displayAvatarURL,"https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70773831")
-			msg.channel.send({embed});
+			return msg.channel.send({embed});
 		}
-		break;
 		case "source": {
 			embed.setAuthor("Click here for my source repository!",self.user.displayAvatarURL,"https://github.com/Jawesome99/papibot")
 			.setDescription("Please mind, that it might not be on the most recent version!")
-			.addField("Last update:",self.lastUpdate);
-			msg.channel.send({embed});
+			.addField("Last update:",self.version);
+			return msg.channel.send({embed});
 		}
-		break;
 		case "roll": {
 			if (args[args.length-1] !== undefined) {
 				var digits = parseInt(args[args.length-1].toString());
@@ -209,86 +254,69 @@ self.on("message", msg => {
 			if (digits < 1) {
 				msg.reply("I can't generate a number with no digits!");break;
 			}
-			msg.reply(disc.roll(digits,args,digInArgs));
+			return msg.reply(disc.roll(digits,args,digInArgs));
 		}
-		break;
 		case "help": {
-			msg.reply(disc.getHelp(args,msg.guild.id));
+			return msg.reply(disc.getHelp(args,msg.guild.id));
 		}
-		break;
 		case "bug": {
 			embed.setAuthor("Found a bug? Click here to create an issue report!",self.user.displayAvatarURL,"https://github.com/Jawesome99/papibot/issues");
-			msg.channel.send({embed});
+			return msg.channel.send({embed});
 		}
-		break;
 		case "8ball": {
-			let img = disc.eightball();
-			msg.reply(args.join(" "),{ files:[`./data/8ball/${img}.gif`] });
+			return msg.reply(args.join(" "),{files:[`./data/8ball/${disc.eightball()}.gif`]});
 		}
-		break;
 		case "reverse": {
 			msg.channel.send(disc.reverse(msg.content)).then(() => {},() => {
 				msg.channel.send("You need to send me some text for that!")
 			});
+			return
 		}
-		break;
 		case "calc": {
 			if (!args[0]) {
-				msg.channel.send("You have to give me an equation!");
-				return;
+				return msg.channel.send("You have to give me an equation!");
 			}
-			msg.reply(math.calc(args));
+			return msg.reply(math.calc(args));
 		}
-		break;
 		case "decide": {
 			if (!args[0]) {
-				msg.channel.send("Decide what?");
-				return;
+				return msg.channel.send("Decide what?");
 			}
-			msg.reply(disc.decideForMe(args));
+			return msg.reply(disc.decideForMe(args));
 		}
-		break;
 		case "toggle": {
 			if(msg.member.permissions.has("MANAGE_GUILD") || msg.author.id === "211227683466641408" || msg.author.id === "297556557774979072") {
 				if (args[0] === undefined) {
-					msg.channel.send("What do you want to toggle?");
-					break;
+					return msg.channel.send("What do you want to toggle?");
 				}
 				if (args[0].toLowerCase() === "wt") {
-					msg.channel.send(blocked.toggleWT(msg.guild.id));
-					break;
+					return msg.channel.send(blocked.toggleWT(msg.guild.id));
 				}
 				if (args[0].toLowerCase() === "im") {
-					msg.channel.send(blocked.toggleIm(msg.guild.id));
-					break;
+					return msg.channel.send(blocked.toggleIm(msg.guild.id));
 				}
 				if (args[0].toLowerCase() === "bc") {
-					msg.channel.send(blocked.toggleBC(msg.guild.id));
-					break;
+					return msg.channel.send(blocked.toggleBC(msg.guild.id));
 				}
 				else {
-					msg.channel.send("Accepted parameters: `wt`, `im`, `bc`")
+					return msg.channel.send("Accepted parameters: `wt`, `im`, `bc`");
 				};
-				break;
 			} else {
-				msg.channel.send("You do not have permission to do that!")
+				return msg.channel.send("You do not have permission to do that!")
 			};
 		}
-		break;
 		case "sendnoots": {
-			var noots = fs.readFileSync("./data/sendnoots.txt","utf8").split("\r\n");
-			msg.channel.send("Noot noot!",{ files: [noots[math.randomNo(0,noots.length-1)]] });
+			let noots = fs.readFileSync("./data/sendnoots.txt","utf8").split("\r\n");
+			return msg.channel.send("Noot noot!",{files:[noots[math.randomNo(0,noots.length-1)]]});
 		}
-		break;
 		case "sendnudes": {
-			if(msg.channel.nsfw || msg.channel.name.includes("nsfw")){
-					var nudes = fs.readFileSync("./data/sendnudes.txt","utf8").split("\r\n");
-					msg.channel.send("P-please don't stare...", {files: [nudes[math.randomNo(0,nudes.length-1)]]});
+			if(msg.channel.nsfw || msg.channel.name.toLowerCase().includes("nsfw")){
+					let nudes = fs.readFileSync("./data/sendnudes.txt","utf8").split("\r\n");
+					return msg.channel.send("P-please don't stare...", {files: [nudes[math.randomNo(0,nudes.length-1)]]});
 			} else {
-				msg.channel.send("I can't do that here! Try again in an nsfw channel!");
+				return msg.channel.send("I can't do that here! Try again in an nsfw channel!");
 			}
 		}
-		break;
 		case "info": {
 			embed.setAuthor("Papi-Bot",self.user.displayAvatarURL,"https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70773831")
 			.setDescription("Click my name for my invite link!")
@@ -297,34 +325,28 @@ self.on("message", msg => {
 			.addField("Emoji available",self.emojis.size,true)
 			.addField("Last Ping",self.pings[0],true)
 			.addField("D.JS version",Discord.version,true)
-			.addField("Last update",self.lastUpdate,true);
+			.addField("Last update",self.version,true)
+			.setColor(msg.guild.me.displayHexColor);
 			let usage = process.memoryUsage().heapUsed;let size = ["B","KB","MB","GB"];let usageData = 0
 			while (usage/1024 >= 1) {
 				usage = usage/1024;usageData++
 			}
-			embed.addField("Memory Usage",parseInt(usage)+size[usageData],true)
+			embed.addField("Memory Usage",parseInt(usage)+size[usageData],true);
+			let uptime = disc.parseUptime(process.uptime());
+			embed.addField("Uptime",uptime,true)
 			.setTimestamp();
-			if (msg.guild.me.roles.find("position",0)) {
-				embed.setColor(msg.guild.me.roles.find("position",0).hexColor)
-			} else {
-				embed.setColor("DEFAULT")
-			}
-			msg.channel.send({embed});
+			return msg.channel.send({embed});
 		}
-		break;
 		case "ss":
 		case "superscript": {
-			msg.channel.send(disc.superscript(args));
+			return msg.channel.send(disc.superscript(args));
 		}
-		break;
 		case "report": {
 			if (!args[0]) {
-				msg.channel.send("Report a user by mentioning them and include a reason! Evidence has to be provided, otherwise your report might be ignored! You can either include a link somewhere in your report or send an attachment, i.e. a photo!\nAbusing this feature will result in you being blocked from using the bot!");
-				break;
+				return msg.channel.send("Report a user by mentioning them and include a reason! Evidence has to be provided, otherwise your report might be ignored! You can either include a link somewhere in your report or send an attachment, i.e. a photo!\nAbusing this feature will result in you being blocked from using the bot!");
 			}
 			if (!mention) {
-				msg.channel.send("Who are you reporting? Mention them!");
-				break;
+				return msg.channel.send("Who are you reporting? Mention them!");
 			}
 			let reporter = msg.author;
 			let reportee = mention.user;
@@ -334,102 +356,140 @@ self.on("message", msg => {
 				let attachment = msg.attachments.first().url;
 				self.fetchUser("211227683466641408").then(Owner => {
 					Owner.send(`A report has been sent in by ${reporter.tag} (ID: ${reporter.id}) from ${guild}\nReportee: ${reportee.tag} (ID: ${reportee.id})\n\nReason: ${reason}\nEvidence: ${attachment}`);
-					msg.channel.send("Your report has been submitted!");
+					return msg.channel.send("Your report has been submitted!");
 				})
 			} else {
 				self.fetchUser("211227683466641408").then(Owner => {
 					Owner.send(`A report has been sent in by ${reporter.tag} (ID: ${reporter.id}) from ${guild}\nReportee: ${reportee.tag} (ID: ${reportee.id})\n\nReason: ${reason}\nNo attachment provided!`);
-					msg.channel.send("Your report has been submitted!");
+					return msg.channel.send("Your report has been submitted!");
 				})
 			};
 		}
-		break;
 		case "rc":
 		case "randcap": {
 			if (!args[0]) {
-				msg.channel.send("You need to send me some text for that!");
-				return;
+				return msg.channel.send("You need to send me some text for that!");
 			}
-			msg.channel.send(disc.randCap(args));
+			return msg.channel.send(disc.randCap(args));
 		}
-		break;
-		case "dice": {
-			if (!args[0]) {
-				msg.channel.send(math.dice("6"));	
-				return;
-			}
-			msg.channel.send(math.dice(args[0]));
+		case "die": {
+			return msg.channel.send(math.die(args[0]));
 		}
-		break;
 		case "fact": {
 			let fact = math.randomNo(0,facts.length-1);
-			msg.channel.send(`Fact #${fact+1}: ${facts[fact]}`);
+			return msg.channel.send(`Fact #${fact+1}: ${facts[fact]}`);
 			
 		}
-		break;
+		case "morse": {
+			let alpha = " ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split(""),
+				morse = "/,.-,-...,-.-.,-..,.,..-.,--.,....,..,.---,-.-,.-..,--,-.,---,.--.,--.-,.-.,...,-,..-,...-,.--,-..-,-.--,--..,.----,..---,...--,....-,.....,-....,--...,---..,----.,-----".split(","),
+				text = args.join(" ").toUpperCase();
+			while (text.includes("Ä") || text.includes("Ö") || text.includes("Ü")) {
+				text = text.replace("Ä","AE").replace("Ö","OE").replace("Ü","UE");
+			}
+			if (text.startsWith(".") || text.startsWith("-")) {
+				text = text.split(" ");
+				let length = text.length;
+				for (i = 0; i < length; i++) {
+					text[i] = alpha[morse.indexOf(text[i])];
+				}
+				text = text.join("");
+			} else {
+				text = text.split("");
+				let length = text.length;
+				for (i = 0; i < length; i++) {
+					text [i] = morse[alpha.indexOf(text[i])];
+				}
+				text = text.join(" ");
+			}
+			return msg.channel.send("```"+text+"```");
+		}
+		case "convert": {
+			return msg.channel.send(convert.convert(args[0], args[1], args[2]));
+		}
 
 		//Music
 		case "join": {
 			switch(disc.join(msg.member)){
 				case 0: {
-					msg.reply("you aren't in a voice channel!");
+					return msg.reply("you aren't in a voice channel!");
 				}
-				break;
 				case 1: {
 					msg.member.voiceChannel.join().then(connection => {
-						msg.channel.send(`Joined voice channel ${msg.guild.voiceConnection.channel.name}!`)
+						return msg.channel.send(`Joined voice channel ${msg.guild.voiceConnection.channel.name}!`);
 					}).catch(console.warn);
 				}
-				break;
 			}
 		}
-		break;
 		case "leave": {
 			switch(disc.leave(msg.guild.voiceConnection)){
 				case 0: {
-					msg.reply("I'm not in a voice channel!");
+					return msg.reply("I'm not in a voice channel!");
 				}
-				break;
 				case 1: {
 					msg.channel.send(`Left voice channel ${msg.guild.voiceConnection.channel.name}!`);
-					msg.guild.voiceConnection.channel.leave();
+					return msg.guild.voiceConnection.channel.leave();
 				}
-				break;
 			}
 		}
-		break;
 		case "play": {
-			switch(disc.play(msg.guild.voiceConnection,msg.member,args)){
+			switch(disc.play(msg.guild.voiceConnection,msg.member)){
 				case 0: {
-					msg.reply("something's not right! Either you or me aren't in a voice channel or what you gave me isn't a valid YouTube URL!");
+					return msg.reply("you and I need to be in the same voice channel!");
 				}
-				break;
 				case 1: {
-					msg.guild.voiceConnection.playStream(yt(args[0], { audioonly: true }), { passes: 1 });
 					msg.channel.startTyping();
 					yt.getInfo(args[0], (err, info) => {
 						if (err) {
 							msg.channel.send(`An error occured: ${err.message}`);
-							msg.channel.stopTyping(true);
-							return;
+							return msg.channel.stopTyping(true);
 						}
-						msg.reply(`playing ${info.title} by ${info.author.name}!`);
+
+						let runtime = disc.parseUptime(info.length_seconds);
+						let video = new Discord.RichEmbed()
+						.setAuthor(info.author.name,info.author.avatar,info.author.channel_url)
+						.setThumbnail(info.iurlmaxres)
+						.setTitle(info.title)
+						.addField("Length:",runtime,true)
+						.addField("Viewcount:",info.short_view_count_text,true)
+						.setColor(msg.guild.me.displayHexColor);
+						if (info.description.length > 150) {
+							video.setDescription(`${info.description.slice(0,149)}...`);
+						} else {
+							video.setDescription(info.description);
+						}
+
+						if (msg.guild.voiceConnection.speaking) {
+							// Stop the running audio if there's a dispatcher and let the event handle the playing.
+							let toPlay = args[0];
+							if (msg.guild.dispatcher && !msg.guild.dispatcher.ended) {
+								let m = msg;
+								let connection = m.guild.voiceConnection;
+								let dispatcher = m.guild.dispatcher;
+								dispatcher.on("end", () => {
+									m.reply("playing your video!",{embed:video});
+									m.channel.stopTyping(true);
+									m.guild.dispatcher = connection.playStream(yt(toPlay, {audioonly: true}), {passes: 1});
+									msg.delete().then(()=>{},reason=>{console.warn(reason)});
+									return;
+								})
+								
+								msg.guild.dispatcher.end();
+							}
+							return;
+						}	
+
+						msg.reply("sure thing, playing your video!",{embed:video});
 						msg.channel.stopTyping(true);
-						msg.delete().then(()=>{},reason => {
-							console.warn(reason)
-						});
+						msg.guild.dispatcher = msg.guild.voiceConnection.playStream(yt(args[0], { audioonly: true }), { passes: 1 });
+						return msg.delete().then(()=>{},reason=>{console.warn(reason)});
 					});
 				}
-				break;
 				case 2:
 				case 3:
-				case 4: {
-					msg.channel.send("This subcommand is currently disabled for technical reasons, please use YouTube videos instead. This message should also never appear.");
-				}
-				break;
+				case 4: return msg.channel.send("This subcommand is currently disabled for technical reasons, please use YouTube videos instead. This message should also never appear.");
 			}
 		}
-		break;
 			
 		//Administrative
 		case "kick": {
@@ -572,13 +632,32 @@ self.on("message", msg => {
 					}
 					default: {
 						let text = (`These are the current logging settings: \n\n${logSettings.settings.guildUpdates} Log guild updates? \n${logSettings.settings.channelUpdates} Log channel updates? \n${logSettings.settings.memberUpdates} Log member updates? \n${logSettings.settings.banUpdates} Log bans? \n${logSettings.settings.emojiUpdates} Log emoji updates? \n\nTo toggle either of the settings, use \`//setlog <setting>\`, for example: \`//setlog member\``);
-						text = text.replace("true","☑");
-						text = text.replace("false","❌");
+						while (text.includes("true") || text.includes("false")) {
+							text = text.replace("true","☑");
+							text = text.replace("false","❌");
+						}
 						msg.channel.send(text);
 					}
 				}
 			}
 			
+		}
+		break;
+		case "cleanup": {
+			if (!msg.member.permissions.has("MANAGE_MESSAGES")) return msg.channel.send("You don't have the permission to do that!");
+			let prunecount = parseInt(args[0]);
+			msg.channel.fetchMessages({ limit: 100 }).then(Messages => {
+				let msgArray = Messages.filterArray(m => m.author.id === self.user.id);
+				msgArray.length = prunecount;
+				msg.channel.bulkDelete(msgArray).then(Msgs => {
+					msg.channel.send(`Cleaned up ${Msgs.size} of my messages!`).then(m => {
+						m.delete(5000);
+						msg.delete(5000);
+					});
+				}, error => {
+					msg.channel.send(`Error while cleaning up:\n${error}`);
+				})
+			});
 		}
 		break;
 	}
@@ -588,53 +667,62 @@ self.on("message", msg => {
 self.on("message", async msg => {
 	if (msg.channel.type == "dm"){return;}
 	if (!msg.content.startsWith(config.getprefix(msg.guild.id))) return;
-	if (tos.check(msg.guild.id) == false && disc.ownerCheck(msg.author.id) == 0){;return;}
+	if (tos.check(msg.guild.id) == false && !disc.ownerCheck(msg.author.id)){;return;}
 	
 	const commands = ["say","eval","setname","getguilds","dm","react","sendintro","restart","shutdown","broadcast","block","unblock","exec","reply"];
 	if (commands.includes(cmd)){
 		switch(disc.ownerCheck(msg.author.id)){
-			case 0: msg.channel.send(disc.explainOwnerCMD(cmd));break;
-			case 1: switch(cmd) {
+			case false: return msg.channel.send(disc.explainOwnerCMD(cmd));
+			case true: switch(cmd) {
 				case "say": {
 					msg.delete().then(()=> {
-						msg.channel.send(args.join(" "))
+						return msg.channel.send(args.join(" "));
 					},()=> {
-						msg.channel.send("Sorry, no permission to delete command ;v;")
+						return;
 					});
 				}
-				break;
-				case "eval": {
-					try {
-						let result = eval(args.join(" "));
-						if (result instanceof Promise) {
-							result = await result;
-						}} catch(err) {
-							msg.channel.send(`Error: ${err.message}`);
-						};
-				}
-				break;
+				// case "eval": {										/* Disabled because I keep abusing it */
+				// 	try {												/* *sigh* */
+				// 		let result = eval(args.join(" "));
+				// 		if (result instanceof Promise) {
+				// 			result = await result;
+				// 		}
+				//	} catch(err) {
+				// 		return msg.channel.send(`Error: ${err.message}`);
+				// 	};
+				// }
+				// case "exec": {
+				// 	try {
+				// 		let result = eval(args.join(" "));
+				// 		if (result instanceof Promise) {
+				// 			result = await result;
+				// 			if (result != null && result != undefined && !result) {
+				// 				return msg.channel.send(`\`\`\`typeof ${typeof result}\ninstanceof ${result.constructor.toString().split("{")[0]}\`\`\`\n\`\`\`\n${result}\`\`\``);
+				// 			} else {
+				// 				return msg.channel.send(`\`\`\`\n${result}\`\`\``);
+				// 			}
+				// 		} else {
+				// 			if (result != null && result != undefined && !result) {
+				// 				return msg.channel.send(`\`\`\`typeof ${typeof result}\ninstanceof ${result.constructor.toString().split("{")[0]}\`\`\`\n\`\`\`\n${result}\`\`\``);
+				// 			} else {
+				// 				return msg.channel.send(`\`\`\`\n${result}\`\`\``);
+				// 			}
+				// 		}
+				// 	} catch(err) {
+				// 		return msg.channel.send(`Error: ${err.message}`);
+				// 	};
+				// }
+				case "eval":
 				case "exec": {
-					try {
-						let result = eval(args.join(" "));
-						if (result instanceof Promise) {
-							result = await result;
-							msg.channel.send(`\`\`\`typeof ${typeof result}\ninstanceof ${result.constructor.toString().split("{")[0]}\`\`\`\n\`\`\`\n${result}\`\`\``);
-						} else {
-							msg.channel.send(`\`\`\`typeof ${typeof result}\ninstanceof ${result.constructor.toString().split("{")[0]}\`\`\`\n\`\`\`\n${result}\`\`\``);
-						}
-					} catch(err) {
-						msg.channel.send(`Error: ${err.message}`);
-					};
+					return msg.channel.send("This command is disabled because you kept abusing it, idiot.");
 				}
-				break;
 				case "setname": {
 					msg.guild.me.setNickname(args.join(" ")).then(() => {
-						msg.channel.send("Successfully set my name!")
+						return msg.channel.send("Successfully set my name!");
 					}, err => {
-						msg.channel.send(`Couldn't set my name: ${err}`)
+						return msg.channel.send(`Error, couldn't set my name: ${err}`);
 					});
 				}
-				break;
 				case "getguilds": {
 					let argstring;
 					let argtext;
@@ -642,49 +730,43 @@ self.on("message", async msg => {
 						case 0: {
 							let list = [];
 							self.guilds.forEach(Guild => {list.push(`${Guild.memberCount} - ${Guild.name}`)})
-							msg.channel.send(`\`\`\`${list.join("\n")}\`\`\``);
+							return msg.channel.send(`\`\`\`${list.join("\n")}\`\`\``);
 						}
-						break;
 						case 1: {
 							argstring = args.toString();
 							argtext = argstring.split(",").slice(1);
-							msg.channel.send(`\`\`\`\n${self.guilds.find('name',argtext.join(" ")).id}\n\`\`\``);
+							return msg.channel.send(`\`\`\`\n${self.guilds.find('name',argtext.join(" ")).id}\n\`\`\``);
 						}
-						break;
 						case 2: {
 							argstring = args.toString();
 							argtext = argstring.split(",").slice(1);
-							msg.channel.send(`\`\`\`\n${self.guilds.find("name",argtext.join(" ")).owner.user.tag}\n\`\`\``);
+							return msg.channel.send(`\`\`\`\n${self.guilds.find("name",argtext.join(" ")).owner.user.tag}\n\`\`\``);
 						}
-						break;
 					}
 				}
-				break;
 				case "dm": {
 					let id = args.shift();
-					let text = args;
 					self.fetchUser(id).then(User => {
 						User.send(text.join(" ")).then(() => {
-							msg.channel.send(`Successfully sent "${text.join(" ")}" to ${User.tag}`)
+							return msg.channel.send(`Successfully sent "${args.join(" ")}" to ${User.tag}`);
+						}, err => {
+							return msg.channel.send(`Error: ${err}`);
 						});
 					});
 				}
-				break;
 				case "reply": {
 					if(!global.lastDM) return;
 					global.lastDM.send(args.join(" ")).then(() => {
-						msg.channel.send(`Successfully sent reply to ${global.lastDM.tag}!`)
+						return msg.channel.send(`Successfully sent "${args.join(" ")}" to ${global.lastDM.tag}!`);
 					}, err => {
-						msg.channel.send(`Error: ${error}`)
+						return msg.channel.send(`Error: ${err}`);
 					});
 				}
-				break;
 				case "react": {
 					msg.channel.fetchMessage(args[0]).then(message => {
-						message.react(args[1]);
+						return message.react(args[1]);
 					}).catch(console.warn);
 				}
-				break;
 				case "sendintro": {
 					let newGuild = self.guilds.get(args[0]);
 					var intro = (`Hello! Sorry for my late introduction, unfortunately I was added while I was offline, so I didn't notice! Anyway, my name is Papi and I hope all ${newGuild.memberCount-1} of you will enjoy my presence!\n\nType //help to begin!`);
@@ -696,12 +778,11 @@ self.on("message", async msg => {
 						}
 					});
 					channel.send(intro).then(() => {
-						self.channels.get("292040520648228864").send("Successfully sent intro")
+						return self.channels.get("292040520648228864").send("Successfully sent intro")
 					},err => {
-						self.channels.get("292040520648228864").send(`Couldn't send intro: ${err}`)
+						return self.channels.get("292040520648228864").send(`Couldn't send intro: ${err}`)
 					});
 				}
-				break;
 				case "broadcast": {
 					self.guilds.forEach(Guild => {
 						if (blocked.checkBroadcasts(Guild.id) == false){
@@ -724,47 +805,39 @@ self.on("message", async msg => {
 							})
 						}
 					});
+					return;
 				}
-				break;
 				case "block": {
 					if (!mention && isNaN(args[0])) {
-						msg.channel.send("Mention someone to block or use their ID!");
-						break;
+						return msg.channel.send("Mention someone to block or use their ID!");
 					}
 					if (mention) {
-						msg.channel.send(blocked.blockUser(mention.id));
-						break;
+						return msg.channel.send(blocked.blockUser(mention.id));
 					}
 					if (!isNaN(args[0])) {
-						msg.channel.send(blocked.blockUser(args[0]));
-						break;
+						return msg.channel.send(blocked.blockUser(args[0]));
 					}
 				}
 				case "unblock": {
 					if (!mention && isNaN(args[0])) {
-						msg.channel.send("Mention someone to unblock or use their ID!");
-						break;
+						return msg.channel.send("Mention someone to unblock or use their ID!");
 					}
 					if (mention) {
-						msg.channel.send(blocked.unblockUser(mention.id));
-						break;
+						return msg.channel.send(blocked.unblockUser(mention.id));
 					}
 					if (!isNaN(args[0])) {
-						msg.channel.send(blocked.unblockUser(args[0]));
-						break;
+						return msg.channel.send(blocked.unblockUser(args[0]));
 					}
 				}
 				case "shutdown": {
 					msg.channel.send("Papi-Bot was shut down.").then(() => {
 						self.destroy().then(() => {
 							console.log("\nPapi-Bot was shut down.");
-							process.exit(0);
+							return process.exit(0);
 						}).catch(console.warn)
 					});
 				}
-				break;
 			}
-			break;
 		}
 	} else {
 		return;
@@ -778,13 +851,11 @@ self.on("message", msg => {
 	if (msg.author == self.user) return;
 
 	//Check for blocked Users
-	if (blocked.checkUser(msg.author.id)){return;}
-
-	if (!args[0]) {return;}
+	if (blocked.checkUser(msg.author.id) || !args[0]) return;
 
 	switch(disc.commandCheck(cmd)){
-		case 1: break;
-		case 0: msg.reply(rem.other(cmd,args));
+		case 1: return;
+		case 0: return msg.reply(rem.other(cmd,args));
 	}
 });
 
@@ -795,7 +866,6 @@ self.on("guildCreate", guild => {
 	var failure = "Couldn't send introduction to new guild";
 	var ownerIntro = `Hello, my name is Papi-Bot and I was just added to your guild ${guild.name}! Unfortunately I can't introduce myself because there is no channel I can currently speak in. Please make sure I can send messages to at least one channel, then use \`//tos\` to read and accept or deny my terms of service! Thanks for having me around!`;
 	let invChannel = guild.channels.find(Channel => {if(Channel.permissionsFor(guild.me).has("SEND_MESSAGES") && Channel.type == "text"){return true;} else {return false;}})
-	console.log(invChannel)
 	if (invChannel == null || invChannel == undefined || !invChannel || !invChannel.send) {
 		guild.owner.send(ownerIntro);
 		config.addGuild(guild);
@@ -848,8 +918,6 @@ self.on("guildMemberAdd",member => {
 		toSend = toSend.replace("$MEMBER_MENTION",`<@${member.id}>`);
 	}
 	channel.send(toSend.toString());
-	console.log(toSend);
-	console.log(toSend.toString());
 })
 
 /**
@@ -974,8 +1042,8 @@ self.on("guildMemberUpdate",(oldMember,newMember) => {
 	let logEmbed = new Discord.RichEmbed()
 	.setAuthor("Member updated",newMember.user.displayAvatarURL)
 	.setTimestamp();
-	if (oldMember.user.tag !== newMember.user.tag) {logEmbed.addField("New username",newMember.user.tag,true);valid = true;}
-	if (oldMember.nickname !== newMember.nickname) {logEmbed.addField("New nickname",newMember.nickname,true);valid = true;}
+	if (oldMember.user.tag !== newMember.user.tag) {logEmbed.addField("Old username",oldMember.user.tag,true);logEmbed.addField("New username",newMember.user.tag,true);valid = true;}
+	if (oldMember.nickname !== newMember.nickname) {logEmbed.addField("Old nickname",oldMember.nickname,true);logEmbed.addField("New nickname",newMember.nickname,true);valid = true;}
 	if (oldMember.user.displayAvatarURL !== newMember.user.displayAvatarURL) {logEmbed.addField("New Avatar","\u200B").setImage(newMember.user.displayAvatarURL);valid = true;}
 	if (valid == true) {logChannel.send({embed: logEmbed})} else {return;}
 })
@@ -987,9 +1055,9 @@ self.on("guildUpdate",(oldGuild,newGuild) => {
 	let logEmbed = new Discord.RichEmbed()
 	.setAuthor("Guild updated")
 	.setTimestamp();
-	if (oldGuild.name !== newGuild.name) {logEmbed.addField("New name",newGuild.name,true);valid = true;}
-	if (oldGuild.ownerID !== newGuild.ownerID) {logEmbed.addField("New owner",newGuild.owner.user.tag,true);valid = true;}
-	if (oldGuild.region !== newGuild.region) {logEmbed.addField("New region",newGuild.region,true);valid = true;}
+	if (oldGuild.name !== newGuild.name) {logEmbed.addField("Old Name",oldGuild.name,true);logEmbed.addField("New name",newGuild.name,true);valid = true;}
+	if (oldGuild.ownerID !== newGuild.ownerID) {logEmbed.addField("Old Owner",oldGuild.owner.user.tag,true);logEmbed.addField("New owner",newGuild.owner.user.tag,true);valid = true;}
+	if (oldGuild.region !== newGuild.region) {logEmbed.addField("Old region",oldGuild.region,true);logEmbed.addField("New region",newGuild.region,true);valid = true;}
 	if (oldGuild.icon !== newGuild.icon) {logEmbed.addField("New icon","\u200B").setImage(newGuild.iconURL);valid = true;}
 	if (valid == true) {logChannel.send({embed: logEmbed})} else {return;}
 })
@@ -1031,8 +1099,8 @@ self.on("message", msg => {
 	} else return;
 });
 
-self.login(token);
-
 process.on('unhandledRejection', err => {
 	console.warn(`Uncaught Promise Error: \n${err.stack}`)
 });
+
+self.login(token);
