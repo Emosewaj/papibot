@@ -3,7 +3,7 @@
 
 exports.calc = function(array) {
 	let string = array.join(" ");
-	if (string.includes("os") || string.includes("discord") || string.includes("process") || string.includes("require") || string.includes("self")) {return ("You've entered a forbidden keyword!");}
+	if (string.includes("discord") || string.includes("process") || string.includes("require") || string.includes("self")) {return ("You've entered a forbidden keyword!");}
 	
 	let abs = Math.abs.bind(Math);
 	let acos = Math.acos.bind(Math);
@@ -69,8 +69,8 @@ exports.round = function(value, decimals) {
 	if (isNaN(number)) {return 0;} else {return number;}
 }
 
-exports.dice = function(sides) {
-	if (!parseInt(sides)) {return("Please give me the amount of sides the die has.")}
+exports.die = function(sides) {
+	if (!parseInt(sides)) sides = 6;
 	let thrw = Math.floor(Math.random()*((parseInt(sides))-1+1)+1);
-	return ("You roll a "+sides+"-sided dice, it shows a "+thrw+"!");
+	return (`You roll a ${sides}-sided die, it shows a ${thrw}!`);
 }
