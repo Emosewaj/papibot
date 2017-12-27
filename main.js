@@ -681,7 +681,7 @@ self.on("message", async msg => {
 						return;
 					});
 				}
-				// case "eval": {										/* Disabled because I keep abusing it */
+				// case "eval": {	/* Disabled because I keep abusing it */
 				// 	try {												/* *sigh* */
 				// 		let result = eval(args.join(" "));
 				// 		if (result instanceof Promise) {
