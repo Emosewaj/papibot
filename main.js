@@ -143,8 +143,9 @@ self.on("message", msg => {
 	switch(cmd){
 		case "ping": {
 			msg.channel.send(`Pong!\n📶 Websocket ping: ${self.pings[0]}`).then(m => {
-				return m.edit(`${m.content}\n📨 Message ping: ${m.createdTimestamp-msg.createdTimestamp}`);
+				m.edit(`${m.content}\n📨 Message ping: ${m.createdTimestamp-msg.createdTimestamp}`);
 			});
+			break;
 		}
 		case "id": {
 			switch(mention){
@@ -356,14 +357,15 @@ self.on("message", msg => {
 				let attachment = msg.attachments.first().url;
 				self.fetchUser("211227683466641408").then(Owner => {
 					Owner.send(`A report has been sent in by ${reporter.tag} (ID: ${reporter.id}) from ${guild}\nReportee: ${reportee.tag} (ID: ${reportee.id})\n\nReason: ${reason}\nEvidence: ${attachment}`);
-					return msg.channel.send("Your report has been submitted!");
+					msg.channel.send("Your report has been submitted!");
 				})
 			} else {
 				self.fetchUser("211227683466641408").then(Owner => {
 					Owner.send(`A report has been sent in by ${reporter.tag} (ID: ${reporter.id}) from ${guild}\nReportee: ${reportee.tag} (ID: ${reportee.id})\n\nReason: ${reason}\nNo attachment provided!`);
-					return msg.channel.send("Your report has been submitted!");
+					msg.channel.send("Your report has been submitted!");
 				})
 			};
+			break;
 		}
 		case "rc":
 		case "randcap": {
@@ -416,10 +418,11 @@ self.on("message", msg => {
 				}
 				case 1: {
 					msg.member.voiceChannel.join().then(connection => {
-						return msg.channel.send(`Joined voice channel ${msg.guild.voiceConnection.channel.name}!`);
+						msg.channel.send(`Joined voice channel ${msg.guild.voiceConnection.channel.name}!`);
 					}).catch(console.warn);
 				}
 			}
+			break;
 		}
 		case "leave": {
 			switch(disc.leave(msg.guild.voiceConnection)){
@@ -431,6 +434,7 @@ self.on("message", msg => {
 					return msg.guild.voiceConnection.channel.leave();
 				}
 			}
+			return;
 		}
 		case "play": {
 			switch(disc.play(msg.guild.voiceConnection,msg.member)){
@@ -489,6 +493,7 @@ self.on("message", msg => {
 				case 3:
 				case 4: return msg.channel.send("This subcommand is currently disabled for technical reasons, please use YouTube videos instead. This message should also never appear.");
 			}
+			return;
 		}
 			
 		//Administrative
@@ -682,7 +687,7 @@ self.on("message", async msg => {
 					});
 				}
 				// case "eval": {	/* Disabled because I keep abusing it */
-				// 	try {												/* *sigh* */
+				// 	try {		/* *sigh* */
 				// 		let result = eval(args.join(" "));
 				// 		if (result instanceof Promise) {
 				// 			result = await result;
@@ -1104,3 +1109,4 @@ process.on('unhandledRejection', err => {
 });
 
 self.login(token);
+
