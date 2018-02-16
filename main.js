@@ -674,14 +674,23 @@ self.on("message", msg => {
 			let prunecount = parseInt(args[0]);
 			msg.channel.fetchMessages({ limit: 100 }).then(Messages => {
 				let msgArray = Messages.filterArray(m => m.author.id === self.user.id);
-				msgArray.length = prunecount;
+				if (msgArray.length > prunecount) msgArray.length = prunecount;
 				msg.channel.bulkDelete(msgArray).then(Msgs => {
-					msg.channel.send(`Cleaned up ${Msgs.size} of my messages!`).then(m => {
-						m.delete(5000);
-						msg.delete(5000);
+					msg.channel.send(`Cleaned up ${Msgs.size} of my messages!`).then(m => {m.delete(5000);msg.delete(5000)});
+				}, e => {
+					msg.channel.send("Bulk delete failed, using fallback method.").then(m => {
+						msgArray.push(m);
+						var Msgs = 0;
+						function del(i) {
+							msgArray[i].delete().then(() => {
+								Msgs++;
+								if (i == msgArray.length-1) {
+									msg.channel.send(`Cleaned up ${Msgs} of my messages!`).then(m1 => {m1.delete(5000);msg.delete(5000)});
+								} else {del(i+1)}
+							});
+						}
+						del(0);
 					});
-				}, error => {
-					msg.channel.send(`Error while cleaning up:\n${error}`);
 				})
 			});
 		}
