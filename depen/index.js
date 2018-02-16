@@ -3,6 +3,32 @@ const fs = require("fs");
 const math = require("./math.js");
 const config = require("./config.js");
 
+var iso=["aa","ab","ae","af","ak","am","an","ar","as","av","ay","az","ba","be","bg","bh","bi","bm","bn","bo","br","bs","ca","ce","ch","co","cr","cs","cu","cv","cy","da","de","dv","dz","ee","el","en","eo","es","et","eu","fa","ff","fi","fj","fo","fr","fy","ga","gd","gl","gn","gu","gv","ha","he","hi","ho","hr","ht","hu","hy","hz","ia","id","ie","ig","ii","ik","io","is","it","iu","ja","jv","ka","kg","ki","kj","kk","kl","km","kn","ko","kr","ks","ku","kv","kw","ky","la","lb","lg","li","ln","lo","lt","lu","lv","mg","mh","mi","mk","ml","mn","mr","ms","mt","my","na","nb","nd","ne","ng","nl","nn","no","nr","nv","ny","oc","oj","om","or","os","pa","pi","pl","ps","pt","qu","rm","rn","ro","ru","rw","sa","sc","sd","se","sg","si","sk","sl","sm","sn","so","sq","sr","ss","st","su","sv","sw","ta","te","tg","th","ti","tk","tl","tn","to","tr","ts","tt","tw","ty","ug","uk","ur","uz","ve","vi","vo","wa","wo","xh","yi","yo","za","zh","zu"],iso2={"\ufeffaar":"aa",abk:"ab",afr:"af",aka:"ak",alb:"sq",amh:"am",ara:"ar",arg:"an",arm:"hy",asm:"as",ava:"av",ave:"ae",aym:"ay",aze:"az",bak:"ba",bam:"bm",baq:"eu",bel:"be",ben:"bn",bih:"bh",bis:"bi",bos:"bs",bre:"br",bul:"bg",bur:"my",cat:"ca",cha:"ch",che:"ce",chi:"zh",chu:"cu",chv:"cv",cor:"kw",cos:"co",cre:"cr",cze:"cs",dan:"da",div:"dv",dut:"nl",dzo:"dz",eng:"en",epo:"eo",est:"et",ewe:"ee",fao:"fo",fij:"fj",fin:"fi",fre:"fr",fry:"fy",ful:"ff",geo:"ka",ger:"de",gla:"gd",gle:"ga",glg:"gl",glv:"gv",gre:"el",grn:"gn",guj:"gu",hat:"ht",hau:"ha",heb:"he",her:"hz",hin:"hi",hmo:"ho",hrv:"hr",hun:"hu",ibo:"ig",ice:"is",ido:"io",iii:"ii",iku:"iu",ile:"ie",ina:"ia",ind:"id",ipk:"ik",ita:"it",jav:"jv",jpn:"ja",kal:"kl",kan:"kn",kas:"ks",kau:"kr",kaz:"kk",khm:"km",kik:"ki",kin:"rw",kir:"ky",kom:"kv",kon:"kg",kor:"ko",kua:"kj",kur:"ku",lao:"lo",lat:"la",lav:"lv",lim:"li",lin:"ln",lit:"lt",ltz:"lb",lub:"lu",lug:"lg",mac:"mk",mah:"mh",mal:"ml",mao:"mi",mar:"mr",may:"ms",mlg:"mg",mlt:"mt",mon:"mn",nau:"na",nav:"nv",nbl:"nr",nde:"nd",ndo:"ng",nep:"ne",nno:"nn",nob:"nb",nor:"no",nya:"ny",oci:"oc",oji:"oj",ori:"or",orm:"om",oss:"os",pan:"pa",per:"fa",pli:"pi",pol:"pl",por:"pt",pus:"ps",que:"qu",roh:"rm",rum:"ro",run:"rn",rus:"ru",sag:"sg",san:"sa",sin:"si",slo:"sk",slv:"sl",sme:"se",smo:"sm",sna:"sn",snd:"sd",som:"so",sot:"st",spa:"es",srd:"sc",srp:"sr",ssw:"ss",sun:"su",swa:"sw",swe:"sv",tah:"ty",tam:"ta",tat:"tt",tel:"te",tgk:"tg",tgl:"tl",tha:"th",tib:"bo",tir:"ti",ton:"to",tsn:"tn",tso:"ts",tuk:"tk",tur:"tr",twi:"tw",uig:"ug",ukr:"uk",urd:"ur",uzb:"uz",ven:"ve",vie:"vi",vol:"vo",wel:"cy",wln:"wa",wol:"wo",xho:"xh",yid:"yi",yor:"yo",zha:"za",zul:"zu"},map={afar:"aa",abkhazian:"ab",afrikaans:"af",akan:"ak",albanian:"sq",amharic:"am",arabic:"ar",aragonese:"an",armenian:"hy",assamese:"as",avaric:"av",avestan:"ae",aymara:"ay",azerbaijani:"az",bashkir:"ba",bambara:"bm",basque:"eu",belarusian:"be",bengali:"bn","bihari languages":"bh",bislama:"bi",tibetan:"bo",bosnian:"bs",breton:"br",bulgarian:"bg",burmese:"my",catalan:"ca",valencian:"ca",czech:"cs",chamorro:"ch",chechen:"ce",chinese:"zh","church slavic":"cu","old slavonic":"cu","church slavonic":"cu","old bulgarian":"cu","old church slavonic":"cu",chuvash:"cv",cornish:"kw",corsican:"co",cree:"cr",welsh:"cy",czech:"cs",danish:"da",german:"de",divehi:"dv",dhivehi:"dv",maldivian:"dv",dutch:"nl",flemish:"nl",dzongkha:"dz",greek:"el",english:"en",esperanto:"eo",estonian:"et",basque:"eu",ewe:"ee",faroese:"fo",persian:"fa",fijian:"fj",finnish:"fi",french:"fr",french:"fr","western frisian":"fy",fulah:"ff",georgian:"ka",german:"de",gaelic:"gd","scottish gaelic":"gd",irish:"ga",galician:"gl",manx:"gv",guarani:"gn",gujarati:"gu",haitian:"ht","haitian creole":"ht",hausa:"ha",hebrew:"he",herero:"hz",hindi:"hi","hiri motu":"ho",croatian:"hr",hungarian:"hu",armenian:"hy",igbo:"ig",icelandic:"is",ido:"io","sichuan yi":"ii",nuosu:"ii",inuktitut:"iu",interlingue:"ie",occidental:"ie",interlingua:"ia",indonesian:"id",inupiaq:"ik",icelandic:"is",italian:"it",javanese:"jv",japanese:"ja",kalaallisut:"kl",greenlandic:"kl",kannada:"kn",kashmiri:"ks",georgian:"ka",kanuri:"kr",kazakh:"kk","central khmer":"km",kikuyu:"ki",gikuyu:"ki",kinyarwanda:"rw",kirghiz:"ky",kyrgyz:"ky",komi:"kv",kongo:"kg",korean:"ko",kuanyama:"kj",kwanyama:"kj",kurdish:"ku",lao:"lo",latin:"la",latvian:"lv",limburgan:"li",limburger:"li",limburgish:"li",lingala:"ln",lithuanian:"lt",luxembourgish:"lb",letzeburgesch:"lb","luba-katanga":"lu",ganda:"lg",macedonian:"mk",marshallese:"mh",malayalam:"ml",maori:"mi",marathi:"mr",malay:"ms",macedonian:"mk",malagasy:"mg",maltese:"mt",mongolian:"mn",maori:"mi",malay:"ms",burmese:"my",nauru:"na",navajo:"nv",navaho:"nv","ndebele, south":"nr","south ndebele":"nr","ndebele, north":"nd","north ndebele":"nd",ndonga:"ng",nepali:"ne",dutch:"nl",flemish:"nl","norwegian nynorsk":"nn","nynorsk, norwegian":"nn","norwegian bokmål":"nb","bokmål, norwegian":"nb",norwegian:"no",chichewa:"ny",chewa:"ny",nyanja:"ny",occitan:"oc",ojibwa:"oj",oriya:"or",oromo:"om",ossetian:"os",ossetic:"os",panjabi:"pa",punjabi:"pa",persian:"fa",pali:"pi",polish:"pl",portuguese:"pt",pushto:"ps",pashto:"ps",quechua:"qu",romansh:"rm",romanian:"ro",moldavian:"ro",moldovan:"ro",rundi:"rn",russian:"ru",sango:"sg",sanskrit:"sa",sinhala:"si",sinhalese:"si",slovak:"sk",slovak:"sk",slovenian:"sl","northern sami":"se",samoan:"sm",shona:"sn",sindhi:"sd",somali:"so","sotho, southern":"st",spanish:"es",castilian:"es",albanian:"sq",sardinian:"sc",serbian:"sr",swati:"ss",sundanese:"su",swahili:"sw",swedish:"sv",tahitian:"ty",tamil:"ta",tatar:"tt",telugu:"te",tajik:"tg",tagalog:"tl",thai:"th",tibetan:"bo",tigrinya:"ti",tonga:"to",tswana:"tn",tsonga:"ts",turkmen:"tk",turkish:"tr",twi:"tw",uighur:"ug",uyghur:"ug",ukrainian:"uk",urdu:"ur",uzbek:"uz",venda:"ve",vietnamese:"vi","volapük":"vo",welsh:"cy",walloon:"wa",wolof:"wo",xhosa:"xh",yiddish:"yi",yoruba:"yo",zhuang:"za",chuang:"za",chinese:"zh",zulu:"zu"};
+
+exports.language = name => {
+
+    // Validate the name string
+    if (typeof name !== 'string') {
+      throw new Error(`The language must be a string, received ${typeof name}`);
+    }
+    // Possible overflow errors
+    if (name.length > 100) {
+      throw new Error(`The language must be a string under 100 characters, received ${name.length}`);
+    }
+  
+    // Let's work with lowercase for everything
+    name = name.toLowerCase();
+  
+    // Pass it through several possible maps to try to find the right one
+    name = map[name] || iso2[name] || name;
+  
+    // Make sure we have the correct name or throw
+    if (!iso.includes(name)) {
+      throw new Error(`The name "${name}" is not part of the ISO 639-1 and I couldn't automatically parse it :(`);
+    }
+    return name;
+};
+
 exports.getcmd = function(content,id,name) {
 	let cmd = content.split(" ")[0];
 	if (cmd.startsWith("//")){cmd = cmd.slice (2);}
@@ -82,7 +108,8 @@ exports.roll = function(number,array,boolean){
 exports.getHelp = function(array,guild_id){
 	let prefix = config.getprefix(guild_id);
 	switch(array.join(" ")){
-		case "general": var text = "these are the general-use commands:\n\
+		case "general":
+		case "general 1": var text = "these are the general-use commands (page 1/2):\n\
 ```\n\
 "+prefix+"8ball [text] ..................................... The magic 8ball has all the answers you need.\n\
 "+prefix+"avatar [@user] ................................... Shows the tagged user's avatar, or yours if noone was tagged.\n\
@@ -94,6 +121,9 @@ exports.getHelp = function(array,guild_id){
 "+prefix+"guildinfo ........................................ Shows information about this guild.\n\
 "+prefix+"info ............................................. Reveals info about the bot.\n\
 "+prefix+"invite ........................................... Makes me send my invite link so you can have me on your very own server!\n\
+```Enter `//help general 2` to view the second page!";break
+		case "general 2": var text = "these are the general-use commands (page 2/2):\n\
+```\n\
 "+prefix+"morse <text or morse> ............................ Converts the given text into morse code or vice versa!\n\
 "+prefix+"randcap <text> || rc <text> ...................... Randomly capitalize the given text.\n\
 "+prefix+"report <@User> <reason> .......................... Report a user for abusing any of this bot's features. Please also provide evidence!\n\
@@ -102,6 +132,7 @@ exports.getHelp = function(array,guild_id){
 "+prefix+"sendnoots ........................................ Noot noot!\n\
 "+prefix+"superscript <text> || ss <text> .................. Turn some text into unicode superscript (most letters supported)\n\
 "+prefix+"status [@user] ................................... Shows the status of a user and what they are playing, if anything.\n\
+"+prefix+"translate <text> <from> <to> ..................... Translate the given text from the given language to the other.\n\
 "+prefix+"userinfo [@user] ................................. Display extensive information about you or whoever you mentioned.\n\
 ```";break;
 		case "technical": var text = "these are the more technical commands:\n\
@@ -133,7 +164,7 @@ exports.getHelp = function(array,guild_id){
 \n\
 To get help for commands, use either of these sub-commands:\n\
 ```\n\
-"+prefix+"help general ............ Get information about general-use commands.\n\
+"+prefix+"help general ............ Get information about general-use commands. (2 Pages)\n\
 "+prefix+"help administrative ..... Get information on administrative commands.\n\
 "+prefix+"help nsfw ............... Get information on lewd commands.\n\
 "+prefix+"help technical .......... Get information on more technical, development-oriented commands.\n\
@@ -257,7 +288,7 @@ exports.parseUptime = function(uptime) {
 exports.commandCheck = function(cmd) {
 	let cmdlist = ["ping","id","avatar","guildinfo","status","invite","source","roll","help","join","leave","play", "say","eval","setname","getguilds",
 	"react","shutdown","dm","bug","8ball","kick","ban","reverse","sendnudes","calc","decide","sendintro","toggle","sendnoots","tos","info","setprefix","broadcast","superscript","rpg",
-	"setwelcome","shutdown","block","unblock","report","randcap","ss","rc","die","setlog","exec","fact","reply", "morse", "cleanup", "userinfo", "convert"];
+	"setwelcome","shutdown","block","unblock","report","randcap","ss","rc","die","setlog","exec","fact","reply", "morse", "cleanup", "userinfo", "convert","translate"];
 	if (cmdlist.includes(cmd)){return 1;} else {return 0;}
 }
 

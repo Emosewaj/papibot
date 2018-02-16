@@ -18,9 +18,9 @@ exports.convert = function(value, sUnit, tUnit) {
 	tCat = categories.find(cat => {if (cat.units.includes(tUnit)) return true});
 	if (!sCat || !tCat) return "Error: Either source unit or target unit don't exist!";
 	if (sCat.name !== tCat.name) return "Error: Source unit and target unit are not in the same category.";
-	if (sCat.name == "temperatures") {
+	if (sCat.name == "temperature") {
 		let base;
-		let result;
+		var result;
 		switch(sUnit) {
 			case "c": {
 				base = value;

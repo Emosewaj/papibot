@@ -2,6 +2,7 @@ const fs = require("fs");
 const url = require("url");
 const http = require("http");
 const yt = require("ytdl-core");
+const tl = require("translate");
 const disc = require("./depen/index.js");
 const rem = require("./depen/rem.js");
 const blocked = require("./depen/blocked.js");
@@ -380,7 +381,6 @@ self.on("message", msg => {
 		case "fact": {
 			let fact = math.randomNo(0,facts.length-1);
 			return msg.channel.send(`Fact #${fact+1}: ${facts[fact]}`);
-			
 		}
 		case "morse": {
 			let alpha = " ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split(""),
@@ -409,6 +409,25 @@ self.on("message", msg => {
 		case "convert": {
 			return msg.channel.send(convert.convert(args[0], args[1], args[2]));
 		}
+		case "translate": {
+			return msg.channel.send("Loading...").then(m => {
+				let to = args.pop();
+				let from = args.pop();
+				let text = args.join(" ");
+				if (!to || !from || !text) return m.edit("Error: Invalid arguments:```//translate <text> <from> <to>```");
+				try {disc.language(to)} catch (err) {m.edit(`Error parsing target language: ${err}`); return;}
+				try {disc.language(from)} catch (err) {m.edit(`Error parsing source language: ${err}`); return;}
+				tl(text,{from, to, engine: cfg.tlEngine, key: cfg.tlKey}).then(translation => {
+					m.edit({
+						embed: new Discord.RichEmbed().setTitle("Translation")
+						.setDescription(`[Powered by Yandex.Translate](http://translate.yandex.com/?lang=${disc.language(from)}-${disc.language(to)}&text=${encodeURIComponent(text)})`)
+						.addField(from,"```\n"+text+"```")
+						.addField(to,"```\n"+translation+"```")
+						.setTimestamp()
+					});
+				}, err => {m.edit(`Error: ${err}`)});
+			});
+		}
 
 		//Music
 		case "join": {
@@ -419,7 +438,7 @@ self.on("message", msg => {
 				case 1: {
 					msg.member.voiceChannel.join().then(connection => {
 						msg.channel.send(`Joined voice channel ${msg.guild.voiceConnection.channel.name}!`);
-					}).catch(console.warn);
+					}).catch(msg.channel.send(`I couldn't join ${msg.member.voiceChannel.name}!\n`));
 				}
 			}
 			break;
@@ -440,6 +459,7 @@ self.on("message", msg => {
 			switch(disc.play(msg.guild.voiceConnection,msg.member)){
 				case 0: {
 					return msg.reply("you and I need to be in the same voice channel!");
+					break;
 				}
 				case 1: {
 					msg.channel.startTyping();
@@ -488,10 +508,11 @@ self.on("message", msg => {
 						msg.guild.dispatcher = msg.guild.voiceConnection.playStream(yt(args[0], { audioonly: true }), { passes: 1 });
 						return msg.delete().then(()=>{},reason=>{console.warn(reason)});
 					});
+					break;
 				}
 				case 2:
 				case 3:
-				case 4: return msg.channel.send("This subcommand is currently disabled for technical reasons, please use YouTube videos instead. This message should also never appear.");
+				case 4: msg.channel.send("This subcommand is currently disabled for technical reasons, please use YouTube videos instead. This message should also never appear.");break;
 			}
 			return;
 		}
@@ -685,48 +706,48 @@ self.on("message", async msg => {
 					},()=> {
 						return;
 					});
+					break;
 				}
-				// case "eval": {	/* Disabled because I keep abusing it */
-				// 	try {		/* *sigh* */
-				// 		let result = eval(args.join(" "));
-				// 		if (result instanceof Promise) {
-				// 			result = await result;
-				// 		}
-				//	} catch(err) {
-				// 		return msg.channel.send(`Error: ${err.message}`);
-				// 	};
-				// }
-				// case "exec": {
-				// 	try {
-				// 		let result = eval(args.join(" "));
-				// 		if (result instanceof Promise) {
-				// 			result = await result;
-				// 			if (result != null && result != undefined && !result) {
-				// 				return msg.channel.send(`\`\`\`typeof ${typeof result}\ninstanceof ${result.constructor.toString().split("{")[0]}\`\`\`\n\`\`\`\n${result}\`\`\``);
-				// 			} else {
-				// 				return msg.channel.send(`\`\`\`\n${result}\`\`\``);
-				// 			}
-				// 		} else {
-				// 			if (result != null && result != undefined && !result) {
-				// 				return msg.channel.send(`\`\`\`typeof ${typeof result}\ninstanceof ${result.constructor.toString().split("{")[0]}\`\`\`\n\`\`\`\n${result}\`\`\``);
-				// 			} else {
-				// 				return msg.channel.send(`\`\`\`\n${result}\`\`\``);
-				// 			}
-				// 		}
-				// 	} catch(err) {
-				// 		return msg.channel.send(`Error: ${err.message}`);
-				// 	};
-				// }
-				case "eval":
+				case "eval": {	
+					try {		
+						let result = eval(args.join(" "));
+						if (result instanceof Promise) {
+							result = await result;
+						}
+					} catch(err) {
+						return msg.channel.send(`Error: ${err.message}`);
+					};
+					return;
+				}
 				case "exec": {
-					return msg.channel.send("This command is disabled because you kept abusing it, idiot.");
-				}
+					try {
+						let result = eval(args.join(" "));
+						if (result instanceof Promise) {
+							result = await result;
+							if (result != null && result != undefined && !result) {
+								return msg.channel.send(`\`\`\`typeof ${typeof result}\ninstanceof ${result.constructor.toString().split("{")[0]}\`\`\`\n\`\`\`\n${result}\`\`\``);
+							} else {
+								return msg.channel.send(`\`\`\`\n${result}\`\`\``);
+							}
+						} else {
+							if (result != null && result != undefined && !result) {
+								return msg.channel.send(`\`\`\`typeof ${typeof result}\ninstanceof ${result.constructor.toString().split("{")[0]}\`\`\`\n\`\`\`\n${result}\`\`\``);
+							} else {
+								return msg.channel.send(`\`\`\`\n${result}\`\`\``);
+							}
+						}
+					} catch(err) {
+						return msg.channel.send(`Error: ${err.message}`);
+					};
+					return;
+				 }
 				case "setname": {
 					msg.guild.me.setNickname(args.join(" ")).then(() => {
 						return msg.channel.send("Successfully set my name!");
 					}, err => {
 						return msg.channel.send(`Error, couldn't set my name: ${err}`);
 					});
+					break;
 				}
 				case "getguilds": {
 					let argstring;
@@ -748,6 +769,7 @@ self.on("message", async msg => {
 							return msg.channel.send(`\`\`\`\n${self.guilds.find("name",argtext.join(" ")).owner.user.tag}\n\`\`\``);
 						}
 					}
+					break;
 				}
 				case "dm": {
 					let id = args.shift();
@@ -758,6 +780,7 @@ self.on("message", async msg => {
 							return msg.channel.send(`Error: ${err}`);
 						});
 					});
+					break;
 				}
 				case "reply": {
 					if(!global.lastDM) return;
@@ -766,11 +789,13 @@ self.on("message", async msg => {
 					}, err => {
 						return msg.channel.send(`Error: ${err}`);
 					});
+					break;
 				}
 				case "react": {
 					msg.channel.fetchMessage(args[0]).then(message => {
 						return message.react(args[1]);
 					}).catch(console.warn);
+					break;
 				}
 				case "sendintro": {
 					let newGuild = self.guilds.get(args[0]);
@@ -787,6 +812,7 @@ self.on("message", async msg => {
 					},err => {
 						return self.channels.get("292040520648228864").send(`Couldn't send intro: ${err}`)
 					});
+					break;
 				}
 				case "broadcast": {
 					self.guilds.forEach(Guild => {
@@ -1109,4 +1135,3 @@ process.on('unhandledRejection', err => {
 });
 
 self.login(token);
-
