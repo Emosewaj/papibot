@@ -288,7 +288,7 @@ exports.parseUptime = function(uptime) {
 exports.commandCheck = function(cmd) {
 	let cmdlist = ["ping","id","avatar","guildinfo","status","invite","source","roll","help","join","leave","play", "say","eval","setname","getguilds",
 	"react","shutdown","dm","bug","8ball","kick","ban","reverse","sendnudes","calc","decide","sendintro","toggle","sendnoots","tos","info","setprefix","broadcast","superscript","rpg",
-	"setwelcome","shutdown","block","unblock","report","randcap","ss","rc","die","setlog","exec","fact","reply", "morse", "cleanup", "userinfo", "convert","translate"];
+	"setwelcome","shutdown","block","unblock","report","randcap","ss","rc","die","setlog","exec","fact","reply", "morse", "cleanup", "userinfo", "convert","translate","afk"];
 	if (cmdlist.includes(cmd)){return 1;} else {return 0;}
 }
 

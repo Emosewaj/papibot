@@ -427,6 +427,19 @@ self.on("message", msg => {
 					});
 				}, err => {m.edit(`Error: ${err}`)});
 			});
+			break;
+		}
+		case "afk": {
+			if (!args[0]) return msg.channel.send("Error: Please provide a reason!");
+			let reason = args.join(" ");
+			while (reason.includes("'")) {
+				reason = reason.replace("'","\\'");
+			}
+			return config.setAFK(msg.author.id,reason).then(() => {
+				return msg.channel.send("I've set your AFK message, see you soon!");
+			},err => {
+				return msg.channel.send(`Error setting your AFK message: ${err}`);
+			});
 		}
 
 		//Music
@@ -698,6 +711,20 @@ self.on("message", msg => {
 	}
 });
 
+//AFK messages
+self.on("message", msg => {
+	if (msg.author == self.user || msg.channel.type == "dm" || !tos.check(msg.guild.id) || msg.content.startsWith(config.getprefix(msg.guild.id))) return;
+	if (config.getAFK(msg.author.id)) {
+		config.delAFK(msg.author.id).then(() => {
+			return msg.channel.send(`Welcome back, ${msg.author.username}! I've removed your AFK message!`);
+		},err => {return console.log(err)});
+	}
+
+	if (msg.mentions.members.first() && config.getAFK(msg.mentions.members.first().id)) {
+		return msg.channel.send(`Hey there! **${msg.mentions.users.first().username}** is currently not available! Reason: *${config.getAFK(msg.mentions.members.first().id)}*`);
+	}
+});
+
 // Owner commands
 self.on("message", async msg => {
 	if (msg.channel.type == "dm"){return;}
@@ -749,7 +776,7 @@ self.on("message", async msg => {
 						return msg.channel.send(`Error: ${err.message}`);
 					};
 					return;
-				 }
+				}
 				case "setname": {
 					msg.guild.me.setNickname(args.join(" ")).then(() => {
 						return msg.channel.send("Successfully set my name!");
@@ -783,7 +810,7 @@ self.on("message", async msg => {
 				case "dm": {
 					let id = args.shift();
 					self.fetchUser(id).then(User => {
-						User.send(text.join(" ")).then(() => {
+						User.send(args.join(" ")).then(() => {
 							return msg.channel.send(`Successfully sent "${args.join(" ")}" to ${User.tag}`);
 						}, err => {
 							return msg.channel.send(`Error: ${err}`);

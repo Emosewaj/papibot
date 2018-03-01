@@ -4,6 +4,7 @@ let db = new sqlite3.Database("./data/servers.db", (err) => {if (err) {console.l
 
 var welcomes = new Map();
 var logSettings = new Map();
+var afk = new Map();
 
 function updatePrefixes(){
     global.prefixes = new Map();
@@ -198,7 +199,44 @@ exports.getLogSettings = function(guildID){
     if (!logSettings.get(guildID)) {return null;} else {return logSettings.get(guildID);}
 }
 
+exports.setAFK = function(id, message) {
+    return new Promise((resolve, reject) => {
+        db.run("INSERT INTO afk VALUES ('"+id+"', '"+message+"')",[],err => {
+            if (err) reject(err);
+            afk.set(id,message);
+            resolve();
+        });
+    });
+}
+
+exports.delAFK = function(id) {
+	return new Promise((resolve, reject) => {
+        afk.delete(id);
+        db.run("DELETE FROM afk WHERE id == '"+id+"'",err => {
+            if (err) reject(err);
+            resolve();
+        });
+    });
+}
+
+exports.getAFK = function(id) {
+    if (afk.has(id)) return afk.get(id);
+    return;
+}
+
+function updateAFKSettings() {
+    db.all("SELECT * FROM afk ORDER BY id",[],(err, rows) => {
+        if (err) {
+            throw err;
+        }
+        rows.forEach(row => {
+            afk.set(row.id,row.message);
+        });
+    });
+}
+
 updatePrefixes();
 updateWelcomes();
 updateLogSettings();
+updateAFKSettings();
 global.welcomes = welcomes;
