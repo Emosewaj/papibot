@@ -112,6 +112,7 @@ exports.getHelp = function(array,guild_id){
 		case "general 1": var text = "these are the general-use commands (page 1/2):\n\
 ```\n\
 "+prefix+"8ball [text] ..................................... The magic 8ball has all the answers you need.\n\
+"+prefix+"afk <reason> ..................................... Set an AFK message that is shown when someone tags you.\n\
 "+prefix+"avatar [@user] ................................... Shows the tagged user's avatar, or yours if noone was tagged.\n\
 "+prefix+"calc <equation> .................................. Calculates the given equation and returns the result. Any JS Math.* operation supported.\n\
 "+prefix+"convert <amount> <source unit> <target unit> ..... Convert two units!\n\
