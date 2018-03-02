@@ -201,7 +201,7 @@ exports.getLogSettings = function(guildID){
 
 exports.setAFK = function(id, message) {
     return new Promise((resolve, reject) => {
-        db.run("INSERT INTO afk VALUES ('"+id+"', '"+message+"')",[],err => {
+        db.run("INSERT INTO afk VALUES ( ? , ? )",[id, message],err => {
             if (err) reject(err);
             afk.set(id,message);
             resolve();

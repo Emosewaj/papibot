@@ -432,12 +432,6 @@ self.on("message", msg => {
 		case "afk": {
 			if (!args[0]) return msg.channel.send("Error: Please provide a reason!");
 			let reason = args.join(" ");
-			while (reason.includes("'")) {
-				reason = reason.replace("'","$SINGLEQUOTE");
-			}
-			while (reason.includes("$SINGLEQUOTE")) {
-				reason = reason.replace("$SINGLEQUOTE","\\'");
-			}
 			return config.setAFK(msg.author.id,reason).then(() => {
 				return msg.channel.send("I've set your AFK message, see you soon!");
 			},err => {
