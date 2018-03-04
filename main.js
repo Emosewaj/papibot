@@ -35,7 +35,7 @@ const facts = require("./data/didyouknow.json");
 self.on("ready", () => {
 	self.version = "27/12/2017";
 	self.user.setPresence({"game":{"name":"Type //help to begin!"}});
-	self.channels.get("292040520648228864").send({embed:new Discord.RichEmbed().setTitle(`Papi-Bot v${self.version}`)
+	self.channels.get("419968973287981061").send({embed:new Discord.RichEmbed().setTitle(`Papi-Bot v${self.version}`)
     .addField("Status",self.user.presence.status,true)
     .addField("Version",self.version,true)
     .addField("Guilds",self.guilds.size,true)
@@ -126,8 +126,8 @@ self.on("message", msg => {
 	let logEmbed = new Discord.RichEmbed()
 	.setAuthor("Command",msg.author.displayAvatarURL)
 	.setTimestamp()
-	.addField("Author",`${msg.author.tag}\n${msg.author.id}`,true)
-	.addField("Guild",`${msg.guild.name}\n${msg.guild.id}`,true)
+	.addField("Author",`${msg.author.username}`,true)
+	.addField("Guild",`${msg.guild.name}`,true)
 	if (msg.content.length > 1024) {
 		let longCMD = msg.content
 		logEmbed.addField("Command",longCMD.slice(0,1023),true)
@@ -229,7 +229,8 @@ self.on("message", msg => {
 			}
 		}
 		case "invite": {
-			embed.setAuthor("Click here for my invite link!",self.user.displayAvatarURL,"https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70773831")
+			embed.setAuthor("Select a link!",self.user.displayAvatarURL)
+			.setDescription("[Invite me to your server!](https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70773831)\n[Join the support server!](https://discord.gg/cXVD7Vm)")
 			return msg.channel.send({embed});
 		}
 		case "source": {
@@ -841,9 +842,9 @@ self.on("message", async msg => {
 						}
 					});
 					channel.send(intro).then(() => {
-						return self.channels.get("292040520648228864").send("Successfully sent intro")
+						return self.channels.get("419962831522234368").send("Successfully sent intro")
 					},err => {
-						return self.channels.get("292040520648228864").send(`Couldn't send intro: ${err}`)
+						return self.channels.get("419962831522234368").send(`Couldn't send intro: ${err}`)
 					});
 					break;
 				}
@@ -851,7 +852,7 @@ self.on("message", async msg => {
 					self.guilds.forEach(Guild => {
 						if (blocked.checkBroadcasts(Guild.id) == false){
 							let GuildChannel = Guild.channels.find(Channel => {
-								if (Channel.permissionsFor(self.user).has("SEND_MESSAGES") && Channel.name.includes("rule") == false && Channel.name.includes("support") == false && Channel.name.includes("announce") == false && Channel.name.includes("staff") == false && Channel.type == "text") {
+								if (Channel.permissionsFor(self.user).has("SEND_MESSAGES") && Channel.permissionsFor(self.user).has("VIEW_CHANNEL") && Channel.name.includes("rule") == false && Channel.name.includes("support") == false && Channel.name.includes("announce") == false && Channel.name.includes("staff") == false && Channel.type == "text") {
 									return true;
 								} else {
 									return false;
@@ -865,8 +866,8 @@ self.on("message", async msg => {
 							GuildChannel.send(text).then(Msg => {
 								console.log(`Message sent to #${Msg.channel.name} in ${Msg.guild.name}`);
 							}, err => {
-								console.error(`Couldn't send a message: ${err}`);
-							})
+								console.error(`Couldn't send a message to ${GuildChannel.guild.name}: ${err}`);
+							});
 						}
 					});
 					return;
@@ -945,9 +946,9 @@ self.on("guildCreate", guild => {
 	.addField("Members:",guild.memberCount-1)
 	.setThumbnail(guild.iconURL);
 	invChannel.createInvite().then(Invite => {
-		self.channels.get("292040520648228864").send(`<@211227683466641408> I was added to a new guild!\nInvite: ${Invite.url}`,{embed});
+		self.channels.get("419968973287981061").send(`<@211227683466641408> I was added to a new guild!\nInvite: ${Invite.url}`,{embed});
 	}, err => {
-		self.channels.get("292-4-52-648228864").send("<@211227683466641408> I was added to a new guild!",{embed});
+		self.channels.get("419968973287981061").send("<@211227683466641408> I was added to a new guild!",{embed});
 	});
 });
 
@@ -960,7 +961,7 @@ self.on("guildDelete", guild => {
 	.addField("Owner:",`${guild.owner} (${guild.owner.user.tag})`)
 	.addField("Members:",guild.memberCount-1)
 	.setThumbnail(guild.iconURL);
-	self.guilds.get("292040520648228864").channels.get("292040520648228864").send("<@211227683466641408> I was removed from a guild!",{embed});
+	self.channels.get("419968973287981061").send("<@211227683466641408> I was removed from a guild!",{embed});
 	config.removeGuild(guild);
 });
 
@@ -1141,8 +1142,8 @@ self.on("message", msg => {
 process.on("uncaughtException", err => {
 	fs.writeFileSync("./logs/lastCrash.log",err.stack);
 	console.error(err.stack);
-	self.channels.get("292040520648228864").send(`<@211227683466641408> Crashed: ${err}\n at ${new Date().toString()}`);
-	self.channels.get("292040520648228864").send(`\`\`\`\n${err.stack}\`\`\``).then(()=>{process.exit(1);},()=>{process.exit(1);})
+	self.channels.get("419968973287981061").send(`<@211227683466641408> Crashed: ${err}\n at ${new Date().toString()}`);
+	self.channels.get("419968973287981061").send(`\`\`\`\n${err.stack}\`\`\``).then(()=>{process.exit(1);},()=>{process.exit(1);})
 });
 
 // ToS Check
