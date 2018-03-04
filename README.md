@@ -1,4 +1,8 @@
 # papibot
+
+[![Discord Bots](https://discordbots.org/api/widget/337217642660233217.svg)](https://discordbots.org/bot/337217642660233217)
+
+
 My personal Discord Bot, mainly used for testing what's possible and how.
 
 I wouldn't have been able to do this without the help of Torri, thank you so much for assisting me through setting this whole thing up!
