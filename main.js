@@ -33,7 +33,9 @@ var args = [];
 const facts = require("./data/didyouknow.json");
 
 self.on("ready", () => {
-	self.version = "27/12/2017";
+	self.version = "07/03/2018";
+	self.commandsUsed = 0;
+	self.commandsUsedAllTime = require("./data/cmdUseAllTime.json").value;
 	self.user.setPresence({"game":{"name":"Type //help to begin!"}});
 	self.channels.get("419968973287981061").send({embed:new Discord.RichEmbed().setTitle(`Papi-Bot v${self.version}`)
     .addField("Status",self.user.presence.status,true)
@@ -135,10 +137,16 @@ self.on("message", msg => {
 	} else {
 		logEmbed.addField("Command",msg.content,true);
 	}
-	self.channels.get("357870372206673921").send({embed: logEmbed});
 
 	//Check for blocked Users
 	if (blocked.checkUser(msg.author.id)){return;}
+
+	self.channels.get("357870372206673921").send({embed: logEmbed});
+	self.commandsUsed++
+	self.commandsUsedAllTime++
+	fs.writeFile("./data/cmdUseAllTime.json",JSON.stringify({value:self.commandsUsedAllTime}),err => {
+		if (err) throw err;
+	});
 
 	// Commands
 	switch(cmd){
@@ -328,7 +336,8 @@ self.on("message", msg => {
 			.addField("Emoji available",self.emojis.size,true)
 			.addField("Last Ping",self.pings[0],true)
 			.addField("D.JS version",Discord.version,true)
-			.addField("Last update",self.version,true)
+			.addField("Commands used (since last restart)",self.commandsUsed,true)
+			.addField("Commands used (all time)",self.commandsUsedAllTime,true)
 			.setColor(msg.guild.me.displayHexColor);
 			let usage = process.memoryUsage().heapUsed;let size = ["B","KB","MB","GB"];let usageData = 0
 			while (usage/1024 >= 1) {
@@ -441,6 +450,7 @@ self.on("message", msg => {
 		}
 
 		//Music
+		/*
 		case "join": {
 			switch(disc.join(msg.member)){
 				case 0: {
@@ -521,12 +531,13 @@ self.on("message", msg => {
 					});
 					break;
 				}
-				case 2:
-				case 3:
-				case 4: msg.channel.send("This subcommand is currently disabled for technical reasons, please use YouTube videos instead. This message should also never appear.");break;
 			}
 			return;
 		}
+		*/
+		case "join":
+		case "leave":
+		case "play": return msg.channel.send("The music commands are currently not available. :frowning:")
 			
 		//Administrative
 		case "kick": {
@@ -927,10 +938,8 @@ self.on("message", msg => {
 // Guild introduction	
 self.on("guildCreate", guild => {
 	var intro = (`Hello! My name is Papi-Bot! I hope all ${guild.memberCount-1} of you will enjoy my presence! Please accept the terms of service to begin (\`//tos\`)!`);
-	var success = "Successfully sent introduction to new guild";
-	var failure = "Couldn't send introduction to new guild";
 	var ownerIntro = `Hello, my name is Papi-Bot and I was just added to your guild ${guild.name}! Unfortunately I can't introduce myself because there is no channel I can currently speak in. Please make sure I can send messages to at least one channel, then use \`//tos\` to read and accept or deny my terms of service! Thanks for having me around!`;
-	let invChannel = guild.channels.find(Channel => {if(Channel.permissionsFor(guild.me).has("SEND_MESSAGES") && Channel.type == "text"){return true;} else {return false;}})
+	let invChannel = guild.channels.find(Channel => {if (Channel.permissionsFor(guild.me).has("SEND_MESSAGES") && Channel.type == "text"){return true} else {return false}})
 	if (invChannel == null || invChannel == undefined || !invChannel || !invChannel.send) {
 		guild.owner.send(ownerIntro);
 		config.addGuild(guild);
@@ -1142,8 +1151,8 @@ self.on("message", msg => {
 process.on("uncaughtException", err => {
 	fs.writeFileSync("./logs/lastCrash.log",err.stack);
 	console.error(err.stack);
-	self.channels.get("419968973287981061").send(`<@211227683466641408> Crashed: ${err}\n at ${new Date().toString()}`);
-	self.channels.get("419968973287981061").send(`\`\`\`\n${err.stack}\`\`\``).then(()=>{process.exit(1);},()=>{process.exit(1);})
+	self.channels.get("419968973287981061")
+	.send(`<@211227683466641408> Crashed: ${err}\n at ${new Date().toString()}`,{files: ["./logs/lastCrash.log"]}).then(()=>{process.exit(1);},()=>{process.exit(1);});
 });
 
 // ToS Check
