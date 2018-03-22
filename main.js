@@ -963,7 +963,6 @@ self.on("message", async msg => {
 							if (channels.length != 0) setTimeout(() => {sendBroadcast(text)},2500);
 						});
 					}
-					
 					return sendBroadcast(text);
 				}
 				case "block": {
