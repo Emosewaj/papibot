@@ -6,11 +6,13 @@
   "dependencies": {
     "discord.js": "^11.3.0",
     "ffmpeg-binaries": "^3.2.2-3",
+    "kaori": "^1.1.4",
     "node-gyp": "^3.6.2",
     "node-pre-gyp": "^0.6.39",
     "opusscript": "0.0.3",
     "rebuild": "^0.1.2",
     "sqlite3": "^3.1.13",
+    "translate": "^1.0.2",
     "ytdl-core": "^0.18.2"
   },
   "devDependencies": {},
