@@ -929,7 +929,7 @@ self.on("message", async msg => {
 				case "broadcast": {
 					let channels = [];
 					self.guilds.forEach(g => {
-						if (block.checkBroadcasts(g.id)) return;
+						if (blocked.checkBroadcasts(g.id)) return;
 						let channel = g.channels.find(ch => {
 							if (ch.type == "text" &&
 							ch.permissionsFor(self.user).has("VIEW_CHANNEL") &&
@@ -937,7 +937,8 @@ self.on("message", async msg => {
 							!ch.name.includes("rule") &&
 							!ch.name.includes("support") &&
 							!ch.name.includes("announce") &&
-							!ch.name.includes("staff")
+							!ch.name.includes("staff") &&
+							!ch.name.includes("log")
 							) return true;
 						});
 						if (!channel) return;
@@ -954,12 +955,12 @@ self.on("message", async msg => {
 							toSend = toSend.replace("$PREFIX",prefix);
 						}
 						channel.send(toSend).then(() => {
-							console.log(`Message sent to #${channel.name} in ${channel.guild.name}`);
 							sends++;
-							setTimeout(() => {sendBroadcast(text)},2500);
+							console.log(`Message sent to #${channel.name} in ${channel.guild.name}, sent to ${sends}/${self.guilds.size} guilds`);
+							if (channels.length != 0) setTimeout(() => {sendBroadcast(text)},2500);
 						}).catch(e => {
 							console.log(`Couldn't send a message to #${channel.name} in ${channel.guild.name}: ${e}`);
-							setTimeout(() => {sendBroadcast(text)},2500);
+							if (channels.length != 0) setTimeout(() => {sendBroadcast(text)},2500);
 						});
 					}
 					
