@@ -3,6 +3,8 @@ const url = require("url");
 const http = require("http");
 const yt = require("ytdl-core");
 const tl = require("translate");
+const Kaori = require("kaori");
+const kaori = new Kaori(require("./depen/kaori/moreSites.json"));
 const disc = require("./depen/index.js");
 const rem = require("./depen/rem.js");
 const blocked = require("./depen/blocked.js");
@@ -36,6 +38,11 @@ self.on("ready", () => {
 	self.version = "07/03/2018";
 	self.commandsUsed = 0;
 	self.commandsUsedAllTime = require("./data/cmdUseAllTime.json").value;
+	self.errors = {
+		notNsfw: "I can't do that here! Try again in an nsfw channel!",
+		noArgs: "You need to specify at least one tag! Tags are seperated by spaces!",
+		noImage: "Sorry, couldn't find any image with those tags!"
+	}
 	self.user.setPresence({"game":{"name":"Type //help to begin!"}});
 	self.channels.get("419968973287981061").send({embed:new Discord.RichEmbed().setTitle(`Papi-Bot v${self.version}`)
     .addField("Status",self.user.presence.status,true)
@@ -320,14 +327,6 @@ self.on("message", msg => {
 			let noots = fs.readFileSync("./data/sendnoots.txt","utf8").split("\r\n");
 			return msg.channel.send("Noot noot!",{files:[noots[math.randomNo(0,noots.length-1)]]});
 		}
-		case "sendnudes": {
-			if(msg.channel.nsfw || msg.channel.name.toLowerCase().includes("nsfw")){
-					let nudes = fs.readFileSync("./data/sendnudes.txt","utf8").split("\r\n");
-					return msg.channel.send("P-please don't stare...", {files: [nudes[math.randomNo(0,nudes.length-1)]]});
-			} else {
-				return msg.channel.send("I can't do that here! Try again in an nsfw channel!");
-			}
-		}
 		case "info": {
 			embed.setAuthor("Papi-Bot",self.user.displayAvatarURL,"https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70773831")
 			.setDescription("Click my name for my invite link!")
@@ -446,6 +445,74 @@ self.on("message", msg => {
 				return msg.channel.send("I've set your AFK message, see you soon!");
 			},err => {
 				return msg.channel.send(`Error setting your AFK message: ${err}`);
+			});
+		}
+
+		//NSFW
+		case "sendnudes": {
+			if(!(msg.channel.nsfw || msg.channel.name.toLowerCase().includes("nsfw"))) return msg.channel.send(self.errors.notNsfw);
+			let nudes = fs.readFileSync("./data/sendnudes.txt","utf8").split("\r\n");
+			return msg.channel.send("P-please don't stare...", {files: [nudes[math.randomNo(0,nudes.length-1)]]});
+		}
+		case "e621": {
+			if (!(msg.channel.nsfw || msg.channel.name.toLowerCase().includes("nsfw"))) return msg.channel.send(self.errors.notNsfw);
+			if (!args) return msg.channel.send(self.errors.noArgs);
+			return msg.channel.send("Taking a look...").then(m => {
+				return kaori.search("e621", {tags: args, random: true, limit: 1}).then(images => {
+					return m.edit("Found a picture!",{
+						embed: new Discord.RichEmbed()
+						.setImage(images[0].common.fileURL)
+						.setTitle("Click here to open full image!")
+						.setURL(images[0].common.fileURL)
+						.setDescription(`Rating: ${disc.parseRating(images[0].common.rating)}\nScore: ${images[0].common.score}`)
+					});
+				}).catch(e => m.edit(self.errors.noImage));
+			});
+		}
+		case "danbooru": {
+			if (!(msg.channel.nsfw || msg.channel.name.toLowerCase().includes("nsfw"))) return msg.channel.send(self.errors.notNsfw);
+			if (!args) return msg.channel.send(self.errors.noArgs);
+			if (args.length > 2) return msg.channel.send("Sorry, I can't search for more than 2 tags at a time with danbooru!")
+			return msg.channel.send("Taking a look...").then(m => {
+				return kaori.search("danbooru", {tags: args, random: true, limit: 1}).then(images => {
+					return m.edit("Found a picture!",{
+						embed: new Discord.RichEmbed()
+						.setImage(images[0].common.fileURL)
+						.setTitle("Click here to open full image!")
+						.setURL(images[0].common.fileURL)
+						.setDescription(`Rating: ${disc.parseRating(images[0].common.rating)}\nScore: ${images[0].common.score}`)
+					});
+				}).catch(e => m.edit(self.errors.noImage));
+			});
+		}
+		case "gelbooru": {
+			if (!(msg.channel.nsfw || msg.channel.name.toLowerCase().includes("nsfw"))) return msg.channel.send(self.errors.notNsfw);
+			if (!args) return msg.channel.send(self.errors.noArgs);
+			return msg.channel.send("Taking a look...").then(m => {
+				return kaori.search("gelbooru", {tags: args, random: true, limit: 1}).then(images => {
+					return m.edit("Found a picture!",{
+						embed: new Discord.RichEmbed()
+						.setImage(images[0].common.fileURL)
+						.setTitle("Click here to open full image!")
+						.setURL(images[0].common.fileURL)
+						.setDescription(`Rating: ${disc.parseRating(images[0].common.rating)}\nScore: ${images[0].common.score}`)
+					});
+				}).catch(e => m.edit(self.errors.noImage));
+			});
+		}
+		case "rule34": {
+			if (!(msg.channel.nsfw || msg.channel.name.toLowerCase().includes("nsfw"))) return msg.channel.send(self.errors.notNsfw);
+			if (!args) return msg.channel.send(self.errors.noArgs);
+			return msg.channel.send("Taking a look...").then(m => {
+				return kaori.search("rule34", {tags: args, random: true, limit: 1}).then(images => {
+					return m.edit("Found a picture!",{
+						embed: new Discord.RichEmbed()
+						.setImage(images[0].common.fileURL)
+						.setTitle("Click here to open full image!")
+						.setURL(images[0].common.fileURL)
+						.setDescription(`Rating: ${disc.parseRating(images[0].common.rating)}\nScore: ${images[0].common.score}`)
+					});
+				}).catch(e => m.edit(self.errors.noImage));
 			});
 		}
 
@@ -860,28 +927,43 @@ self.on("message", async msg => {
 					break;
 				}
 				case "broadcast": {
-					self.guilds.forEach(Guild => {
-						if (blocked.checkBroadcasts(Guild.id) == false){
-							let GuildChannel = Guild.channels.find(Channel => {
-								if (Channel.permissionsFor(self.user).has("SEND_MESSAGES") && Channel.permissionsFor(self.user).has("VIEW_CHANNEL") && Channel.name.includes("rule") == false && Channel.name.includes("support") == false && Channel.name.includes("announce") == false && Channel.name.includes("staff") == false && Channel.type == "text") {
-									return true;
-								} else {
-									return false;
-								};
-							});
-							let text = args.join(" ");
-							let prefix = config.getprefix(GuildChannel.guild.id);
-							while (text.includes("$PREFIX")) {
-								text = text.replace("$PREFIX",prefix)
-							}
-							GuildChannel.send(text).then(Msg => {
-								console.log(`Message sent to #${Msg.channel.name} in ${Msg.guild.name}`);
-							}, err => {
-								console.error(`Couldn't send a message to ${GuildChannel.guild.name}: ${err}`);
-							});
-						}
+					let channels = [];
+					self.guilds.forEach(g => {
+						if (block.checkBroadcasts(g.id)) return;
+						let channel = g.channels.find(ch => {
+							if (ch.type == "text" &&
+							ch.permissionsFor(self.user).has("VIEW_CHANNEL") &&
+							ch.permissionsFor(self.user).has("SEND_MESSAGES") &&
+							!ch.name.includes("rule") &&
+							!ch.name.includes("support") &&
+							!ch.name.includes("announce") &&
+							!ch.name.includes("staff")
+							) return true;
+						});
+						if (!channel) return;
+						channels.push(channel);
 					});
-					return;
+					const text = args.join(" ");
+					var sends = 0;
+
+					function sendBroadcast(text) {
+						let channel = channels.shift();
+						let prefix = config.getprefix(channel.guild.id);
+						let toSend = text;
+						while (toSend.includes("$PREFIX")) {
+							toSend = toSend.replace("$PREFIX",prefix);
+						}
+						channel.send(toSend).then(() => {
+							console.log(`Message sent to #${channel.name} in ${channel.guild.name}`);
+							sends++;
+							setTimeout(() => {sendBroadcast(text)},2500);
+						}).catch(e => {
+							console.log(`Couldn't send a message to #${channel.name} in ${channel.guild.name}: ${e}`);
+							setTimeout(() => {sendBroadcast(text)},2500);
+						});
+					}
+					
+					return sendBroadcast(text);
 				}
 				case "block": {
 					if (!mention && isNaN(args[0])) {
