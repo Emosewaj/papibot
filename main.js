@@ -459,7 +459,6 @@ self.on("message", msg => {
 			if (!args) return msg.channel.send(self.errors.noArgs);
 			return msg.channel.send("Taking a look...").then(m => {
 				return kaori.search("e621", {tags: args, random: true, limit: 1}).then(images => {
-					console.log(images[0]);
 					return m.edit("Found a picture!",{
 						embed: new Discord.RichEmbed()
 						.setImage(images[0].common.fileURL)
