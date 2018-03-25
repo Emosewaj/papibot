@@ -35,7 +35,7 @@ var args = [];
 const facts = require("./data/didyouknow.json");
 
 self.on("ready", () => {
-	self.version = "07/03/2018";
+	self.version = "25/03/2018";
 	self.commandsUsed = 0;
 	self.commandsUsedAllTime = require("./data/cmdUseAllTime.json").value;
 	self.errors = {
@@ -156,7 +156,7 @@ self.on("message", msg => {
 	});
 
 	// Commands
-	switch(cmd){
+	switch(cmd.toLowerCase()){
 		case "ping": {
 			msg.channel.send(`Pong!\n📶 Websocket ping: ${self.pings[0]}`).then(m => {
 				m.edit(`${m.content}\n📨 Message ping: ${m.createdTimestamp-msg.createdTimestamp}`);
@@ -513,6 +513,43 @@ self.on("message", msg => {
 						.setDescription(`Rating: ${disc.parseRating(images[0].common.rating)}\nScore: ${images[0].common.score}`)
 					});
 				}).catch(e => m.edit(self.errors.noImage));
+			});
+		}
+		case "ct":
+		case "checktag":
+		case "checktags": {
+			let sites = ["Danbooru","E621","Gelbooru","Rule34"];
+			let valid = 0, invalid = 0;
+			if (args.length == 0) return msg.channel.send(self.errors.noArgs);
+			if (args.length > 25) return msg.channel.send("Sorry, can't check that many tags at once!");
+			let embed = new Discord.RichEmbed()
+			.setTitle("Search results")
+			.setFooter('"Valid" means that at least one image exists under this tag. "Invalid" means there are none. Combinations of tags may still not bring results, despite all tags being valid.');
+			async function checkTag(tag,m) {
+				let results = [];
+				results[0] = await kaori.search("danbooru",{tags: [tag], limit: 1, random: false}).catch(e => {results[0] = null});
+				results[1] = await kaori.search("e621",{tags: [tag], limit: 1, random: false}).catch(e => {results[1] = null});
+				results[2] = await kaori.search("gelbooru",{tags: [tag], limit: 1, random: false}).catch(e => {results[2] = null});
+				results[3] = await kaori.search("rule34",{tags: [tag], limit: 1, random: false}).catch(e => {results[3] = null});
+				console.log(tag, results);
+				for (let i in results) {
+					if (results[i] == undefined || results[i].length == 0) {
+						results[i] = `\\❌ ${sites[i]}: Invalid`;
+						invalid++
+					} else {
+						results[i] = `\\✅ ${sites[i]}: Valid`;
+						valid++
+					}
+				}
+				await embed.addField(`Tag: "${tag}"`,results.join("\n"),true);
+				if (embed.fields.length == args.length) {
+					if (valid >= invalid) embed.setColor("GREEN").setDescription("Seems like these tags are mostly valid!");
+					else embed.setColor("RED").setDescription("Seems like these tags are mostly invalid!");
+					return m.edit({embed});
+				}
+			}
+			return msg.channel.send("Checking, give me a moment!").then(m => {
+				args.forEach(tag => checkTag(tag,m));
 			});
 		}
 
@@ -1011,7 +1048,7 @@ self.on("message", msg => {
 	//Check for blocked Users
 	if (blocked.checkUser(msg.author.id) || !args[0]) return;
 
-	switch(disc.commandCheck(cmd)){
+	switch(disc.commandCheck(cmd.toLowerCase())){
 		case 1: return;
 		case 0: return msg.reply(rem.other(cmd,args));
 	}

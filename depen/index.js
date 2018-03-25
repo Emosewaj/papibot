@@ -159,11 +159,12 @@ exports.getHelp = function(array,guild_id){
 ```";break;
 		case "nsfw": var text = "these are the non-worksafe commands:\n\
 ```\n\
-"+prefix+"danbooru <tags> ..... Search danbooru for lewds!\n\
-"+prefix+"e621 <tags> ......... Search e621 for lewds!\n\
-"+prefix+"gelbooru <tags> ..... Search gelbooru for lewds!\n\
-"+prefix+"rule34 <tags> ....... Search rule34 for lewds!\n\
-"+prefix+"sendnudes ........... Only looking, no touching allowed!\n\
+"+prefix+"checkTags <tag(s)> ..... Check if one or more tags are valid on the available sites!\n\
+"+prefix+"danbooru <tag(s)> ...... Search danbooru for lewds!\n\
+"+prefix+"e621 <tag(s)> .......... Search e621 for lewds!\n\
+"+prefix+"gelbooru <tag(s)> ...... Search gelbooru for lewds!\n\
+"+prefix+"rule34 <tag(s)> ........ Search rule34 for lewds!\n\
+"+prefix+"sendnudes .............. Only looking, no touching allowed!\n\
 ```All of these commands are restricted to channels **marked as NSFW!**\n\
 See here for a guide on tags: https://goo.gl/pgWwH6";break;
 		default: var text = "hello! Thanks for using Emosewaj's Papi-Bot!\n\
@@ -304,7 +305,7 @@ exports.commandCheck = function(cmd) {
 	let cmdlist = ["ping","id","avatar","guildinfo","status","invite","source","roll","help","join","leave","play", "say","eval","setname","getguilds",
 	"react","shutdown","dm","bug","8ball","kick","ban","reverse","sendnudes","calc","decide","sendintro","toggle","sendnoots","tos","info","setprefix","broadcast","superscript","rpg",
 	"setwelcome","shutdown","block","unblock","report","randcap","ss","rc","die","setlog","exec","fact","reply", "morse", "cleanup", "userinfo", "convert","translate","afk","e621","danbooru",
-	"gelbooru","rule34"];
+	"gelbooru","rule34","checktags","ct","checktag"];
 	if (cmdlist.includes(cmd)){return 1;} else {return 0;}
 }
 
