@@ -259,11 +259,32 @@ exports.randCap = function(args) {
 }
 
 exports.parseRating = function(string) {
-	switch(string) {
-		case "s": return "Safe"
-		case "q": return "Questionable"
-		case "e": return "Explicit"
-		default: return "Unknown"
+	
+}
+
+exports.parseKaori = function(parameter, argument) {
+	switch(parameter) {
+		case "a": {
+			if (argument == "" || !argument) return "Unknown";
+			else return argument;
+		}
+		case "s": {
+			if (argument == null) return "No source given.";
+			else return `[Link!](${argument})`;
+		}
+		case "sc": {
+			if (argument == null) return 0;
+			else return argument;
+		}
+		case "r": {
+			switch(argument) {
+				case "s": return "Safe"
+				case "q": return "Questionable"
+				case "e": return "Explicit"
+				default: console.log(argument);return "Unknown"
+			}
+		}
+		default: return "";
 	}
 }
 

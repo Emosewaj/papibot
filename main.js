@@ -459,12 +459,13 @@ self.on("message", msg => {
 			if (!args) return msg.channel.send(self.errors.noArgs);
 			return msg.channel.send("Taking a look...").then(m => {
 				return kaori.search("e621", {tags: args, random: true, limit: 1}).then(images => {
+					console.log(images[0]);
 					return m.edit("Found a picture!",{
 						embed: new Discord.RichEmbed()
 						.setImage(images[0].common.fileURL)
 						.setTitle("Click here to open full image!")
 						.setURL(images[0].common.fileURL)
-						.setDescription(`Rating: ${disc.parseRating(images[0].common.rating)}\nScore: ${images[0].common.score}`)
+						.setDescription(`Rating: ${disc.parseKaori("r",images[0].common.rating)}\nScore: ${disc.parseKaori("sc",images[0].common.score)}\nSource: ${disc.parseKaori("s",images[0].common.source)}`)
 					});
 				}).catch(e => m.edit(self.errors.noImage));
 			});
@@ -480,7 +481,7 @@ self.on("message", msg => {
 						.setImage(images[0].common.fileURL)
 						.setTitle("Click here to open full image!")
 						.setURL(images[0].common.fileURL)
-						.setDescription(`Rating: ${disc.parseRating(images[0].common.rating)}\nScore: ${images[0].common.score}`)
+						.setDescription(`Rating: ${disc.parseKaori("r",images[0].common.rating)}\nScore: ${disc.parseKaori("sc",images[0].common.score)}\nArtist: ${disc.parseKaori("a",images[0].tag_string_artist)}\nSource: ${disc.parseKaori("s",images[0].common.source)}`)
 					});
 				}).catch(e => m.edit(self.errors.noImage));
 			});
@@ -495,7 +496,7 @@ self.on("message", msg => {
 						.setImage(images[0].common.fileURL)
 						.setTitle("Click here to open full image!")
 						.setURL(images[0].common.fileURL)
-						.setDescription(`Rating: ${disc.parseRating(images[0].common.rating)}\nScore: ${images[0].common.score}`)
+						.setDescription(`Rating: ${disc.parseKaori("r",images[0].common.rating)}\nScore: ${disc.parseKaori("sc",images[0].common.score)}\nSource: ${disc.parseKaori("s",images[0].common.source)}`)
 					});
 				}).catch(e => m.edit(self.errors.noImage));
 			});
@@ -510,7 +511,7 @@ self.on("message", msg => {
 						.setImage(images[0].common.fileURL)
 						.setTitle("Click here to open full image!")
 						.setURL(images[0].common.fileURL)
-						.setDescription(`Rating: ${disc.parseRating(images[0].common.rating)}\nScore: ${images[0].common.score}`)
+						.setDescription(`Rating: ${disc.parseKaori("r",images[0].common.rating)}\nScore: ${disc.parseKaori("sc",images[0].common.score)}\nSource: ${disc.parseKaori("s",images[0].common.source)}`)
 					});
 				}).catch(e => m.edit(self.errors.noImage));
 			});
@@ -531,7 +532,6 @@ self.on("message", msg => {
 				results[1] = await kaori.search("e621",{tags: [tag], limit: 1, random: false}).catch(e => {results[1] = null});
 				results[2] = await kaori.search("gelbooru",{tags: [tag], limit: 1, random: false}).catch(e => {results[2] = null});
 				results[3] = await kaori.search("rule34",{tags: [tag], limit: 1, random: false}).catch(e => {results[3] = null});
-				console.log(tag, results);
 				for (let i in results) {
 					if (results[i] == undefined || results[i].length == 0) {
 						results[i] = `\\❌ ${sites[i]}: Invalid`;
