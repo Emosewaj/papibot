@@ -144,6 +144,27 @@ function updateLogSettings() {
 }
 
 exports.setLogSettings = function(guildID,channelID,setting){
+    if (setting == null && channelID == null) {
+        return new Promise ((resolve,reject) => {
+            db.run("DELETE FROM logs WHERE guildID = ?;",[guildID],err => {
+                if (err) reject (err);
+                logSettings.delete(guildID);
+                resolve("Logging has been disabled!");
+            });
+        });
+    }
+
+    if (channelID && setting == null) {
+        return new Promise((resolve,reject) => {
+            let settings = JSON.stringify(logSettings.get(guildID));
+            db.run("UPDATE logs SET channelID = ?, logSettings = ? WHERE guildID = ?;",[channelID,settings,guildID],err => {
+                if (err) reject(err);
+                logSettings.set(guildID,{channel: channelID, settings: logSettings.get(guildID)});
+                resolve(`Logging channel successfully changed to <#${channelID}>!`);
+            })
+        });
+    }
+
     if (logSettings.get(guildID)){
         let curSettings = logSettings.get(guildID);
         switch(setting){

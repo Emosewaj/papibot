@@ -328,8 +328,8 @@ self.on("message", msg => {
 			return msg.channel.send("Noot noot!",{files:[noots[math.randomNo(0,noots.length-1)]]});
 		}
 		case "info": {
-			embed.setAuthor("Papi-Bot",self.user.displayAvatarURL,"https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70773831")
-			.setDescription("Click my name for my invite link!")
+			embed.setAuthor("Papi-Bot",self.user.displayAvatarURL)
+			.setDescription("Click [here](https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70773831) to invite me to your server!")
 			.addField("Users cached",self.users.size,true)
 			.addField("Servers available",self.guilds.size,true)
 			.addField("Emoji available",self.emojis.size,true)
@@ -742,47 +742,56 @@ self.on("message", msg => {
 			} else {
 				switch(args[0]){
 					case "channel": {
-						config.setLogSettings(msg.guild.id,logSettings.channel,"channel").then(resolve => {
+						return config.setLogSettings(msg.guild.id,logSettings.channel,"channel").then(resolve => {
 							msg.channel.send(resolve);
 						}, reject => {
 							msg.channel.send(reject);
 						});
-						return;
 					}
 					case "emoji": {
-						config.setLogSettings(msg.guild.id,logSettings.channel,"emoji").then(resolve => {
+						return config.setLogSettings(msg.guild.id,logSettings.channel,"emoji").then(resolve => {
 							msg.channel.send(resolve);
 						}, reject => {
 							msg.channel.send(reject);
 						});
-						return;
 					}
 					case "bans": {
-						config.setLogSettings(msg.guild.id,logSettings.channel,"ban").then(resolve => {
+						return config.setLogSettings(msg.guild.id,logSettings.channel,"ban").then(resolve => {
 							msg.channel.send(resolve);
 						}, reject => {
 							msg.channel.send(reject);
 						});
-						return;
 					}
 					case "member": {
-						config.setLogSettings(msg.guild.id,logSettings.channel,"member").then(resolve => {
+						return config.setLogSettings(msg.guild.id,logSettings.channel,"member").then(resolve => {
 							msg.channel.send(resolve);
 						}, reject => {
 							msg.channel.send(reject);
 						});
-						return;
 					}
 					case "guild": {
-						config.setLogSettings(msg.guild.id,logSettings.channel,"guild").then(resolve => {
+						return config.setLogSettings(msg.guild.id,logSettings.channel,"guild").then(resolve => {
 							msg.channel.send(resolve);
 						}, reject => {
 							msg.channel.send(reject);
 						});
-						return;
+					}
+					case "remove": {
+						return config.setLogSettings(msg.guild.id,null,null).then(resolve => {
+							msg.channel.send(resolve);
+						}, reject => {
+							msg.channel.send(reject);
+						});
+					}
+					case "changeChannel": {
+						if (!args[1]) return msg.channel.send("You must provide a channel name!");
+						if (msg.guild.channels.find("name",args[1]) && msg.guild.channels.find("name",args[1]).permissionsFor(self.user).has("SEND_MESSAGES")) {
+							msg.channel.send(`Now using ${msg.guild.channels.find("name",args[1]).name} as the log channel!`);
+							return config.setLogSettings(msg.guild.id,msg.guild.channels.find("name",args[1]).id,null);
+						}
 					}
 					default: {
-						let text = (`These are the current logging settings: \n\n${logSettings.settings.guildUpdates} Log guild updates? \n${logSettings.settings.channelUpdates} Log channel updates? \n${logSettings.settings.memberUpdates} Log member updates? \n${logSettings.settings.banUpdates} Log bans? \n${logSettings.settings.emojiUpdates} Log emoji updates? \n\nTo toggle either of the settings, use \`//setlog <setting>\`, for example: \`//setlog member\``);
+						let text = (`These are the current logging settings: \n\n${logSettings.settings.guildUpdates} Log guild updates? \n${logSettings.settings.channelUpdates} Log channel updates? \n${logSettings.settings.memberUpdates} Log member updates? \n${logSettings.settings.banUpdates} Log bans? \n${logSettings.settings.emojiUpdates} Log emoji updates? \n\nTo toggle either of the settings, use \`//setlog <setting>\`, for example: \`//setlog member\`\nTo change the logging channel, use \`//setlog changeChannel <channel name>\``);
 						while (text.includes("true") || text.includes("false")) {
 							text = text.replace("true","☑");
 							text = text.replace("false","❌");
