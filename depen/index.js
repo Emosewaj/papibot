@@ -150,23 +150,25 @@ exports.getHelp = function(array,guild_id){
 ```";break;
 		case "administrative": var text = "these are the administrative commands:\n\
 ```\n\
-"+prefix+"kick <@user> [reason] ...... Kicks the specified user, as long as you and the bot have the permission to do so.\n\
-"+prefix+"ban <@user> [reason] ....... Bans the specified user, permission-rule as above applies here as well.\n\
-"+prefix+"toggle <wt|im|bc> .......... Toggles word triggers and the I'm-dadjoke trigger for your server respectively.\n\
-"+prefix+"setlog ..................... Change logging options for your server.\n\
-"+prefix+"setprefix <new prefix> ..... Sets a new server-wide prefix for the bot.\n\
-"+prefix+"setwelcome ................. Activate or deactivate welcome messages for the server.\n\
+"+prefix+"kick <@user> [reason] ............ Kicks the specified user, as long as you and the bot have the permission to do so.\n\
+"+prefix+"ban <@user> [reason] ............. Bans the specified user, permission-rule as above applies here as well.\n\
+"+prefix+"toggle <wt|im|bc> ................ Toggles word triggers and the I'm-dadjoke trigger for your server respectively.\n\
+"+prefix+"serverblacklist <add|delete> ..... Modify the server's nsfw tag blacklist!\n\
+"+prefix+"setlog ........................... Change logging options for your server.\n\
+"+prefix+"setprefix <new prefix> ........... Sets a new server-wide prefix for the bot.\n\
+"+prefix+"setwelcome ....................... Activate or deactivate welcome messages for the server.\n\
 ```";break;
 		case "nsfw": var text = "these are the non-worksafe commands:\n\
 ```\n\
-"+prefix+"checkTags <tag(s)> ..... Check if one or more tags are valid on the available sites!\n\
-"+prefix+"danbooru <tag(s)> ...... Search danbooru for lewds!\n\
-"+prefix+"e621 <tag(s)> .......... Search e621 for lewds!\n\
-"+prefix+"gelbooru <tag(s)> ...... Search gelbooru for lewds!\n\
-"+prefix+"rule34 <tag(s)> ........ Search rule34 for lewds!\n\
-"+prefix+"sendnudes .............. Only looking, no touching allowed!\n\
+"+prefix+"blacklist <add|delete|(server)list> [tag(s)] ..... Modify your blacklist or view your or the server's blacklist!\n\
+"+prefix+"checkTags <tag(s)> ............................... Check if one or more tags are valid on the available sites!\n\
+"+prefix+"danbooru <tag(s)> ................................ Search danbooru for lewds!\n\
+"+prefix+"e621 <tag(s)> .................................... Search e621 for lewds!\n\
+"+prefix+"gelbooru <tag(s)> ................................ Search gelbooru for lewds!\n\
+"+prefix+"rule34 <tag(s)> .................................. Search rule34 for lewds!\n\
+"+prefix+"sendnudes ........................................ Only looking, no touching allowed!\n\
 ```All of these commands are restricted to channels **marked as NSFW!**\n\
-See here for a guide on tags: https://goo.gl/pgWwH6";break;
+See here for a guide on tags and blacklists: https://goo.gl/pgWwH6";break;
 		default: var text = "hello! Thanks for using Emosewaj's Papi-Bot!\n\
 \n\
 To get help for commands, use either of these sub-commands:\n\
@@ -326,7 +328,7 @@ exports.commandCheck = function(cmd) {
 	let cmdlist = ["ping","id","avatar","guildinfo","status","invite","source","roll","help","join","leave","play", "say","eval","setname","getguilds",
 	"react","shutdown","dm","bug","8ball","kick","ban","reverse","sendnudes","calc","decide","sendintro","toggle","sendnoots","tos","info","setprefix","broadcast","superscript","rpg",
 	"setwelcome","shutdown","block","unblock","report","randcap","ss","rc","die","setlog","exec","fact","reply", "morse", "cleanup", "userinfo", "convert","translate","afk","e621","danbooru",
-	"gelbooru","rule34","checktags","ct","checktag"];
+	"gelbooru","rule34","checktags","ct","checktag","blacklist","serverblacklist"];
 	if (cmdlist.includes(cmd)){return 1;} else {return 0;}
 }
 

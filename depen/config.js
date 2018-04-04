@@ -5,6 +5,7 @@ let db = new sqlite3.Database("./data/servers.db", (err) => {if (err) {console.l
 var welcomes = new Map();
 var logSettings = new Map();
 var afk = new Map();
+var blacklists = new Map();
 
 function updatePrefixes(){
     global.prefixes = new Map();
@@ -18,6 +19,12 @@ function updatePrefixes(){
     })
 }
 
+/**
+ * 
+ * @param {String} content 
+ * @param {String} id 
+ * @param {String} name 
+ */
 exports.getcmd = function(content,id,name) {
     if (prefixes.get(id) == undefined) {console.log("Couldn't find a prefix, inserting a default");let prefix = "//";db.run('INSERT INTO prefixes VALUES ("'+id+'","'+name+'","//");',[],function(err){if (err) {return console.log(err.message);}});updatePrefixes();}
     let prefix = prefixes.get(id);
@@ -26,10 +33,18 @@ exports.getcmd = function(content,id,name) {
 	return cmd;
 }
 
+/**
+ * 
+ * @param {String} id 
+ */
 exports.getprefix = function(id) {
     return prefixes.get(id);
 }
 
+/**
+ * 
+ * @param {Guild} guild 
+ */
 exports.addGuild = function(guild) {
     db.run('INSERT INTO prefixes VALUES ("'+guild.id+'","'+guild.name+'","//");',[],function(err){
         if (err) {
@@ -39,6 +54,10 @@ exports.addGuild = function(guild) {
     })
 }
 
+/**
+ * 
+ * @param {Guild} guild 
+ */
 exports.removeGuild = function(guild) {
     db.run("DELETE FROM prefixes WHERE serverID = '"+guild.id+"';",[],function(err){
         if (err) {
@@ -54,6 +73,11 @@ exports.removeGuild = function(guild) {
     });
 }
 
+/**
+ * 
+ * @param {Guild} guild 
+ * @param {String} newPrefix 
+ */
 exports.changePrefix = function(guild,newPrefix) {
     prefixes.set(guild.id,newPrefix);
     db.run("UPDATE prefixes SET name = '"+guild.name+"', prefix ='"+newPrefix+"' WHERE serverID = '"+guild.id+"';",[],function(err){
@@ -75,6 +99,12 @@ function updateWelcomes(){
     })
 }
 
+/**
+ * 
+ * @param {String} guildID 
+ * @param {String} channelID 
+ * @param {String} message 
+ */
 exports.setWelcome = function(guildID,channelID,message){
     return new Promise((reject,resolve) => {
         let array = message.split("");
@@ -110,6 +140,10 @@ exports.setWelcome = function(guildID,channelID,message){
     })
 }
 
+/**
+ * 
+ * @param {String} guildID 
+ */
 exports.removeWelcome = function(guildID){
     return new Promise((resolve,reject) => {
         db.run("DELETE FROM welcome WHERE guildID = '"+guildID+"';",[],function(err) {
@@ -124,6 +158,10 @@ exports.removeWelcome = function(guildID){
     })
 }
 
+/**
+ * 
+ * @param {String} guildID 
+ */
 exports.getWelcome = function(guildID){
     return welcomes.get(guildID);
 }
@@ -143,6 +181,12 @@ function updateLogSettings() {
     })
 }
 
+/**
+ * 
+ * @param {String} guildID 
+ * @param {String} channelID 
+ * @param {String} setting 
+ */
 exports.setLogSettings = function(guildID,channelID,setting){
     if (setting == null && channelID == null) {
         return new Promise ((resolve,reject) => {
@@ -216,10 +260,19 @@ exports.setLogSettings = function(guildID,channelID,setting){
     }
 }
 
+/**
+ * 
+ * @param {String} guildID 
+ */
 exports.getLogSettings = function(guildID){
     if (!logSettings.get(guildID)) {return null;} else {return logSettings.get(guildID);}
 }
 
+/**
+ * 
+ * @param {String} id 
+ * @param {String} message 
+ */
 exports.setAFK = function(id, message) {
     return new Promise((resolve, reject) => {
         db.run("INSERT INTO afk VALUES ( ? , ? )",[id, message],err => {
@@ -230,6 +283,10 @@ exports.setAFK = function(id, message) {
     });
 }
 
+/**
+ * 
+ * @param {String} id 
+ */
 exports.delAFK = function(id) {
 	return new Promise((resolve, reject) => {
         afk.delete(id);
@@ -240,6 +297,10 @@ exports.delAFK = function(id) {
     });
 }
 
+/**
+ * 
+ * @param {String} id 
+ */
 exports.getAFK = function(id) {
     if (afk.has(id)) return afk.get(id);
     return;
@@ -256,8 +317,116 @@ function updateAFKSettings() {
     });
 }
 
+/**
+ * 
+ * @param {String} id 
+ * @param {Array} tags 
+ */
+exports.setBlacklist = function(id, tags) {
+    tags = parseTags(tags);
+    return new Promise((resolve, reject) => {
+        if (!blacklists.has(id)) {
+            db.run("INSERT INTO blacklists VALUES (?, ?);",[id,JSON.stringify(tags)],err => {
+                if (err) reject("Couldn't set your blacklist tags: "+err);
+                blacklists.set(id, tags);
+                resolve("Successfully set your blacklist tags!");
+            });
+        } else {
+            let newTags = blacklists.get(id);
+            for (let i in tags) {
+                if (!newTags.includes(tags[i])) newTags.push(tags[i]);
+            }
+            db.run("UPDATE blacklists SET id = ?, tags = ? WHERE id = ?",[id,JSON.stringify(newTags),id],err => {
+                if (err) reject("Couldn't update your blacklist tags: "+err);
+                blacklists.set(id, newTags);
+                resolve("Successfully updated your blacklist tags!");
+            });
+        }
+    });
+}
+
+/**
+ * 
+ * @param {String} id 
+ * @returns {Array}
+ */
+exports.getBlacklist = function(id) {
+    if (blacklists.has(id)) return reverseParseTags(blacklists.get(id));
+    return [];
+}
+
+/**
+ * 
+ * @param {String} id 
+ * @param {Array} tags 
+ */
+exports.delBlacklist = function(id, tags) {
+    tags = parseTags(tags);
+    return new Promise((resolve, reject) => {
+        if (!blacklists.has(id)) return reject("You don't have any tags blacklisted!");
+        if (!tags || !tags[0]) return reject("You didn't specify any tags!");
+        let curTags = blacklists.get(id);
+        let removedTags = [];
+        for (let i in tags) {
+            if (curTags.includes(tags[i])) {
+                removedTags.push(tags[i]);
+                curTags.splice(curTags.indexOf(tags[i]),1);
+            }
+        }
+        if (curTags.length == 0) {
+            return db.run("DELETE FROM blacklists WHERE id = ?",[id],err => {
+                if (err) return reject("Couldn't save your removed tags: "+err);
+                blacklists.delete(id);
+                resolve("Successfully removed the following tags from your blacklist:```"+removedTags.join(", ")+"```");
+            });
+        } else {
+            return db.run("UPDATE blacklists SET id = ?, tags = ? WHERE id = ?",[id,JSON.stringify(curTags),id],err => {
+                if (err) return reject("Couldn't save your removed tags: "+err);
+                blacklists.set(id,curTags);
+                resolve("Successfully removed the following tags from your blacklist:```"+removedTags.join(", ")+"```");
+            });
+        }
+    });
+}
+
+function updateBlacklists() {
+    db.all("SELECT * FROM blacklists ORDER BY id",[],(err, rows) => {
+        if (err) {
+            throw err;
+        }
+        rows.forEach(row => {
+            blacklists.set(row.id,JSON.parse(row.tags));
+        });
+    });
+}
+
+/**
+ * 
+ * @param {Array} tags 
+ * @returns {Array}
+ */
+function parseTags(tags) {
+    for (let i in tags) {
+        if (!tags[i].startsWith("-")) tags[i] = "-"+tags[i];
+    }
+    return tags;
+}
+
+/**
+ * 
+ * @param {Array} tags
+ * @returns {Array} 
+ */
+function reverseParseTags(tags) {
+    for (let i in tags) {
+        if (tags[i].startsWith("-")) tags[i] = tags[i].slice(1);
+    }
+    return tags;
+}
+
 updatePrefixes();
 updateWelcomes();
 updateLogSettings();
 updateAFKSettings();
+updateBlacklists();
 global.welcomes = welcomes;

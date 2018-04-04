@@ -35,7 +35,7 @@ var args = [];
 const facts = require("./data/didyouknow.json");
 
 self.on("ready", () => {
-	self.version = "25/03/2018";
+	self.version = "04/04/2018";
 	self.commandsUsed = 0;
 	self.commandsUsedAllTime = require("./data/cmdUseAllTime.json").value;
 	self.errors = {
@@ -458,7 +458,13 @@ self.on("message", msg => {
 			if (!(msg.channel.nsfw || msg.channel.name.toLowerCase().includes("nsfw"))) return msg.channel.send(self.errors.notNsfw);
 			if (!args) return msg.channel.send(self.errors.noArgs);
 			return msg.channel.send("Taking a look...").then(m => {
-				return kaori.search("e621", {tags: args, random: true, limit: 1}).then(images => {
+				let userBlacklist = config.getBlacklist(msg.author.id);
+				let serverBlacklist = config.getBlacklist(msg.guild.id);
+				for (let i in args) {
+					if (userBlacklist.includes(args[i])) return m.edit(`The tag \`${args[i]}\` conflicts with your blacklist settings!`);
+					if (serverBlacklist.includes(args[i])) return m.edit(`The tag \`${args[i]}\` conflicts with this server's blacklist settings!`);
+				}
+				return kaori.search("e621", {tags: args.concat(userBlacklist,serverBlacklist), random: true, limit: 1}).then(images => {
 					return m.edit("Found a picture!",{
 						embed: new Discord.RichEmbed()
 						.setImage(images[0].common.fileURL)
@@ -489,7 +495,13 @@ self.on("message", msg => {
 			if (!(msg.channel.nsfw || msg.channel.name.toLowerCase().includes("nsfw"))) return msg.channel.send(self.errors.notNsfw);
 			if (!args) return msg.channel.send(self.errors.noArgs);
 			return msg.channel.send("Taking a look...").then(m => {
-				return kaori.search("gelbooru", {tags: args, random: true, limit: 1}).then(images => {
+				let userBlacklist = config.getBlacklist(msg.author.id);
+				let serverBlacklist = config.getBlacklist(msg.guild.id);
+				for (let i in args) {
+					if (userBlacklist.includes(args[i])) return m.edit(`The tag \`${args[i]}\` conflicts with your blacklist settings!`);
+					if (serverBlacklist.includes(args[i])) return m.edit(`The tag \`${args[i]}\` conflicts with this server's blacklist settings!`);
+				}
+				return kaori.search("gelbooru", {tags: args.concat(userBlacklist,serverBlacklist), random: true, limit: 1}).then(images => {
 					return m.edit("Found a picture!",{
 						embed: new Discord.RichEmbed()
 						.setImage(images[0].common.fileURL)
@@ -504,7 +516,13 @@ self.on("message", msg => {
 			if (!(msg.channel.nsfw || msg.channel.name.toLowerCase().includes("nsfw"))) return msg.channel.send(self.errors.notNsfw);
 			if (!args) return msg.channel.send(self.errors.noArgs);
 			return msg.channel.send("Taking a look...").then(m => {
-				return kaori.search("rule34", {tags: args, random: true, limit: 1}).then(images => {
+				let userBlacklist = config.getBlacklist(msg.author.id);
+				let serverBlacklist = config.getBlacklist(msg.guild.id);
+				for (let i in args) {
+					if (userBlacklist.includes(args[i])) return m.edit(`The tag \`${args[i]}\` conflicts with your blacklist settings!`);
+					if (serverBlacklist.includes(args[i])) return m.edit(`The tag \`${args[i]}\` conflicts with this server's blacklist settings!`);
+				}
+				return kaori.search("rule34", {tags: args.concat(userBlacklist,serverBlacklist), random: true, limit: 1}).then(images => {
 					return m.edit("Found a picture!",{
 						embed: new Discord.RichEmbed()
 						.setImage(images[0].common.fileURL)
@@ -550,6 +568,17 @@ self.on("message", msg => {
 			return msg.channel.send("Checking, give me a moment!").then(m => {
 				args.forEach(tag => checkTag(tag,m));
 			});
+		}
+		case "blacklist": {
+			if (!args[0]) return msg.channel.send("Do you want to add or delete a tag?");
+			if (!args[1] && (args[0] != "list" && args[0] != "serverlist")) return msg.channel.send("You didn't provide any tags!");
+			switch (args.shift()) {
+				case "add": return config.setBlacklist(msg.author.id,args).then(m => msg.channel.send(m),m => msg.channel.send(m));
+				case "delete": return config.delBlacklist(msg.author.id,args).then(m => msg.channel.send(m),m => msg.channel.send(m));
+				case "list": return msg.channel.send("These are your blacklisted tags: ```\n"+config.getBlacklist(msg.author.id).join(", ")+"```");
+				case "serverlist": return msg.channel.send("These are "+msg.guild.name+"'s blacklisted tags: ```\n"+config.getBlacklist(msg.guild.id).join(", ")+"```");
+				default: return;
+			}
 		}
 
 		//Music
@@ -829,6 +858,19 @@ self.on("message", msg => {
 			});
 		}
 		break;
+		case "serverblacklist": {
+			if (!msg.member.permissions.has("MANAGE_GUILD")) return msg.channel.send("You don't have the permission to do that!");
+			if (!args[0]) return msg.channel.send("Do you want to add or delete a tag?");
+			if (!args[1]) return msg.channel.send("You didn't provide any tags!");
+			switch (args.shift()) {
+				case "add": {
+					return config.setBlacklist(msg.guild.id,args).then(m => msg.channel.send(m),m => msg.channel.send(m));
+				}
+				case "delete": {
+					return config.delBlacklist(msg.guild.id,args).then(m => msg.channel.send(m),m => msg.channel.send(m));
+				}
+			}
+		}
 	}
 });
 
