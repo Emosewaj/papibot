@@ -22,7 +22,7 @@ Columns: serverID, name, prefix
 "serverID" stores the unique server ID of the server that set the prefix
 "name" stores the name of the server. This is to be removed for privacy reasons, no server names should be stored.
 "prefix" stores the set prefix of the server as a literal string.
-Note: Every server has an entry here for technical reasons, if no custom prefix was set, it will be "//".
+Note: Every server has an entry here for technical reasons, if no custom prefix was set, it will be "//". This is planned to be changed to only store custom prefixes.
 
 Name: welcome
 Columns: guildID, channelID, message
