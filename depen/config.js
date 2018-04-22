@@ -350,8 +350,13 @@ exports.setBlacklist = function(id, tags) {
  * @param {String} id 
  * @returns {Array}
  */
-exports.getBlacklist = function(id) {
+exports.getBlacklistTags = function(id) {
     if (blacklists.has(id)) return reverseParseTags(blacklists.get(id));
+    return [];
+}
+
+exports.getBlacklist = function(id) {
+    if (blacklists.has(id)) return blacklists.get(id);
     return [];
 }
 

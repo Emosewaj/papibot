@@ -467,6 +467,7 @@ self.on("message", msg => {
 				return kaori.search("e621", {tags: args.concat(userBlacklist,serverBlacklist), random: true, limit: 1}).then(images => {
 					return m.edit("Found a picture!",{
 						embed: new Discord.RichEmbed()
+						.setFooter("Not seeing an image? Click the link in the title!")
 						.setImage(images[0].common.fileURL)
 						.setTitle("Click here to open full image!")
 						.setURL(images[0].common.fileURL)
@@ -483,6 +484,7 @@ self.on("message", msg => {
 				return kaori.search("danbooru", {tags: args, random: true, limit: 1}).then(images => {
 					return m.edit("Found a picture!",{
 						embed: new Discord.RichEmbed()
+						.setFooter("Not seeing an image? Click the link in the title!")
 						.setImage(images[0].common.fileURL)
 						.setTitle("Click here to open full image!")
 						.setURL(images[0].common.fileURL)
@@ -504,6 +506,7 @@ self.on("message", msg => {
 				return kaori.search("gelbooru", {tags: args.concat(userBlacklist,serverBlacklist), random: true, limit: 1}).then(images => {
 					return m.edit("Found a picture!",{
 						embed: new Discord.RichEmbed()
+						.setFooter("Not seeing an image? Click the link in the title!")
 						.setImage(images[0].common.fileURL)
 						.setTitle("Click here to open full image!")
 						.setURL(images[0].common.fileURL)
@@ -525,6 +528,7 @@ self.on("message", msg => {
 				return kaori.search("rule34", {tags: args.concat(userBlacklist,serverBlacklist), random: true, limit: 1}).then(images => {
 					return m.edit("Found a picture!",{
 						embed: new Discord.RichEmbed()
+						.setFooter("Not seeing an image? Click the link in the title!")
 						.setImage(images[0].common.fileURL)
 						.setTitle("Click here to open full image!")
 						.setURL(images[0].common.fileURL)
@@ -575,8 +579,8 @@ self.on("message", msg => {
 			switch (args.shift()) {
 				case "add": return config.setBlacklist(msg.author.id,args).then(m => msg.channel.send(m),m => msg.channel.send(m));
 				case "delete": return config.delBlacklist(msg.author.id,args).then(m => msg.channel.send(m),m => msg.channel.send(m));
-				case "list": return msg.channel.send("These are your blacklisted tags: ```\n"+config.getBlacklist(msg.author.id).join(", ")+"```");
-				case "serverlist": return msg.channel.send("These are "+msg.guild.name+"'s blacklisted tags: ```\n"+config.getBlacklist(msg.guild.id).join(", ")+"```");
+				case "list": return msg.channel.send("These are your blacklisted tags: ```\n"+config.getBlacklistTags(msg.author.id).join(", ")+"```");
+				case "serverlist": return msg.channel.send("These are "+msg.guild.name+"'s blacklisted tags: ```\n"+config.getBlacklistTags(msg.guild.id).join(", ")+"```");
 				default: return;
 			}
 		}
@@ -1017,7 +1021,10 @@ self.on("message", async msg => {
 					let channels = [];
 					self.guilds.forEach(g => {
 						if (blocked.checkBroadcasts(g.id)) return;
-						let channel = g.channels.find(ch => {
+						channel = g.channels.find(ch => {
+							if (ch.name == "general") return true;
+						});
+						if (!channel) channel = g.channels.find(ch => {
 							if (ch.type == "text" &&
 							ch.permissionsFor(self.user).has("VIEW_CHANNEL") &&
 							ch.permissionsFor(self.user).has("SEND_MESSAGES") &&
