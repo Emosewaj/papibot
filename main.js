@@ -55,9 +55,10 @@ self.on("ready", () => {
 
 // Word triggers
 self.on("message", msg => {
-	if (msg.channel.type == "dm") return;
-	if (msg.author == self.user) return;
-	if (tos.check(msg.guild.id) == false) return;
+	if (msg.channel.type == "dm" &&
+		msg.author == self.user &&
+		msg.author.bot &&
+		!tos.check(msg.guild.id)) return;
 	let wtcmd = config.getcmd(msg.content,msg.guild.id,msg.guild.name);
 	let wtargs = disc.getargs(msg.content);
 	
@@ -123,11 +124,12 @@ self.on("message", msg => {
 
 // Actual commands
 self.on("message", msg => {
-	if (msg.channel.type == "dm"){return;}
+	if (msg.channel.type == "dm" &&
+		msg.author == self.user &&
+		msg.author.bot) return;
 	if (!msg.content.startsWith(config.getprefix(msg.guild.id))) {return;}
-	if (msg.author == self.user) {return;}
-	var embed = new Discord.RichEmbed();
 	if (tos.check(msg.guild.id) == false && msg.content.startsWith("//tos") != true){msg.channel.send("This server has not accepted the terms of service yet! Please review and accept them using `//tos`!");return;}
+	var embed = new Discord.RichEmbed();
 	cmd = config.getcmd(msg.content,msg.guild.id,msg.guild.name);
 	args = disc.getargs(msg.content);
 	mention = msg.mentions.members.first();
