@@ -1,0 +1,9 @@
+{
+  "name": "papi-bot",
+  "version": "0.0.0",
+  "description": "PapiBot",
+  "main": "app.js",
+  "author": {
+    "name": "Emosewaj"
+  }
+}
