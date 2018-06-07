@@ -19,16 +19,22 @@ self.version = {
 	release: 0
 };
 
-function init() {
+async function init() {
 	self.ready = false;
 	self.commands = new Collection();
 	let cmds = fs.readdirSync("./commands");
 	for (let i in cmds) {
-		self.commands.set(cmds[i].slice(0, cmds[i].length - 3), require("./commands/" + cmds[i]));
+		self.commands.set(cmds[i].slice(0, cmds[i].length - 3).toLowerCase(), require("./commands/" + cmds[i]));
 	}
 
 	self.db = new Database("./data/servers.db");
-	
+
+	let customPrefixGuilds = await self.db.all("prefixes");
+	self.customPrefixGuilds = new Collection();
+	for (let i in customPrefixGuilds) {
+		self.customPrefixGuilds.set(customPrefixGuilds[i].id, customPrefixGuilds[i].prefix);
+	}
+
 	switch (cfg.mode) {
 		case "main": self.login(cfg.tokens.main); break;
 		case "test": self.login(cfg.tokens.test); break;
@@ -45,16 +51,16 @@ self.on("ready", () => {
 
 self.on("message", async m => {
 	if (m.author.bot) return;
-	let prefix = await self.db.get("prefixes", m.guild.id);
+	let prefix = self.customPrefixGuilds.get(m.guild.id);
 	if (!prefix) prefix = "//";
 	if (!m.content.startsWith(prefix)) return;
 	if (!self.ready) return m.channel.send("Papi-Bot is currently not accepting commands! Please wait a short bit!");
 	let cmd = m.content.split(" ")[0].slice(prefix.length);
 	let args = m.content.split(" ").splice(1);
 
-	if (self.commands.has(cmd)) {
+	if (self.commands.has(cmd.toLowerCase())) {
 		args.unshift(m);
-		self.commands.get(cmd).run(self, args);
+		self.commands.get(cmd.toLowerCase()).run(self, args);
 		log(`${m.author.tag} in ${m.guild.name}: ${m.content}`);
 	} else {
 		m.channel.send("No such command (Debug)!");

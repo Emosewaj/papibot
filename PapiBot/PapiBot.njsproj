@@ -29,10 +29,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
+    <Compile Include="commands\avatar.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\guildinfo.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\id.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="commands\ping.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\status.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\userinfo.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Content Include="cfg.json">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="templateCommand.js">
       <SubType>Code</SubType>
     </Content>
     <Content Include="data\Database.js">

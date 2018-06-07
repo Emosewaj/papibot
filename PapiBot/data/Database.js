@@ -8,6 +8,32 @@ class Database {
 		this.log("DB loaded");
 	}
 
+	all(table) {
+		return new Promise((resolve, reject) => {
+			switch (table) {
+				case "prefixes":
+					this.db.all("SELECT * FROM prefixes;", [], (err, rows) => {
+						if (err) reject(err);
+						resolve(rows);
+					});
+					break;
+			}
+		});
+	}
+
+	del(table, id) {
+		return new Promise((resolve, reject) => {
+			switch (table) {
+				case "prefixes":
+					this.db.run("DELETE FROM prefixes WHERE id = ?;", [id], err => {
+						if (err) reject(err);
+						resolve();
+					});
+					break;
+			}
+		});
+	}
+
 	get(table, id) {
 		return new Promise((resolve, reject) => {
 			switch (table) {
