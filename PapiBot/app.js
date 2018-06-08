@@ -16,15 +16,21 @@ const cfg = require("./cfg.json");
 self.version = {
 	major: 3,
 	minor: 0,
-	release: 0
+	patch: 0
 };
 
 async function init() {
 	self.ready = false;
 	self.commands = new Collection();
 	let cmds = fs.readdirSync("./commands");
+	self.failed = 0;
 	for (let i in cmds) {
-		self.commands.set(cmds[i].slice(0, cmds[i].length - 3).toLowerCase(), require("./commands/" + cmds[i]));
+		try {
+			self.commands.set(cmds[i].slice(0, cmds[i].length - 3).toLowerCase(), require("./commands/" + cmds[i]));
+		} catch (err) {
+			console.error(err);
+			self.failed++;
+		}
 	}
 
 	self.db = new Database("./data/servers.db");
@@ -47,10 +53,21 @@ self.on("ready", () => {
 	let amount = " commands ";
 	if (self.commands.size === 1) amount = " command ";
 	log(self.commands.size + amount + "loaded!");
+	log(self.failed + " commands failed to load!");
 });
 
 self.on("message", async m => {
 	if (m.author.bot) return;
+
+	if (m.channel.type === "dm") {
+		if (m.content.startsWith("//")) m.channel.send("Papi-Bot is designed to work in servers, direct messages are forwarded to the developer (Your message was forwarded anyway)!");
+		return self.fetchUser("211227683466641408").then(User => {
+			User.send("From " + m.author.tag + ": " + m.content);
+			if (m.attachments.first()) User.send("From " + m.author.tag + ": " + m.attachments.first().url);
+			self.lastDM = m.author;
+		});
+	}
+
 	let prefix = self.customPrefixGuilds.get(m.guild.id);
 	if (!prefix) prefix = "//";
 	if (!m.content.startsWith(prefix)) return;
@@ -61,7 +78,7 @@ self.on("message", async m => {
 	if (self.commands.has(cmd.toLowerCase())) {
 		args.unshift(m);
 		self.commands.get(cmd.toLowerCase()).run(self, args);
-		log(`${m.author.tag} in ${m.guild.name}: ${m.content}`);
+		//log(`${m.author.tag} in ${m.guild.name}: ${m.content}`);
 	} else {
 		m.channel.send("No such command (Debug)!");
 	}
@@ -104,7 +121,19 @@ function log(string) {
 
 init();
 
-process.on("uncaughtException", e => {
-	console.error(e);
-	process.exit();
+process.on("uncaughtException", err => {
+	fs.writeFileSync("./logs/lastCrash.log", err.stack);
+	console.error(err);
+	self.channels.get("419968973287981061")
+		.send(`<@211227683466641408> Crashed: ${err}\n at ${new Date().toString()}`, {
+			files: ["./logs/lastCrash.log"]
+		}).then(() => {
+			process.exit(1);
+		}, () => {
+			process.exit(1);
+		});
+});
+
+process.on('unhandledRejection', err => {
+	console.warn(`Uncaught Promise Error: \n${err}`);
 });

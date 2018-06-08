@@ -29,7 +29,34 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
+    <Compile Include="commands\8ball.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="commands\avatar.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\ban.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\cleanup.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\convert.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\decide.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\dm.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\eval.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\exec.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\getguilds.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="commands\guildinfo.js">
@@ -38,7 +65,64 @@
     <Compile Include="commands\id.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\info.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\invite.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\kick.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\morse.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\randcap.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\rc.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\react.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\reply.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\restart.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\roll.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\say.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\sendnudes.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\setname.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\shutdown.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\ss.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\superscript.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="commands\ping.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\reverse.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\sendnoots.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\source.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="commands\status.js">
@@ -50,6 +134,31 @@
     <Content Include="cfg.json">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="data\8ball\1.png" />
+    <Content Include="data\8ball\10.png" />
+    <Content Include="data\8ball\11.png" />
+    <Content Include="data\8ball\12.png" />
+    <Content Include="data\8ball\13.png" />
+    <Content Include="data\8ball\14.png" />
+    <Content Include="data\8ball\15.png" />
+    <Content Include="data\8ball\16.png" />
+    <Content Include="data\8ball\17.png" />
+    <Content Include="data\8ball\18.png" />
+    <Content Include="data\8ball\19.png" />
+    <Content Include="data\8ball\2.png" />
+    <Content Include="data\8ball\20.png" />
+    <Content Include="data\8ball\3.png" />
+    <Content Include="data\8ball\4.png" />
+    <Content Include="data\8ball\5.png" />
+    <Content Include="data\8ball\6.png" />
+    <Content Include="data\8ball\7.png" />
+    <Content Include="data\8ball\8.png" />
+    <Content Include="data\8ball\9.png" />
+    <Content Include="data\categories.json" />
+    <Content Include="data\sendnoots.txt" />
+    <Content Include="data\sendnudes.txt" />
+    <Content Include="data\units.json" />
+    <Content Include="package-lock.json" />
     <Content Include="templateCommand.js">
       <SubType>Code</SubType>
     </Content>
@@ -64,6 +173,7 @@
   <ItemGroup>
     <Folder Include="commands\" />
     <Folder Include="data\" />
+    <Folder Include="data\8ball\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
