@@ -32,30 +32,38 @@
     <Compile Include="commands\8ball.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\afk.js" />
     <Compile Include="commands\avatar.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="commands\ban.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\checktags.js" />
     <Compile Include="commands\cleanup.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="commands\convert.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\danbooru.js" />
     <Compile Include="commands\decide.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="commands\dm.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\e621.js" />
     <Compile Include="commands\eval.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="commands\exec.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\fact.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\gelbooru.js" />
     <Compile Include="commands\getguilds.js">
       <SubType>Code</SubType>
     </Compile>
@@ -89,12 +97,16 @@
     <Compile Include="commands\reply.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\report.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="commands\restart.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="commands\roll.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\rule34.js" />
     <Compile Include="commands\say.js">
       <SubType>Code</SubType>
     </Compile>
@@ -128,10 +140,18 @@
     <Compile Include="commands\status.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\toggle.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\translate.js" />
     <Compile Include="commands\userinfo.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="data\other\kaoriUtil.js" />
     <Content Include="cfg.json">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="data\8ball.json">
       <SubType>Code</SubType>
     </Content>
     <Content Include="data\8ball\1.png" />
@@ -154,7 +174,12 @@
     <Content Include="data\8ball\7.png" />
     <Content Include="data\8ball\8.png" />
     <Content Include="data\8ball\9.png" />
+    <Content Include="data\blocked\broadcasts.txt" />
+    <Content Include="data\blocked\dadjokes.txt" />
+    <Content Include="data\blocked\wordtriggers.txt" />
     <Content Include="data\categories.json" />
+    <Content Include="data\facts.json" />
+    <Content Include="data\other\moreKaoriSites.json" />
     <Content Include="data\sendnoots.txt" />
     <Content Include="data\sendnudes.txt" />
     <Content Include="data\units.json" />
@@ -174,6 +199,8 @@
     <Folder Include="commands\" />
     <Folder Include="data\" />
     <Folder Include="data\8ball\" />
+    <Folder Include="data\blocked\" />
+    <Folder Include="data\other\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

@@ -12,6 +12,7 @@ const self = new Client({
 	]
 });
 const cfg = require("./cfg.json");
+self.cfg = cfg;
 
 self.version = {
 	major: 3,
@@ -36,7 +37,13 @@ async function init() {
 	self.db = new Database("./data/servers.db");
 
 	let customPrefixGuilds = await self.db.all("prefixes");
+	let disabledBroadcastGuilds = fs.readFileSync("./data/blocked/broadcasts.txt", "utf8");
+	let enabledDadjokeGuilds = fs.readFileSync("./data/blocked/dadjokes.txt", "utf8");
+	let enabledWordtriggerGuilds = fs.readFileSync("./data/blocked/wordtriggers.txt", "utf8");
 	self.customPrefixGuilds = new Collection();
+	self.disabledBroadcastGuilds = disabledBroadcastGuilds.split(",");
+	self.enabledDadjokeGuilds = enabledDadjokeGuilds.split(",");
+	self.enabledWordtriggerGuilds = enabledWordtriggerGuilds.split(",");
 	for (let i in customPrefixGuilds) {
 		self.customPrefixGuilds.set(customPrefixGuilds[i].id, customPrefixGuilds[i].prefix);
 	}
@@ -77,12 +84,21 @@ self.on("message", async m => {
 
 	if (self.commands.has(cmd.toLowerCase())) {
 		args.unshift(m);
-		self.commands.get(cmd.toLowerCase()).run(self, args);
-		//log(`${m.author.tag} in ${m.guild.name}: ${m.content}`);
+		log(`${m.author.tag} in ${m.guild.name}: ${m.content}`);
+		try {
+			self.commands.get(cmd.toLowerCase()).run(self, args);
+		} catch (err) {
+			m.channel.send("Error running command: `" + err + "`");
+		}
 	} else {
 		m.channel.send("No such command (Debug)!");
 	}
 });
+
+self.checkNsfw = function (channel) {
+	if (channel.nsfw || channel.name.toLowerCase().includes("nsfw")) return true;
+	return false;
+};
 
 self.checkOverride = function (id) {
 	if (id === "211227683466641408" ||
@@ -93,7 +109,7 @@ self.checkOverride = function (id) {
 };
 
 self.checkPermission = function (member, permissions) {
-	if (member.hasPermission(permissions, checkAdmin = true, checkOwner = true)) return true;
+	if (member.hasPermission(permissions, false, true, true)) return true;
 	return false;
 };
 

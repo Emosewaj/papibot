@@ -1,12 +1,14 @@
-﻿class eightball {
+﻿const urls = require("../data/8ball.json");
+
+class eightball {
 	static run(client, args) {
 		const m = args.shift();
 		m.channel.send({
 			embed: {
-				title: "8ball",
-				description: args.join(),
+				title: "8ball - " + m.member.displayName,
+				description: args.join(" "),
 				image: {
-					url: `./data/8ball/${Math.floor(Math.random() * (20 - 1 + 1) + 1)}.gif`
+					url: urls[Math.floor(Math.random() * 20)]
 				}
 			}
 		});

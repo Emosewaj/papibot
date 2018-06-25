@@ -1,7 +1,9 @@
 ﻿{
 	"mode": "test",
+	"tlEngine": "yandex",
+	"tlKey": "trnsl.1.1.20180116T170502Z.de156a2a6d6af4f9.0b6dcb6919c478fe067e43bdf4033747d35f9e4f",
 	"tokens": {
-		"main": "MzM3MjE3NjQyNjYwMjMzMjE3.DFDwHA.3Ax5m8OnfvdWBHFfFuEy41r-DTQ",
-		"test": "MzUwNDA0NTUzODUxNzk3NTE0.DJn8fA.ocP5YEmH3PE0wL3KPfuZqUfL6ik"
+		"main": "MzM3MjE3NjQyNjYwMjMzMjE3.DgH74g.P6A4tiBZfI7EOVcbp3yjEPmIfKY",
+		"test": "MzUwNDA0NTUzODUxNzk3NTE0.DgH78Q.ajKDW_ydxVyr1MOsDWhUnFjo9a4"
 	}
 }

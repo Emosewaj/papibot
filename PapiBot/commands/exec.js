@@ -9,11 +9,10 @@ class exec {
 			if (result instanceof Promise) {
 				result = await result;
 			}
-			return m.channel.send("```js\ntypeof " + typeof result + "``````js\n" + util.inspect(result).slice(0, 1950) + "```");
+			return m.channel.send("```js\ntypeof " + typeof result + "``````js\n" + util.inspect(result, { depth: 0 }).slice(0, 1950) + "```");
 		} catch (err) {
 			return m.channel.send(`Error: ${err.message}`);
 		}
-		return;
 	}
 }
 

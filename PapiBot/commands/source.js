@@ -12,7 +12,7 @@
 				fields: [
 					{
 						name: "Current version:",
-						value: `p-API v${version}`
+						value: `p-API ${version}`
 					}
 				]
 			}
