@@ -125,29 +125,19 @@ function log(string) {
 	console.log(`${ts} ${string}`);
 }
 
-/*function logS(string) {
-	let date = new Date();
-	let hr = date.getHours().toString();
-	let min = date.getMinutes().toString();
-	let sec = date.getSeconds().toString();
-	if (hr.length < 2) hr = "0" + hr;
-	if (min.length < 2) min = "0" + min;
-	if (sec.length < 2) sec = "0" + sec;
-}*/
-
 init();
 
 process.on("uncaughtException", err => {
-	fs.writeFileSync("./logs/lastCrash.log", err.stack);
+	//fs.writeFileSync("./logs/lastCrash.log", err.stack);
 	console.error(err);
-	self.channels.get("419968973287981061")
+	/*self.channels.get("419968973287981061")
 		.send(`<@211227683466641408> Crashed: ${err}\n at ${new Date().toString()}`, {
 			files: ["./logs/lastCrash.log"]
 		}).then(() => {
 			process.exit(1);
 		}, () => {
 			process.exit(1);
-		});
+		});*/
 });
 
 process.on('unhandledRejection', err => {

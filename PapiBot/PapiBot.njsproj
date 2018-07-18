@@ -32,6 +32,7 @@
     <Compile Include="commands\8ball.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\add.js" />
     <Compile Include="commands\afk.js" />
     <Compile Include="commands\avatar.js">
       <SubType>Code</SubType>
@@ -79,10 +80,25 @@
     <Compile Include="commands\invite.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\queue.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\skip.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\join.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="commands\kick.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\leave.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="commands\morse.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\play.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="commands\randcap.js">
@@ -92,6 +108,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="commands\react.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="commands\remove.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="commands\reply.js">
@@ -148,6 +167,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="data\other\kaoriUtil.js" />
+    <Compile Include="data\other\voiceUtil.js" />
     <Content Include="cfg.json">
       <SubType>Code</SubType>
     </Content>

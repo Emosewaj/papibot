@@ -7,14 +7,14 @@
     "discord.js": "^11.3.2",
     "ffmpeg-binaries": "^3.2.2",
     "kaori": "^1.1.4",
-    "node-gyp": "^3.6.2",
+    "node-gyp": "^3.7.0",
     "node-pre-gyp": "^0.6.39",
-    "opusscript": "0.0.3",
+    "opusscript": "0.0.6",
     "rebuild": "^0.1.2",
     "sqlite": "^2.9.2",
-    "sqlite3": "^3.1.13",
+    "sqlite3": "^4.0.2",
     "translate": "^1.0.2",
-    "ytdl-core": "^0.18.7"
+    "ytdl-core": "^0.20.4"
   },
   "author": "Emosewaj"
 }
