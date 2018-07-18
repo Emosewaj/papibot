@@ -211,10 +211,8 @@
     <Content Include="data\Database.js">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="debug.bat" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="data\servers.db" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="commands\" />

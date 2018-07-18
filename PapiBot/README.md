@@ -1,7 +1,6 @@
-﻿# PapiBot
+﻿# papibot
 
-[![Discord Bots](https://discordbots.org/api/widget/337217642660233217.svg)](https://discordbots.org/bot/337217642660233217)
-
+[![Discord Bots](https://discordbots.org/api/widget/337217642660233217.svg)](https://discordbots.org/bot/337217642660233217)  [![Some Text Lole](https://i.imgur.com/AbKBzY4.png)](http://discord.io/emosewaj)
 
 My personal Discord Bot, mainly used for testing what's possible and how.
 
