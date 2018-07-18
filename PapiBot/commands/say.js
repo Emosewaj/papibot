@@ -7,6 +7,15 @@
 			m.channel.send(args.join(" "));
 		});
 	}
+
+	static help() {
+		return {
+			category: "owner-only",
+			shortDesc: "Say something as Papi-Bot",
+			longDesc: "Say something as Papi-Bot.",
+			syntax: "say <text>"
+		};
+	}
 }
 
 module.exports = templateCommand;

@@ -60,6 +60,15 @@ class convert {
 			.addField("Result", result.toFixed(2)+" "+targetUnit);
 		return m.channel.send({ embed });
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Converts something from A to B",
+			longDesc: "Converts a given unit to a different unit of the same category. Most Google supported conversions are supported.",
+			syntax: "convert <amount> <source unit> <target unit>"
+		};
+	}
 }
 
 module.exports = convert;

@@ -61,6 +61,15 @@ class info {
 			return `${days} Days, ${hours} Hours, ${minutes} Minutes, ${seconds} Seconds`;
 		}
 	}
+
+	static help() {
+		return {
+			category: "technical",
+			shortDesc: "Displays info about Papi-Bot",
+			longDesc: "Displays technical information about Papi-Bot.",
+			syntax: "info"
+		};
+	}
 }
 
 module.exports = info;

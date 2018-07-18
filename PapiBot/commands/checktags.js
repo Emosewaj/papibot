@@ -50,6 +50,15 @@ class checktags {
 			}
 		});
 	}
+
+	static help() {
+		return {
+			category: "nsfw",
+			shortDesc: "Checks given tags on various NSFW sites",
+			longDesc: "Checks whether the available NSFW sites have at least one image under the given tag. Checking lots of tags may take a while, please be patient.",
+			syntax: "checktags <tag> [tag] [tag]..."
+		};
+	}
 }
 
 module.exports = checktags;

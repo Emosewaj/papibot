@@ -33,6 +33,15 @@ class gelbooru {
 			});
 		});
 	}
+
+	static help() {
+		return {
+			category: "nsfw",
+			shortDesc: "Searches Gelbooru.com",
+			longDesc: "Searches Gelbooru.com for one or multiple tags and posts an image if one was found. Requires a channel to be marked as NSFW or have \"nsfw\" in its name.",
+			syntax: "gelbooru <tag> [tag] [tag]..."
+		};
+	}
 }
 
 module.exports = gelbooru;

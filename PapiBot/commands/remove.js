@@ -9,6 +9,15 @@
 		let deleted = m.guild.queueOut.splice(parseInt(args[0]) - 1, 1);
 		return m.channel.send("Removed `" + deleted.title + "` added by `" + deleted.requester + "` from the queue!");
 	}
+
+	static help() {
+		return {
+			category: "music",
+			shortDesc: "Removes an item from the queue",
+			longDesc: "Removes an item from the song queue of the server. Specify the item using it's position in the queue.",
+			syntax: "remove <number>"
+		};
+	}
 }
 
 module.exports = remove;

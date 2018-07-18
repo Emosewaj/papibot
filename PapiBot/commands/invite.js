@@ -13,6 +13,15 @@ class invite {
 			}
 		});
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Posts two bot relevant invites",
+			longDesc: "Posts invites to invite the bot and to join the official support server.",
+			syntax: "invite"
+		};
+	}
 }
 
 module.exports = invite;

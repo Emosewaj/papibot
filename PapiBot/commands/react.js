@@ -12,6 +12,15 @@
 			return m.channel.send("Error: " + err);
 		});
 	}
+
+	static help() {
+		return {
+			category: "owner-only",
+			shortDesc: "Reacts to a message",
+			longDesc: "Reacts to a message with a given unicode emoji. Custom emojis not supported (yet(?)).",
+			syntax: "react <message id> <unicode emoji>"
+		};
+	}
 }
 
 module.exports = react;

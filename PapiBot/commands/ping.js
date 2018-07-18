@@ -5,6 +5,15 @@
 			msg.edit(msg.content + "\n📨 Message ping: " + (msg.createdTimestamp - m.createdTimestamp));
 		});
 	}
+
+	static help() {
+		return {
+			category: "technical",
+			shortDesc: "Pong! Measures delay",
+			longDesc: "Pong! Measures the latency between when a command is sent and when Papi answers and the latency to the Discord Websocket.",
+			syntax: "ping"
+		};
+	}
 }
 
 module.exports = ping;

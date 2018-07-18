@@ -49,6 +49,15 @@ class add {
 			}
 		}
 	}
+
+	static help() {
+		return {
+			category: "music",
+			shortDesc: "Adds audio to the queue",
+			longDesc: "Adds an audio file or a YouTube video to the server's queue.",
+			syntax: "add <url to audio file or YouTube link>"
+		};
+	}
 }
 
 module.exports = add;

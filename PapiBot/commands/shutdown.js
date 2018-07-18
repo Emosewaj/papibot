@@ -11,6 +11,15 @@
 			});
 		});
 	}
+
+	static help() {
+		return {
+			category: "owner-only",
+			shortDesc: "Shuts Papi-Bot down and restarts the bot.",
+			longDesc: "Shuts Papi-Bot down and restarts the bot.",
+			syntax: "shutdown"
+		};
+	}
 }
 
 module.exports = shutdown;

@@ -9,6 +9,15 @@
 			return m.channel.send("Error:" + err);
 		});
 	}
+
+	static help() {
+		return {
+			category: "owner-only",
+			shortDesc: "Replies to the last received DM",
+			longDesc: "Replies to the last received DM.",
+			syntax: "reply <text>"
+		};
+	}
 }
 
 module.exports = reply;

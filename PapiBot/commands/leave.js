@@ -8,6 +8,15 @@
 		m.guild.me.voiceChannel.leave();
 		return m.channel.send("Left " + channelName + "!");
 	}
+
+	static help() {
+		return {
+			category: "music",
+			shortDesc: "Leaves the current voice channel",
+			longDesc: "Leaves the voice channel, if Papi-Bot is in any on this server.",
+			syntax: "leave"
+		};
+	}
 }
 
 module.exports = leave;

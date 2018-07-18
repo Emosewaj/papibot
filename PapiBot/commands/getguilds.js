@@ -29,6 +29,15 @@
 				}
 		}
 	}
+
+	static help() {
+		return {
+			category: "owner-only",
+			shortDesc: "Lists all of Papi-Bot's servers",
+			longDesc: "Lists all of Papi-Bot's servers.",
+			syntax: "getguilds or getguilds id <server name> or getguilds owner <server name>"
+		};
+	}
 }
 
 module.exports = getguilds;

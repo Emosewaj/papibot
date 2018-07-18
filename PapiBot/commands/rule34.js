@@ -33,6 +33,15 @@ class rule34 {
 			});
 		});
 	}
+
+	static help() {
+		return {
+			category: "nsfw",
+			shortDesc: "Searches Rule34.xxx",
+			longDesc: "Searches Rule34.xxx for one or multiple tags and posts an image if one was found. Requires a channel to be marked as NSFW or have \"nsfw\" in its name.",
+			syntax: "rule34 <tag> [tag] [tag]..."
+		};
+	}
 }
 
 module.exports = rule34;

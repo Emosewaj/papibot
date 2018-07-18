@@ -24,6 +24,15 @@
 		}
 		return m.channel.send("```" + text + "```");
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Converts text to morse and vice versa",
+			longDesc: "Converts text to morse and morse to text, ignoring any special characters.",
+			syntax: "morse <text> or morse <morse code>"
+		};
+	}
 }
 
 module.exports = morse;

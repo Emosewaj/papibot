@@ -47,6 +47,15 @@ class userinfo {
 		return m.channel.send({ embed });
 
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Display detailed info on a user",
+			longDesc: "Display detailed information on a user or yourself! This command displays information such as their username and tag, when their account was created, when they joined the server and many things more.",
+			syntax: "userinfo [mention]"
+		};
+	}
 }
 
 module.exports = userinfo;

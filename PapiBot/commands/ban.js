@@ -21,6 +21,15 @@
 			});
 		}
 	}
+
+	static help() {
+		return {
+			category: "administrative",
+			shortDesc: "Bans a member",
+			longDesc: "Bans a member from the server. Both Papi-Bot and the command user need the \"Ban Members\" permission.",
+			syntax: "ban <mention> [reason] or ban <user id> [reason]"
+		};
+	}
 }
 
 module.exports = ban;

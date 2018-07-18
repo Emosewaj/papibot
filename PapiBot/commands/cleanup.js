@@ -44,6 +44,15 @@
 			});
 		});
 	}
+
+	static help() {
+		return {
+			category: "administrative",
+			shortDesc: "Cleans up messages",
+			longDesc: "Cleans up messages from either Papi-Bot or another user.",
+			syntax: "cleanup <amount> [mention]"
+		};
+	}
 }
 
 module.exports = cleanup;

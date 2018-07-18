@@ -72,6 +72,15 @@
 				break;
 		}
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Rolls a die",
+			longDesc: "Rolls a die. Accepts either amount of sides or a regular `1d20` syntax.",
+			syntax: "roll <sides> or roll <number of dies>d<sides of dies> [+ added bonus]"
+		};
+	}
 }
 
 module.exports = roll;

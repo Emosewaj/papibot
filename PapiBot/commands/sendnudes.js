@@ -9,6 +9,15 @@ class sendnudes {
 			files: [nudes[Math.floor(Math.random() * nudes.length)]]
 		});
 	}
+
+	static help() {
+		return {
+			category: "nsfw",
+			shortDesc: "Sends a nude",
+			longDesc: "Sends a nude. Requires a channel to be marked as NSFW or have \"nsfw\" in its name.",
+			syntax: "sendnudes"
+		};
+	}
 }
 
 module.exports = sendnudes;

@@ -11,6 +11,15 @@
 			return m.channel.send("I couldn't join " + m.member.voiceChannel.name + "!\nError: " + err);
 		});
 	}
+
+	static help() {
+		return {
+			category: "music",
+			shortDesc: "Joins a voice channel",
+			longDesc: "Joins the voice channel you're currently in or switches to it. Switching will preserve an existing queue.",
+			syntax: "join"
+		};
+	}
 }
 
 module.exports = join;

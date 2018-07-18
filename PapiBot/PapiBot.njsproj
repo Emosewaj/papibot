@@ -71,6 +71,9 @@
     <Compile Include="commands\guildinfo.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commands\help.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="commands\id.js">
       <SubType>Code</SubType>
     </Compile>
@@ -163,9 +166,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="commands\translate.js" />
-    <Compile Include="commands\userinfo.js">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="commands\userinfo.js" />
     <Compile Include="data\other\kaoriUtil.js" />
     <Compile Include="data\other\voiceUtil.js" />
     <Content Include="cfg.json">

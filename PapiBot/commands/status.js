@@ -22,6 +22,15 @@
 			}
 		}
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Displays a user's status.",
+			longDesc: "Displays a user's status as well as game, if they're playing anything.",
+			syntax: "status [mention]"
+		};
+	}
 }
 
 module.exports = status;

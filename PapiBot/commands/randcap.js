@@ -19,6 +19,15 @@
 		}
 		return m.channel.send(text.join(""));
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Capitalises a string lIkE tHiS",
+			longDesc: "Capitalises a string lIkE tHiS aUtOmAtIcAlLy to imitate a certain meme.",
+			syntax: "randcap <text>"
+		};
+	}
 }
 
 module.exports = randcap;

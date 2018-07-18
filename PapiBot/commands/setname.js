@@ -8,6 +8,15 @@
 			return m.channel.send(`Error, couldn't set my name: ${err}`);
 		});
 	}
+
+	static help() {
+		return {
+			category: "owner-only",
+			shortDesc: "Sets Papi-Bot's nickname in the server.",
+			longDesc: "Sets Papi-Bot's nickname in the server.",
+			syntax: "setname <new name>"
+		};
+	}
 }
 
 module.exports = setname;

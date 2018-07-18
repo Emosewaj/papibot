@@ -28,6 +28,15 @@
 			});
 		}
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Displays a user's avatar",
+			longDesc: "Displays a user's or your own avatar. You can click a link to get to the full size.",
+			syntax: "avatar [mention]"
+		};
+	}
 }
 
 module.exports = avatar;

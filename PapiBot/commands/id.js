@@ -8,6 +8,15 @@
 			return m.channel.send("Your Discord ID is `" + m.author.id + "`!");
 		}
 	}
+
+	static help() {
+		return {
+			category: "technical",
+			shortDesc: "Posts the Discord ID of a member",
+			longDesc: "Posts the Discord ID of a member or yourself.",
+			syntax: "id [mention]"
+		};
+	}
 }
 
 module.exports = id;

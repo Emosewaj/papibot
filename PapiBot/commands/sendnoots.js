@@ -10,6 +10,15 @@ class sendnoots {
 			]
 		});
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Sends a noot",
+			longDesc: "Sends a noot. Not to be confused with sendnudes, which sends a nude.",
+			syntax: "sendnoots"
+		};
+	}
 }
 
 module.exports = sendnoots;

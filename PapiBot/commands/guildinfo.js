@@ -22,6 +22,15 @@ class guildinfo {
 			.setThumbnail(m.guild.iconURL);
 		return m.channel.send({ embed });
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Displays info about the server",
+			longDesc: "Displays extensive information about the server.",
+			syntax: "guildinfo"
+		};
+	}
 }
 
 module.exports = guildinfo;

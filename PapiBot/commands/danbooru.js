@@ -29,6 +29,15 @@ class danbooru {
 			});
 		});
 	}
+
+	static help() {
+		return {
+			category: "nsfw",
+			shortDesc: "Searches Danbooru.donmai.us",
+			longDesc: "Searches Danbooru.donmai.us for one or multiple tags and posts an image if one was found. Requires a channel to be marked as NSFW or have \"nsfw\" in its name. Warning: Danbooru only supports up to two tags!",
+			syntax: "danbooru <tag> [tag]"
+		};
+	}
 }
 
 module.exports = danbooru;

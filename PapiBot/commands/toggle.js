@@ -53,6 +53,15 @@ class toggle {
 				return m.channel.send("That's not a valid parameter!");
 		}
 	}
+
+	static help() {
+		return {
+			category: "administrative",
+			shortDesc: "Toggle various settings",
+			longDesc: "Administrators may use this command to toggle global broadcasts, the dadjoke trigger (NYI) as well as the word triggers (NYI). Global broadcasts are defaul on, the dadjoke triggers and word triggers are default off.",
+			syntax: "toggle <bc|im|wt>"
+		};
+	}
 }
 
 module.exports = toggle;

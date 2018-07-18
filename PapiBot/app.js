@@ -54,13 +54,16 @@ async function init() {
 	}
 }
 
-self.on("ready", () => {
-	self.ready = true;
+self.on("ready", async () => {
 	log(self.user.tag + " online!");
 	let amount = " commands ";
 	if (self.commands.size === 1) amount = " command ";
 	log(self.commands.size + amount + "loaded!");
 	log(self.failed + " commands failed to load!");
+	await self.commands.get("help").initialise_help(self.commands);
+	log("Help database initialised!");
+	self.ready = true;
+	log("Papi-Bot ready!");
 });
 
 self.on("message", async m => {

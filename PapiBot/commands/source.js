@@ -18,6 +18,15 @@
 			}
 		});
 	}
+
+	static help() {
+		return {
+			category: "technical",
+			shortDesc: "Displays a link to the Papi-Bot GitHub",
+			longDesc: "Displays a link to the Papi-Bot GitHub repository.",
+			syntax: "source"
+		};
+	}
 }
 
 module.exports = source;

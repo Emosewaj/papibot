@@ -34,6 +34,15 @@ class e621 {
 			});
 		});
 	}
+
+	static help() {
+		return {
+			category: "nsfw",
+			shortDesc: "Searches e621.net",
+			longDesc: "Searches e621.net for one or multiple tags and posts an image if one was found. Requires a channel to be marked as NSFW or have \"nsfw\" in its name.",
+			syntax: "e621 <tag> [tag] [tag]..."
+		};
+	}
 }
 
 module.exports = e621;

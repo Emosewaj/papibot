@@ -18,6 +18,15 @@ class play {
 			return voiceUtil.playURL(args.join(" "), m.member, m.channel);
 		}
 	}
+
+	static help() {
+		return {
+			category: "music",
+			shortDesc: "Directly plays audio, skipping the queue",
+			longDesc: "Directly plays an audio file or a YouTube video, skipping the queue. The queue will resume automatically.",
+			syntax: "play <url to audio file or youtube video>"
+		};
+	}
 }
 
 module.exports = play;

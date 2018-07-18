@@ -10,6 +10,15 @@
 		}
 		return m.channel.send(text.join(""));
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Turns a string into superscript letters",
+			longDesc: "Turns a string into superscript letters, except for Q, which has no unicode superscript letter.",
+			syntax: "superscript <text>"
+		};
+	}
 }
 
 module.exports = superscript;

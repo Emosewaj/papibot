@@ -24,6 +24,15 @@
 			});
 		}
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Reports a user to Papi-Bot's developer",
+			longDesc: "Reports a user to Papi-Bot's developer. Use only to report abuse of commands, such as bullying et cetera. Please send evidence as well as this will greatly help with the report procedure. After analysing the report, the user will be blocked from using Papi-Bot in any way.",
+			syntax: "report <mention> <reason> [evidence as attachment or link in reason]"
+		};
+	}
 }
 
 module.exports = report;

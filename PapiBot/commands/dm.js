@@ -10,6 +10,15 @@
 			});
 		});
 	}
+
+	static help() {
+		return {
+			category: "owner-only",
+			shortDesc: "DMs a user",
+			longDesc: "Sends a direct message to a user.",
+			syntax: "dm <id> <text>"
+		};
+	}
 }
 
 module.exports = templateCommand;

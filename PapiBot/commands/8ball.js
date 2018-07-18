@@ -13,6 +13,15 @@ class eightball {
 			}
 		});
 	}
+
+	static help() {
+		return {
+			category: "general",
+			shortDesc: "Let the magic 8ball decide your fate",
+			longDesc: "Let a magic 8ball randomly select from a pool of answers to your Yes/No questions.",
+			syntax: "8ball [question]"
+		};
+	}
 }
 
 module.exports = eightball;

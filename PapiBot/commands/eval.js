@@ -12,6 +12,15 @@
 		}
 		return;
 	}
+
+	static help() {
+		return {
+			category: "owner-only",
+			shortDesc: "Runs JavaScript code",
+			longDesc: "Runs JavaScript code.",
+			syntax: "eval <JS code>"
+		};
+	}
 }
 
 module.exports = Eval;

@@ -14,6 +14,15 @@ class exec {
 			return m.channel.send(`Error: ${err.message}`);
 		}
 	}
+
+	static help() {
+		return {
+			category: "owner-only",
+			shortDesc: "Run JavaScript code and output the result",
+			longDesc: "Run JavaScript code and output the result.",
+			syntax: "exec <JS code>"
+		};
+	}
 }
 
 module.exports = exec;

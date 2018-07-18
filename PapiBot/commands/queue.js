@@ -12,6 +12,15 @@
 		}
 		return m.channel.send("Here is the current queue:\n" + queue.join("\n"));
 	}
+
+	static help() {
+		return {
+			category: "music",
+			shortDesc: "Prints the current queue",
+			longDesc: "Prints the current server's queue to the channel.",
+			syntax: "queue"
+		};
+	}
 }
 
 module.exports = templateCommand;
