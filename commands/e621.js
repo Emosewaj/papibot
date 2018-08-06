@@ -1,3 +1,5 @@
+// e621 supports 5 tags maxmimum
+
 const Kaori = require("kaori");
 const kaori = new Kaori(require("../data/other/moreKaoriSites.json"));
 const util = require("../data/other/kaoriUtil.js");
@@ -8,15 +10,9 @@ class e621 {
 		let m = args.shift();
 		if (!client.checkNsfw(m.channel)) return m.channel.send("I can't do that here! Try again in an nsfw channel!");
 		if (!args) return m.channel.send("You need to specify at least one tag! Tags are seperated by spaces!");
+		if (args.length > 1) return m.channel.send("Sorry, e621 does not allow searching for more than five tags at a time!");
 		return m.channel.send("Taking a look...").then(async msg => {
-			console.log(await client.db.get("blacklists", m.author.id));
-			let uBlacklist = util.unNegateTags(await client.db.get("blacklists", m.author.id));
-			let sBlacklist = util.unNegateTags(await client.db.get("blacklists", m.guild.id));
-			for (let i in args) {
-				if (uBlacklist.includes(args[i])) return msg.edit("The tag `" + args[i] + "` conflicts with your blacklist settings!");
-				if (sBlacklist.includes(args[i])) return msg.edit("Tag tag `" + args[i] + "` conflicts with this server's blacklist settings!");
-			}
-			return kaori.search("e621", { tags: args.concat(util.negateTags(uBlacklist), util.negateTags(sBlacklist)), random: true, limit: 1}).then(images => {
+			return kaori.search("e621", { tags: args, random: true, limit: 1}).then(images => {
 				return msg.edit("Found a picture!", {
 					embed: new RichEmbed()
 						.setFooter("Not seeing an image? Click the link in the title!")

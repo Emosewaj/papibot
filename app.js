@@ -2,7 +2,7 @@
 const util = require('util');
 const Database = require("./data/Database.js");
 const fs = require("fs");
-const { Collection, Client, Embed } = require("discord.js");
+const { Collection, Client, RichEmbed } = require("discord.js");
 const self = new Client({
 	messageCacheLifetime: 90,
 	messageSweepInterval: 300,
@@ -17,7 +17,7 @@ self.cfg = cfg;
 self.version = {
 	major: 3,
 	minor: 0,
-	patch: 0
+	patch: 1
 };
 
 async function init() {
@@ -63,7 +63,24 @@ self.on("ready", async () => {
 	await self.commands.get("help").initialise_help(self.commands);
 	log("Help database initialised!");
 	self.ready = true;
+	self.user.setPresence({"game":{"name":"Type //help to begin!"}});
 	log("Papi-Bot ready!");
+
+	function sendOnline(loaded, failed) {
+		self.channels.get("419968973287981061").send({embed: new RichEmbed()
+			.setTitle(`Papi-Bot v${self.version.major}.${self.version.minor}.${self.version.patch}`)
+			.addField("Status", self.user.presence.status, true)
+			.addField("Version", `${self.version.major}.${self.version.minor}.${self.version.patch}`, true)
+			.addField("Guilds", self.guilds.size, true)
+			.addField("RAM Usage", `${(process.memoryUsage().heapUsed/1024/1024).toFixed(2)} MB`, true)
+			.addField("Commands loaded", loaded, true)
+			.addField("Commands failed", failed, true)
+			.setColor(self.guilds.get("292040520648228864").me.displayHexColor)
+			.setThumbnail(self.user.displayAvatarURL)
+		});
+	}
+
+	sendOnline(self.commands.size, self.failed);
 });
 
 self.on("message", async m => {
@@ -94,7 +111,7 @@ self.on("message", async m => {
 			m.channel.send("Error running command: `" + err + "`");
 		}
 	} else {
-		m.channel.send("No such command (Debug)!");
+		m.channel.send("No such command!");
 	}
 });
 
@@ -131,16 +148,16 @@ function log(string) {
 init();
 
 process.on("uncaughtException", err => {
-	//fs.writeFileSync("./logs/lastCrash.log", err.stack);
+	fs.writeFileSync("./logs/lastCrash.log", util.inspect(err, true));
 	console.error(err);
-	/*self.channels.get("419968973287981061")
+	self.channels.get("419968973287981061")
 		.send(`<@211227683466641408> Crashed: ${err}\n at ${new Date().toString()}`, {
 			files: ["./logs/lastCrash.log"]
 		}).then(() => {
 			process.exit(1);
 		}, () => {
 			process.exit(1);
-		});*/
+		});
 });
 
 process.on('unhandledRejection', err => {

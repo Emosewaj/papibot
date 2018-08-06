@@ -1,3 +1,5 @@
+// Gelbooru has no tag limit
+
 const Kaori = require("kaori");
 const kaori = new Kaori();
 const util = require("../data/other/kaoriUtil.js");
