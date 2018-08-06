@@ -10,7 +10,7 @@ class e621 {
 		let m = args.shift();
 		if (!client.checkNsfw(m.channel)) return m.channel.send("I can't do that here! Try again in an nsfw channel!");
 		if (!args) return m.channel.send("You need to specify at least one tag! Tags are seperated by spaces!");
-		if (args.length > 1) return m.channel.send("Sorry, e621 does not allow searching for more than five tags at a time!");
+		if (args.length > 5) return m.channel.send("Sorry, e621 does not allow searching for more than five tags at a time!");
 		return m.channel.send("Taking a look...").then(async msg => {
 			return kaori.search("e621", { tags: args, random: true, limit: 1}).then(images => {
 				return msg.edit("Found a picture!", {
