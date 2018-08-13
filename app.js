@@ -17,8 +17,10 @@ self.cfg = cfg;
 self.version = {
 	major: 3,
 	minor: 0,
-	patch: 1
+	patch: 3
 };
+
+self.inviteURL = "https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70642758";
 
 async function init() {
 	self.ready = false;
@@ -104,7 +106,7 @@ self.on("message", async m => {
 
 	if (self.commands.has(cmd.toLowerCase())) {
 		args.unshift(m);
-		log(`${m.author.tag} in ${m.guild.name}: ${m.content}`);
+		log(`${m.author.id} in ${m.guild.id}: ${m.content}`);
 		try {
 			self.commands.get(cmd.toLowerCase()).run(self, args);
 		} catch (err) {

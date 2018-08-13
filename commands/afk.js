@@ -1,6 +1,5 @@
 class afk {
 	static run(client, args) {
-		console.log("test");
 		let m = args.shift();
 		let reason = null;
 		if (args[0]) reason = args.join(" ");

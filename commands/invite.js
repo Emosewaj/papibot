@@ -9,7 +9,7 @@ class invite {
 					name: "Select a link!",
 					iconURL: client.user.displayAvatarURL
 				},
-				description: "[Invite me to your server!]("+client.inviteURL+")\n[Join the support server!](https://discord.gg/cXVD7Vm)"
+				description: "[Click here to invite me to your server!]("+client.inviteURL+")\n[Click here to join the support server!](https://discord.gg/cXVD7Vm)"
 			}
 		});
 	}
