@@ -16,7 +16,7 @@ self.cfg = cfg;
 
 self.version = {
 	major: 3,
-	minor: 1,
+	minor: 2,
 	patch: 0
 };
 
