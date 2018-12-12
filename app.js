@@ -17,7 +17,7 @@ self.cfg = cfg;
 self.version = {
 	major: 3,
 	minor: 2,
-	patch: 1
+	patch: 2
 };
 
 self.inviteURL = "https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70642758";
@@ -163,5 +163,13 @@ process.on("uncaughtException", err => {
 });
 
 process.on('unhandledRejection', err => {
-	console.warn(`Uncaught Promise Error: \n${err}`);
+	let date = new Date();
+	let hr = date.getHours().toString();
+	let min = date.getMinutes().toString();
+	let sec = date.getSeconds().toString();
+	if (hr.length < 2) hr = "0" + hr;
+	if (min.length < 2) min = "0" + min;
+	if (sec.length < 2) sec = "0" + sec;
+	let ts = `[${hr}:${min}:${sec}]`;
+	console.warn(`${ts} Uncaught Promise Error: \n${err}`);
 });

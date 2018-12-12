@@ -1,5 +1,17 @@
 # Changelog papi-3
 
+## Dec 12, 2018 - Papi 3.2.2
+* Slightly modified error logging for better readability
+
+## Dec 12, 2018 - Papi 3.2.1
+* Fixed crash when a Pokémon would have held items
+
+## Dec 12, 2018 - Papi 3.2.0
++ Implemented //pokedex
+
+## Dec 6, 2018 - Papi 3.1.0
++ Implemented //setprefix
+
 ## Aug 13, 2018 - Papi 3.0.3
 * Removed unnecessary debug log
 * Changed how commands are logged
