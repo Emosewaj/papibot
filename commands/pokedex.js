@@ -172,7 +172,7 @@ class pokedex {
 					.addField("Shape", splitWords(pokemonSpecies.shape.name), true);
 				let heldItemsString = "";
 				for (let i = 0; i < pokemon.held_items.length; i++) {
-					heldItemsString += splitWords(pokemon.held_items[i].name) + "\n";
+					heldItemsString += splitWords(pokemon.held_items[i].item.name) + "\n";
 				}
 				embed.addField("Held Items", denull(heldItemsString), true);
 				let statsString = "";
