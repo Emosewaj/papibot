@@ -1,5 +1,8 @@
 # Changelog papi-3
 
+## Dec 12, 2018 - Papi 3.2.3
+* Minor design update to //pokedex
+
 ## Dec 12, 2018 - Papi 3.2.2
 * Slightly modified error logging for better readability
 

@@ -1,6 +1,18 @@
 ﻿const P = require("pokedex-promise-v2");
 const Pokedex = new P();
-const { RichEmbed } = require("discord.js");
+const { RichEmbed, Collection } = require("discord.js");
+
+const colours = new Collection();
+colours.set("black", "#000000")
+	.set("blue", "BLUE")
+	.set("brown", "#A0522D")
+	.set("grey", "GREY")
+	.set("green", "GREEN")
+	.set("pink", "#FFC0CB")
+	.set("purple", "PURPLE")
+	.set("red", "RED")
+	.set("white", "#FFFFFF")
+	.set("yellow", "#FFFF00");
 
 class pokedex {
 	static async run(client, args) {
@@ -182,7 +194,8 @@ class pokedex {
 					statsString += "\n";
 				}
 				embed.addField("Stats", statsString, true)
-					.addField("Learnable Moves", pokemon.moves.length, true);
+					.addField("Learnable Moves", pokemon.moves.length, true)
+					.setColor(colours.get(pokemonSpecies.color.name));
 				break;
 			}
 			default: {
