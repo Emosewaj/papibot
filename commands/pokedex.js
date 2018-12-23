@@ -19,9 +19,11 @@ class pokedex {
 		const m = args.shift();
 		const msg = await m.channel.send("Please wait...");
 		let embed = new RichEmbed();
-		switch(args.shift().toLowerCase()) {
+		let category = args.shift().toLowerCase();
+		let searchQuery = joinWords(args.join(" ").toLowerCase());
+		switch(category) {
 			case "berry": {
-				let berry = await Pokedex.getBerryByName(args.shift().toLowerCase()).catch(() => {});
+				let berry = await Pokedex.getBerryByName(searchQuery).catch(() => {});
 				if (!berry) return msg.edit("No such berry! Don't include \"berry\"!");
 				let berryItem = await Pokedex.resource(berry.item.url).catch(() => {});
 				embed.setTitle(firstToUpper(berry.name + " Berry"))
@@ -43,7 +45,7 @@ class pokedex {
 				break;
 			}
 			case "generation": {
-				let gen = await Pokedex.getGenerationByName(args.shift().toLowerCase()).catch(() => {});
+				let gen = await Pokedex.getGenerationByName(searchQuery).catch(() => {});
 				if (!gen) return msg.edit("No such generation! Try a number!");
 				for (let i = 0; i < gen.names.length; i++) {
 					embed.setTitle(gen.names[i].name);
@@ -66,7 +68,7 @@ class pokedex {
 				break;
 			}
 			case "game": {
-				let version = await Pokedex.getVersionByName(args.shift().toLowerCase()).catch(() => {});
+				let version = await Pokedex.getVersionByName(searchQuery).catch(() => {});
 				if (!version) return msg.edit("No such game!");
 				let versionGroup = await Pokedex.resource(version.version_group.url).catch(() => {});
 				let versionGen = await Pokedex.resource(versionGroup.generation.url).catch(() => {});
@@ -93,8 +95,8 @@ class pokedex {
 				break;
 			}
 			case "item": {
-				let item = await Pokedex.getItemByName(args.shift().toLowerCase()).catch(() => {});
-				if (!item) return msg.edit("No such item! Replace spaces with \"-\"!");
+				let item = await Pokedex.getItemByName(searchQuery).catch(() => {});
+				if (!item) return msg.edit("No such item!");
 				let itemFlingEffect = null;
 				if (item.fling_effect) itemFlingEffect = await Pokedex.resource(item.fling_effect.url).catch(() => {});
 				embed.setTitle(splitWords(item.name))
@@ -114,29 +116,29 @@ class pokedex {
 				}
 				for (let i = 0; i < item.flavor_text_entries.length; i++) {
 					if (item.flavor_text_entries[i].language.name == "en") {
-						embed.setDescription("Category: " + splitWords(item.category.name) + "\n\n" + item.flavor_text_entries[i].text);
+						embed.setDescription("Category: " + splitWords(item.category.name) + "\n\n" + removeNewlines2(item.flavor_text_entries[i].text));
 						break;
 					}
 				}
 				break;
 			}
 			case "move": {
-				let move = await Pokedex.getMoveByName(args.shift().toLowerCase()).catch(() => {});
-				if (!move) return msg.edit("No such move! Replace spaces with \"-\"!");
+				let move = await Pokedex.getMoveByName(searchQuery).catch(() => {});
+				if (!move) return msg.edit("No such move!");
 				embed.setTitle(splitWords(move.name))
 					.setDescription(move.effect_entries[0].effect.replace("$effect_chance%", move.effect_chance + "%"))
 					.addField("Damage Class", firstToUpper(move.damage_class.name), true)
 					.addField("Move Type", splitWords(move.type.name), true)
 					.addField("PP", move.pp, true)
-					.addField("Power", move.power, true)
-					.addField("Accuracy", move.accuracy, true)
+					.addField("Power", denull2(move.power), true)
+					.addField("Accuracy", denull2(move.accuracy), true)
 					.addField("Priority", move.priority, true)
 					.addField("Targets", splitWords(move.target.name), true)
 					.addField("Effect Chance", denull2(move.effect_chance) + "%", true);
 				break;
 			}
 			case "pokemon": {
-				let pokemon = await Pokedex.getPokemonByName(args.shift().toLowerCase()).catch(() => {});
+				let pokemon = await Pokedex.getPokemonByName(searchQuery).catch(() => {});
 				if (!pokemon) return msg.edit("No such Pokémon!");
 				let pokemonSpecies = await Pokedex.resource(pokemon.species.url).catch(() => {});
 				let chance = Math.random();
@@ -156,7 +158,7 @@ class pokedex {
 				descriptionString += "\n\n";
 				for (let i = 0; i < pokemonSpecies.flavor_text_entries.length; i++) {
 					if (pokemonSpecies.flavor_text_entries[i].language.name == "en") {
-						descriptionString += pokemonSpecies.flavor_text_entries[i].flavor_text;
+						descriptionString += removeNewlines2(pokemonSpecies.flavor_text_entries[i].flavor_text);
 						break;
 					}
 				}
@@ -231,6 +233,10 @@ function splitWords(string) {
 	return words.join(" ");
 }
 
+function joinWords(string) {
+	return string.split(" ").join("-");
+}
+
 function denull(obj) {
 	if (obj == null || obj == "") return "None";
 	return obj;
@@ -244,6 +250,13 @@ function denull2(obj) {
 function removeNewlines(string) {
 	while (string.includes("\n:")) {
 		string = string.replace("\n:", ":");
+	}
+	return string;
+}
+
+function removeNewlines2(string) {
+	while (string.includes("\n")) {
+		string = string.replace("\n", " ")
 	}
 	return string;
 }

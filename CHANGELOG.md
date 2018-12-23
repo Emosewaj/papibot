@@ -1,5 +1,12 @@
 # Changelog papi-3
 
+## Dec 23, 2018 - Papi 3.2.4
+* Minor design changes to //pokedex
+  * Search entries that include spaces now no longer have to see them replaced with a `-` sign
+  * Newline characters are now removed from item and Pokémon descriptions
+  * Move Power and Accuracy no longer show up as `null` for some moves
+* Fixed a case in which the //rule34 command would get stuck on "Taking a look..." when no images were returned by the search query
+
 ## Dec 12, 2018 - Papi 3.2.3
 * Minor design update to //pokedex
 

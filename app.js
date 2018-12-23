@@ -17,7 +17,7 @@ self.cfg = cfg;
 self.version = {
 	major: 3,
 	minor: 2,
-	patch: 3
+	patch: 4
 };
 
 self.inviteURL = "https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70642758";

@@ -18,6 +18,7 @@ class rule34 {
 				if (sBlacklist.includes(args[i])) return msg.edit("Tag tag `" + args[i] + "` conflicts with this server's blacklist settings!");
 			}
 			return kaori.search("rule34", { tags: args.concat(util.negateTags(uBlacklist), util.negateTags(sBlacklist)), random: true, limit: 1}).then(images => {
+				if (images.length == 0) return msg.edit("Sorry, couldn't find any image with those tags!");
 				return msg.edit("Found a picture!", {
 					embed: new RichEmbed()
 						.setFooter("Not seeing an image? Click the link in the title!")
