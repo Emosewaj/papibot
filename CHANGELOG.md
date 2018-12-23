@@ -1,5 +1,8 @@
 # Changelog papi-3
 
+## Dec 23, 2018 - Papi 3.2.5
+* Switched which function is used to remove null values from moves for better result readability and less confusion
+
 ## Dec 23, 2018 - Papi 3.2.4
 * Minor design changes to //pokedex
   * Search entries that include spaces now no longer have to see them replaced with a `-` sign

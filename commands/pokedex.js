@@ -130,8 +130,8 @@ class pokedex {
 					.addField("Damage Class", firstToUpper(move.damage_class.name), true)
 					.addField("Move Type", splitWords(move.type.name), true)
 					.addField("PP", move.pp, true)
-					.addField("Power", denull2(move.power), true)
-					.addField("Accuracy", denull2(move.accuracy), true)
+					.addField("Power", denull(move.power), true)
+					.addField("Accuracy", denull(move.accuracy), true)
 					.addField("Priority", move.priority, true)
 					.addField("Targets", splitWords(move.target.name), true)
 					.addField("Effect Chance", denull2(move.effect_chance) + "%", true);
