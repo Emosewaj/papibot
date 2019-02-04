@@ -85,6 +85,7 @@ self.on("ready", async () => {
 	sendOnline(self.commands.size, self.failed);
 });
 
+// Command handler
 self.on("message", async m => {
 	if (m.author.bot) return;
 
@@ -115,6 +116,32 @@ self.on("message", async m => {
 	} else {
 		m.channel.send("No such command!");
 	}
+});
+
+// Welcome message handler
+self.on("guildMemberAdd", async member => {
+	let welcomeMessage = await self.db.get("welcomes", member.guild.id);
+	if (!welcomeMessage) return;
+	let channelID = welcomeMessage.channelid;
+	let message = welcomeMessage.message;
+
+	if (channelID == "dm")
+	{
+		var channel = member.user;
+	}
+	else
+	{
+		var channel = member.guild.channels.get(channelID);
+	}
+
+	while (message.includes("$MEMBER_NAME") || message.includes("$GUILD_NAME") || message.includes("$GUILD_MEMBERCOUNT") || message.includes("$MEMBER_TAG") || message.includes("$MEMBER_MENTION")) {
+		message = message.replace("$MEMBER_NAME",member.user.username);
+		message = message.replace("$GUILD_NAME",member.guild.name);
+		message = message.replace("$GUILD_MEMBERCOUNT",member.guild.memberCount);
+		message = message.replace("$MEMBER_TAG",member.user.tag);
+		message = message.replace("$MEMBER_MENTION",`<@${member.id}>`);
+	}
+	return channel.send(message.toString());
 });
 
 self.checkNsfw = function (channel) {

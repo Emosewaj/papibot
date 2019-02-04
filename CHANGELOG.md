@@ -1,5 +1,9 @@
 # Changelog papi-3
 
+## Jan 4, 2019 - Paapi 3.3.0
++ Implemented //setwelcome
+* Fixed a few things with the Database API
+
 ## Dec 23, 2018 - Papi 3.2.5
 * Switched which function is used to remove null values from moves for better result readability and less confusion
 

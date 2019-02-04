@@ -56,6 +56,12 @@ class Database {
 
 	/**
 	 * Delete en entry from a table.
+	 * One of:
+	 * "afk"
+	 * "blacklists"
+	 * "logs"
+	 * "prefixes"
+	 * "welcomes"
 	 * @param {string} table - The name of the table
 	 * @param {string} id - The ID of the entry
 	 * @returns {Promise<void>} - Nothing
@@ -88,7 +94,7 @@ class Database {
 					});
 					break;
 				case "welcomes":
-					this.db.run("DELETE FROM welcomes WHERE id = ?;", [id], err => {
+					this.db.run("DELETE FROM welcomes WHERE serverid = ?;", [id], err => {
 						if (err) reject(err);
 						resolve();
 					});
@@ -191,7 +197,7 @@ class Database {
 						if (row) {
 							this.db.run("UPDATE blacklists SET tags = ? WHERE id = ?;", [val, id], err => {
 								if (err) reject(err);
-								rsolve();
+								resolve();
 							});
 						} else {
 							this.db.run("INSERT INTO blacklists VALUES (?, ?);", [id, val], err => {
@@ -207,7 +213,7 @@ class Database {
 						if (row) {
 							this.db.run("UPDATE logs SET channelid = ?, settings = ? WHERE id = ?;", [val[0], val[1], id], err => {
 								if (err) reject(err);
-								rsolve();
+								resolve();
 							});
 						} else {
 							this.db.run("INSERT INTO logs VALUES (?, ?, ?);", [id, val[0], val[1]], err => {
@@ -234,12 +240,12 @@ class Database {
 					});
 					break;
 				case "welcomes":
-					this.db.get("SELECT * FROM welcomes WHERE id = ?;", [id], (err, row) => {
+					this.db.get("SELECT * FROM welcomes WHERE serverid = ?;", [id], (err, row) => {
 						if (err) reject(err);
 						if (row) {
-							this.db.run("UPDATE welcomes SET channelid = ?, message = ? WHERE id = ?;", [val[0], val[1], id], err => {
+							this.db.run("UPDATE welcomes SET channelid = ?, message = ? WHERE serverid = ?;", [val[0], val[1], id], err => {
 								if (err) reject(err);
-								rsolve();
+								resolve();
 							});
 						} else {
 							this.db.run("INSERT INTO welcomes VALUES (?, ?, ?);", [id, val[0], val[1]], err => {
