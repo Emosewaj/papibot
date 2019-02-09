@@ -1,6 +1,12 @@
 # Changelog papi-3
 
-## Jan 4, 2019 - Paapi 3.3.0
+## Feb 9, 2019 - Papi 3.3.1
+* Fixed crashing on unavailable video when using //play
+* Fixed NaN views and NaN ratings
+* Fixed typos in the changelog
+Note: Playing files through the music system appears to break the system until the bot re-joins the voice channel. More investigation required.
+
+## Feb 4, 2019 - Papi 3.3.0
 + Implemented //setwelcome
 * Fixed a few things with the Database API
 

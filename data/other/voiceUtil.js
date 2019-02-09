@@ -14,7 +14,9 @@ exports.playURL = function (url, requester, channel) {
 	// We're assuming a voice connection already exists
 	// First check whether this is a file or a YouTube video
 	if (fileRegExp.test(url)) {
-		// If it's a file, attempt to play it and notify requester
+		// If it's a file, attempt to play it and notify 
+		
+		// NOTE: PLAYING A FILE SOMEHOW BREAKS PLAYING ANY FURTHER AUDIO, WHETHER IT BE FILES OR YOUTUBE!
 		let filename = url.split("/");
 		filename = filename[filename.length - 1];
 
@@ -27,7 +29,7 @@ exports.playURL = function (url, requester, channel) {
 			 * Stopping it manually causes reason to be undefined.
 			 * Naturally ending causes the reason to be "Stream is not generating quickly enough."
 			 **/
-			if (reason === "Stream is not generating quickly enough." && channel.guild.queue[0]) {
+			if ((reason === "Stream is not generating quickly enough." || reason === "stream") && channel.guild.queue[0]) {
 				channel.guild.queueOut.shift();
 				let next = channel.guild.queue.shift();
 				return this.playURL(next.url, next.requester, next.channel);
@@ -38,6 +40,18 @@ exports.playURL = function (url, requester, channel) {
 	if (yt.validateURL(url)) {
 		// If it's a YouTube video, we use ytdl-core to stream it. Also print information about the video to the channel.
 		yt.getInfo(url, (err, info) => {
+			// Catch any errors and play the next song
+			if (err || !info) {
+				channel.send("<@" + requester.id + ">, uh-oh! Something went wrong with your video:\n" + err);
+				if (channel.guild.queue[0])
+				{
+					channel.guild.queueOut.shift();
+					let next = channel.guild.queue.shift();
+					this.playURL(next.url, next.requester, next.channel);
+				}
+				return;
+			}
+
 			channel.guild.voiceConnection.playStream(yt(url, { filter: 'audioonly' }));
 			channel.guild.voiceConnection.dispatcher.on("end", reason => {
 				/**
@@ -72,7 +86,7 @@ makeEmbed = function (info) {
 	description.splice(6);
 
 	// Make views more readable
-	let views = parseInt(info.view_count);
+	let views = parseInt(info.player_response.videoDetails.viewCount);
 	let viewData = ["", " Thousand", " Million", " Billion"];
 	let viewCounter = 0;
 	while (views / 1000 > 1) {
@@ -91,7 +105,7 @@ makeEmbed = function (info) {
 		.setThumbnail(info.thumbnail_url.replace("default", "maxresdefault"))
 		.setURL(info.video_url)
 		.addField("Views:", views + viewData[viewCounter], true)
-		.addField("Rating:", (info.avg_rating / 5 * 100).toFixed(2) + "%", true)
+		.addField("Rating:", (info.player_response.videoDetails.averageRating / 5 * 100).toFixed(2) + "%", true)
 		.addField("Length:", length);
 	return embed;
 };
