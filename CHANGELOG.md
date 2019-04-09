@@ -1,5 +1,10 @@
 # Changelog papi-3
 
+## April 9, 2019 - Papi 3.3.3
+* Fixed "No such command!" response after sending only the prefix
+* Fixed reinitialisation of the help system after reconnecting to Discord API
+> *Feels good to clean up some of those older issues finally*
+
 ## April 9, 2019 - Papi 3.3.2
 * Fixed ancient attempt at logging crashes that just spammed the logs, which by themselves suffice as crash logs
 

@@ -17,7 +17,7 @@ self.cfg = cfg;
 self.version = {
 	major: 3,
 	minor: 3,
-	patch: 1
+	patch: 3
 };
 
 self.inviteURL = "https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70642758";
@@ -35,6 +35,9 @@ async function init() {
 			self.failed++;
 		}
 	}
+
+	await self.commands.get("help").initialise_help(self.commands);
+	log("Help database initialised!");
 
 	self.db = new Database("./data/servers.db");
 
@@ -62,8 +65,6 @@ self.on("ready", async () => {
 	if (self.commands.size === 1) amount = " command ";
 	log(self.commands.size + amount + "loaded!");
 	log(self.failed + " commands failed to load!");
-	await self.commands.get("help").initialise_help(self.commands);
-	log("Help database initialised!");
 	self.ready = true;
 	self.user.setPresence({"game":{"name":"Type //help to begin!"}});
 	log("Papi-Bot ready!");
@@ -100,7 +101,7 @@ self.on("message", async m => {
 
 	let prefix = self.customPrefixGuilds.get(m.guild.id);
 	if (!prefix) prefix = "//";
-	if (!m.content.startsWith(prefix)) return;
+	if (!m.content.startsWith(prefix) || m.content == prefix) return;
 	if (!self.ready) return m.channel.send("Papi-Bot is currently not accepting commands! Please wait a short bit!");
 	let cmd = m.content.split(" ")[0].slice(prefix.length);
 	let args = m.content.split(" ").splice(1);
