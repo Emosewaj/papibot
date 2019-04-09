@@ -177,16 +177,7 @@ function log(string) {
 init();
 
 process.on("uncaughtException", err => {
-	fs.writeFileSync("./logs/lastCrash.log", util.inspect(err, true));
-	console.error(err);
-	self.channels.get("419968973287981061")
-		.send(`<@211227683466641408> Crashed: ${err}\n at ${new Date().toString()}`, {
-			files: ["./logs/lastCrash.log"]
-		}).then(() => {
-			process.exit(1);
-		}, () => {
-			process.exit(1);
-		});
+	process.exit(1);
 });
 
 process.on('unhandledRejection', err => {

@@ -1,5 +1,8 @@
 # Changelog papi-3
 
+## April 9, 2019 - Papi 3.3.2
+* Fixed ancient attempt at logging crashes that just spammed the logs, which by themselves suffice as crash logs
+
 ## Feb 9, 2019 - Papi 3.3.1
 * Fixed crashing on unavailable video when using //play
 * Fixed NaN views and NaN ratings
