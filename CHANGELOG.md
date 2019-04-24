@@ -1,5 +1,8 @@
 # Changelog papi-3
 
+## April 25, 2019 - Papi 3.4.0
++ Added //steam, look up information on any Steam user, either with their profile URL or their steam64 ID, please report any bugs you find!
+
 ## April 9, 2019 - Papi 3.3.3
 * Fixed "No such command!" response after sending only the prefix
 * Fixed reinitialisation of the help system after reconnecting to Discord API
