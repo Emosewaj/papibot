@@ -13,8 +13,10 @@ class steam {
         let ID = args[0];
         let KEY = client.cfg.steamKey;
 
+        let message = await m.channel.send("Please wait (if this takes too long, please report by DMing me)..."); 
+
         // Assuming the provided ID is a custom URL, grab https://steamcommunity.com/id/<ID>/?xml=1 and parse into JSON
-        let profileData = await this.grabSteamXML(ID).catch(err => m.channel.send(err));
+        let profileData = await this.grabSteamXML(ID).catch(err => message.edit(err + " Make sure you're using either your custom URL or your Steam64ID."));
         if (!profileData.steamID64) return;
         let status = [
             "<:offline:570714667429920779> Offline",
@@ -45,7 +47,7 @@ class steam {
 
         // General profile info
         SteamApi.getPlayerInfo(ID, KEY, (err, data) => {
-            if (err) return m.channel.send(err);
+            if (err) return message.edit(err);
 
             embed.setAuthor(data.personaname, data.avatarfull, data.profileurl)
                 .setThumbnail(data.avatarfull)
@@ -57,41 +59,41 @@ class steam {
 
             // Owned games
             SteamApi.getOwnedGames(ID, KEY, (err, data) => {
-                if (err) return m.channel.send(err);
+                if (err) return message.edit(err);
 
-                embed.addField("Games", data.game_count, true)
-                    .addField("Groups", profileData.groups[0].group.length, true);
+                embed.addField("Games", data.game_count ? data.game_count : "0", true);
+                embed.addField("Groups", profileData.groups ? profileData.groups[0].group.length : "0", true);
 
-                SteamApi.getFriendList(ID, KEY, (err, data) => {
-                    if (err) return m.channel.send(err);
+                SteamApi.getFriendList(ID, KEY, (err, data) => {    // Currently crashes when profile has friends set to private, no fix, need to wait for API fix
+                    if (err) return message.edit(err);
 
-                    embed.addField("Friends", data.length, true);
+                    embed.addField("Friends", data ? data.length : 0, true);
 
                     SteamApi.getPlayerBans(ID, KEY, (err, data) => {
-                        if (err) return m.channel.send(err);
-
-                        console.log(data);
+                        if (err) return message.edit(err);
 
                         embed.addField("\u200B", "**Ban Information**");
                         embed.addField("Vac Banned", data.VACBanned ? `Yes: ${data.NumberOfVACBans}` : "No", true);
                         embed.addField("Game Banned", data.NumberOfGameBans != 0 ? `Yes: ${data.NumberOfGameBans}` : "No", true);
                         embed.addField("Community Banned", data.CommunityBanned ? "Yes" : "No", true);
-                        embed.addField("Economy Banned", data.EconomyBan != "none" ? data.EconomyBan : "None", true);
+                        embed.addField("Economy Banned", data.EconomyBan != "none" ? data.EconomyBan : "No", true);
                         embed.addField("Days Since Last Ban", data.DaysSinceLastBan, true);
 
                         SteamApi.getRecentGames(ID, KEY, (err, data) => {
-                            if (err) m.channel.send(err);
+                            if (err) return message.edit(err);
 
-                            let str = "";
-                            for(let i = 0; i < data.games.length; i++)
-                            {
-                                str += data.games[i].name + ": " + this.TimeConvert(data.games[i].playtime_2weeks) + "\n";
+                            if(data.games) {
+                                let str = "";
+                                for(let i = 0; i < data.games.length; i++)
+                                {
+                                    str += data.games[i].name + ": " + this.TimeConvert(data.games[i].playtime_2weeks) + "\n";
+                                }
+                                embed.addField("Recent Games", str ? str : "None");
                             }
-                            embed.addField("Recent Games", str);
                             
                             embed.setFooter("Info requested by " + m.member.displayName);
                             embed.setTimestamp();
-                            return m.channel.send(embed);
+                            return message.edit(embed);
                         });
                     });
                 });
