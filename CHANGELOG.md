@@ -1,5 +1,8 @@
 # Changelog papi-3
 
+## May 10, 2019 - Papi 3.5.0
++ Added //repeat, which repeats the previously run command.
+
 ## April 25, 2019 - Papi 3.4.1
 * Fixed some errors with //steam and improved some stuff, still needs more work, API is very wonky
 

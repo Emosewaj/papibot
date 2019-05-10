@@ -16,8 +16,8 @@ self.cfg = cfg;
 
 self.version = {
 	major: 3,
-	minor: 4,
-	patch: 1
+	minor: 5,
+	patch: 0
 };
 
 self.inviteURL = "https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70642758";
@@ -111,6 +111,7 @@ self.on("message", async m => {
 		log(`${m.author.id} in ${m.guild.id}: ${m.content}`);
 		try {
 			self.commands.get(cmd.toLowerCase()).run(self, args);
+			if (cmd != "repeat") m.author.lastCommand = {cmd, args};
 		} catch (err) {
 			m.channel.send("Error running command: `" + err + "`");
 		}
