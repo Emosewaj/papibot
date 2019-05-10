@@ -1,4 +1,4 @@
-class templateCommand {
+class repeat {
 	static run(client, args) {
         const m = args.shift();
         let lastCommand = m.author.lastCommand;
@@ -21,4 +21,4 @@ class templateCommand {
 	}
 }
 
-module.exports = templateCommand;
+module.exports = repeat;
