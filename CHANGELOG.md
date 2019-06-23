@@ -1,5 +1,8 @@
 # Changelog papi-3
 
+## June 24. 2019 - Papi 3.6.0
++ Added //sans, I don't know why, but I did, so here we are now
+
 ## May 10, 2019 - Papi 3.5.0
 + Added //repeat, which repeats the previously run command.
 
