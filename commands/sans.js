@@ -3,7 +3,7 @@
 class sans {
 	static run(client, args) {
         const m = args.shift();
-        if(!args[0]) return m.reply(":torielmad:");
+        if(!args[0]) return m.reply("<:torielmad:438819336187150376>");
 
         let content = args.join(" ");
         let regex = /\w/g
@@ -23,8 +23,8 @@ class sans {
 
 function getSans() {
     let rnd = Math.random();
-    if(rnd <= 0.01) return ":sansbadtime:";
-    else return ":sanswink:";
+    if(rnd <= 0.01) return "<:sansbadtime:438819336141144075>";
+    else return "<:sanswink:438819336082292737>";
 }
 
 module.exports = sans;

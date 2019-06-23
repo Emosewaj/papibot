@@ -1,5 +1,8 @@
 # Changelog papi-3
 
+## June 24, 2019 - Papi 3.6.1
+* Fixed emojis for //sans
+
 ## June 24. 2019 - Papi 3.6.0
 + Added //sans, I don't know why, but I did, so here we are now
 
