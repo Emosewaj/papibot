@@ -1,5 +1,8 @@
 # Changelog papi-3
 
+## July 30, 2019 - Papi 3.7.0
++ Added //uwu, by the pope
+
 ## June 24, 2019 - Papi 3.6.1
 * Fixed emojis for //sans
 
