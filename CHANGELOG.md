@@ -1,6 +1,13 @@
 # Changelog papi-3
 
-## July 30, 2019 - Papi 3.7.0
+## July 21, 2019 - Papi 3.7.1
++ Added a status pool and rotating status messages
+* Fixed a typo in the previous changelog entry
+* Some changes to README.md
+* Some code cleanup
+- Removed some unnecessary code from features that are no longer supported or planned, namely broadcasts, word triggers, and dad jokes.
+
+## July 20, 2019 - Papi 3.7.0
 + Added //uwu, by the pope
 
 ## June 24, 2019 - Papi 3.6.1

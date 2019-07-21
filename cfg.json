@@ -1,8 +1,9 @@
 ﻿{
+	"dbltoken": "REMOVED",
 	"mode": "main",
+	"steamKey": "REMOVED"
 	"tlEngine": "yandex",
 	"tlKey": "REMOVED",
-	"steamKey": "REMOVED"
 	"tokens": {
 		"main": "REMOVED",
 		"test": "REMOVED"

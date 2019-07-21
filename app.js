@@ -14,13 +14,25 @@ const self = new Client({
 const cfg = require("./cfg.json");
 self.cfg = cfg;
 
+// Discord Bot List integration
+const DBL = require("dblapi.js");
+const dbl = new DBL(cfg.dbltoken, self);
+dbl.on("posted", () => { log("Server count posted to DBL") });
+dbl.on("error", err => { log("Error posting server count: " + err) });
+
 self.version = {
 	major: 3,
 	minor: 7,
-	patch: 0
+	patch: 1
 };
 
 self.inviteURL = "https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70642758";
+
+self.statusPool = [
+	"Type //help to begin!",
+	"Flying on $SERVERS servers!",
+	"Spotting $USERS users!"
+]
 
 async function init() {
 	self.ready = false;
@@ -42,16 +54,9 @@ async function init() {
 	self.db = new Database("./data/servers.db");
 
 	let customPrefixGuilds = await self.db.all("prefixes");
-	let disabledBroadcastGuilds = fs.readFileSync("./data/blocked/broadcasts.txt", "utf8");
-	let enabledDadjokeGuilds = fs.readFileSync("./data/blocked/dadjokes.txt", "utf8");
-	let enabledWordtriggerGuilds = fs.readFileSync("./data/blocked/wordtriggers.txt", "utf8");
 	self.customPrefixGuilds = new Collection();
-	self.disabledBroadcastGuilds = disabledBroadcastGuilds.split(",");
-	self.enabledDadjokeGuilds = enabledDadjokeGuilds.split(",");
-	self.enabledWordtriggerGuilds = enabledWordtriggerGuilds.split(",");
-	for (let i in customPrefixGuilds) {
+	for (let i in customPrefixGuilds)
 		self.customPrefixGuilds.set(customPrefixGuilds[i].id, customPrefixGuilds[i].prefix);
-	}
 
 	switch (cfg.mode) {
 		case "main": self.login(cfg.tokens.main); break;
@@ -66,20 +71,23 @@ self.on("ready", async () => {
 	log(self.commands.size + amount + "loaded!");
 	log(self.failed + " commands failed to load!");
 	self.ready = true;
-	self.user.setPresence({"game":{"name":"Type //help to begin!"}});
+	//self.user.setPresence({ "game": { "name": "Type //help to begin!" } });
+	self.currentStatus = -1;
+	setInterval(() => nextStatus(), 1800000);
 	log("Papi-Bot ready!");
 
 	function sendOnline(loaded, failed) {
-		self.channels.get("419968973287981061").send({embed: new RichEmbed()
-			.setTitle(`Papi-Bot v${self.version.major}.${self.version.minor}.${self.version.patch}`)
-			.addField("Status", self.user.presence.status, true)
-			.addField("Version", `${self.version.major}.${self.version.minor}.${self.version.patch}`, true)
-			.addField("Guilds", self.guilds.size, true)
-			.addField("RAM Usage", `${(process.memoryUsage().heapUsed/1024/1024).toFixed(2)} MB`, true)
-			.addField("Commands loaded", loaded, true)
-			.addField("Commands failed", failed, true)
-			.setColor(self.guilds.get("292040520648228864").me.displayHexColor)
-			.setThumbnail(self.user.displayAvatarURL)
+		self.channels.get("419968973287981061").send({
+			embed: new RichEmbed()
+				.setTitle(`Papi-Bot v${self.version.major}.${self.version.minor}.${self.version.patch}`)
+				.addField("Status", self.user.presence.status, true)
+				.addField("Version", `${self.version.major}.${self.version.minor}.${self.version.patch}`, true)
+				.addField("Guilds", self.guilds.size, true)
+				.addField("RAM Usage", `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
+				.addField("Commands loaded", loaded, true)
+				.addField("Commands failed", failed, true)
+				.setColor(self.guilds.get("292040520648228864").me.displayHexColor)
+				.setThumbnail(self.user.displayAvatarURL)
 		});
 	}
 
@@ -88,10 +96,13 @@ self.on("ready", async () => {
 
 // Command handler
 self.on("message", async m => {
-	if (m.author.bot) return;
+	if (m.author.bot)
+		return;
 
 	if (m.channel.type === "dm") {
-		if (m.content.startsWith("//")) m.channel.send("Papi-Bot is designed to work in servers, direct messages are forwarded to the developer (Your message was forwarded anyway)!");
+		if (m.content.startsWith("//"))
+			m.channel.send("Papi-Bot is designed to work in servers, direct messages are forwarded to the developer (Your message was forwarded anyway)!");
+
 		return self.fetchUser("211227683466641408").then(User => {
 			User.send("From " + m.author.tag + ": " + m.content);
 			if (m.attachments.first()) User.send("From " + m.author.tag + ": " + m.attachments.first().url);
@@ -100,9 +111,13 @@ self.on("message", async m => {
 	}
 
 	let prefix = self.customPrefixGuilds.get(m.guild.id);
-	if (!prefix) prefix = "//";
-	if (!m.content.startsWith(prefix) || m.content == prefix) return;
-	if (!self.ready) return m.channel.send("Papi-Bot is currently not accepting commands! Please wait a short bit!");
+	if (!prefix)
+		prefix = "//";
+	if (!m.content.startsWith(prefix) || m.content == prefix)
+		return;
+	if (!self.ready)
+		return m.channel.send("Papi-Bot is currently not accepting commands! Please wait a short bit!");
+
 	let cmd = m.content.split(" ")[0].slice(prefix.length);
 	let args = m.content.split(" ").splice(1);
 
@@ -111,57 +126,72 @@ self.on("message", async m => {
 		log(`${m.author.id} in ${m.guild.id}: ${m.content}`);
 		try {
 			self.commands.get(cmd.toLowerCase()).run(self, args);
-			if (cmd != "repeat") m.author.lastCommand = {cmd, args};
+			if (cmd != "repeat") m.author.lastCommand = { cmd, args };
 		} catch (err) {
 			m.channel.send("Error running command: `" + err + "`");
 		}
-	} else {
+	} else
 		m.channel.send("No such command!");
-	}
 });
 
 // Welcome message handler
 self.on("guildMemberAdd", async member => {
 	let welcomeMessage = await self.db.get("welcomes", member.guild.id);
-	if (!welcomeMessage) return;
+
+	if (!welcomeMessage)
+		return;
+
 	let channelID = welcomeMessage.channelid;
 	let message = welcomeMessage.message;
 
 	if (channelID == "dm")
-	{
 		var channel = member.user;
-	}
 	else
-	{
 		var channel = member.guild.channels.get(channelID);
-	}
 
 	while (message.includes("$MEMBER_NAME") || message.includes("$GUILD_NAME") || message.includes("$GUILD_MEMBERCOUNT") || message.includes("$MEMBER_TAG") || message.includes("$MEMBER_MENTION")) {
-		message = message.replace("$MEMBER_NAME",member.user.username);
-		message = message.replace("$GUILD_NAME",member.guild.name);
-		message = message.replace("$GUILD_MEMBERCOUNT",member.guild.memberCount);
-		message = message.replace("$MEMBER_TAG",member.user.tag);
-		message = message.replace("$MEMBER_MENTION",`<@${member.id}>`);
+		message = message.replace("$MEMBER_NAME", member.user.username);
+		message = message.replace("$GUILD_NAME", member.guild.name);
+		message = message.replace("$GUILD_MEMBERCOUNT", member.guild.memberCount);
+		message = message.replace("$MEMBER_TAG", member.user.tag);
+		message = message.replace("$MEMBER_MENTION", `<@${member.id}>`);
 	}
 	return channel.send(message.toString());
 });
 
+// Rotate through different statuses
+function nextStatus() {
+	self.currentStatus++;
+
+	if (self.currentStatus == self.statusPool.length)
+		self.currentStatus = 0;
+
+	let status = self.statusPool[self.currentStatus];
+	status = status.replace("$SERVERS", self.guilds.size)
+		.replace("$USERS", self.users.size);
+
+	self.user.setPresence({ "game": { "name": status } });
+}
+
 self.checkNsfw = function (channel) {
-	if (channel.nsfw || channel.name.toLowerCase().includes("nsfw")) return true;
-	return false;
+	if (channel.nsfw || channel.name.toLowerCase().includes("nsfw")) 
+		return true;
+	else
+		return false;
 };
 
 self.checkOverride = function (id) {
-	if (id === "211227683466641408" ||
-		id === "297556557774979072") {
+	if (id === "211227683466641408" || id === "297556557774979072")
 		return true;
-	}
-	return false;
+	else
+		return false;
 };
 
 self.checkPermission = function (member, permissions) {
-	if (member.hasPermission(permissions, false, true, true)) return true;
-	return false;
+	if (member.hasPermission(permissions, false, true, true))
+		return true;
+	else 
+		return false;
 };
 
 function log(string) {
@@ -179,6 +209,7 @@ function log(string) {
 init();
 
 process.on("uncaughtException", err => {
+	console.error(err);
 	process.exit(1);
 });
 
