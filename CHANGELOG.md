@@ -1,5 +1,9 @@
 # Changelog papi-3
 
+## July 21, 2019 - Papi 3.7.2
+* Small fix regarding rotating status messages
+- Additional cleanup from old features
+
 ## July 21, 2019 - Papi 3.7.1
 + Added a status pool and rotating status messages
 * Fixed a typo in the previous changelog entry
