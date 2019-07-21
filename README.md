@@ -7,7 +7,7 @@
 
 My personal Discord Bot, mainly used for testing what's possible and how.
 
-See the [Changelog](README.md) for the latest updates!
+See the [Changelog](CHANGELOG.md) for the latest updates!
 
 Join the [official server](http://discord.io/emosewaj) for support, testing and suggestions or bug reports!  
 You can also report bugs in the [issues](https://github.com/Jawesome99/papibot/issues) section on GitHub!
