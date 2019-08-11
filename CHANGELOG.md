@@ -1,5 +1,8 @@
 # Changelog papi-3
 
+## August 11, 2019 - Papi 3.7.3
+- Fuck you goblino
+
 ## July 21, 2019 - Papi 3.7.2
 * Small fix regarding rotating status messages
 - Additional cleanup from old features

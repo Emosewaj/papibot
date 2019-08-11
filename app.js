@@ -14,7 +14,6 @@ const self = new Client({
 const cfg = require("./cfg.json");
 self.cfg = cfg;
 
-
 // Discord Bot List integration
 const DBL = require("dblapi.js");
 const dbl = new DBL(cfg.dbltoken, self);
@@ -24,7 +23,7 @@ dbl.on("error", err => { log("Error posting server count: " + err) });
 self.version = {
 	major: 3,
 	minor: 7,
-	patch: 2
+	patch: 3
 };
 
 self.inviteURL = "https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70642758";
@@ -72,10 +71,12 @@ self.on("ready", async () => {
 	log(self.commands.size + amount + "loaded!");
 	log(self.failed + " commands failed to load!");
 	self.ready = true;
-	//self.user.setPresence({ "game": { "name": "Type //help to begin!" } });
+	self.user.setPresence({ "game": { "name": "Type //help to begin!" } });
+	/*
 	self.currentStatus = -1;
 	setInterval(() => nextStatus(), 1800000);
 	nextStatus();
+	*/
 	log("Papi-Bot ready!");
 
 	function sendOnline(loaded, failed) {
