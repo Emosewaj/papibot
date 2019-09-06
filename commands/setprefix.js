@@ -18,7 +18,7 @@ class setprefix {
 			category: "administrative",
 			shortDesc: "Changes the prefix.",
 			longDesc: "Changes and sets the prefix for Papi-Bot on this server.",
-			syntax: "prefix <new prefix>"
+			syntax: "setprefix <new prefix>"
 		};
 	}
 }

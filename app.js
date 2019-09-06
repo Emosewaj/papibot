@@ -23,7 +23,7 @@ dbl.on("error", err => { log("Error posting server count: " + err) });
 self.version = {
 	major: 3,
 	minor: 7,
-	patch: 3
+	patch: 4
 };
 
 self.inviteURL = "https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70642758";
@@ -121,8 +121,10 @@ self.on("message", async m => {
 	if (!self.ready)
 		return m.channel.send("Papi-Bot is currently not accepting commands! Please wait a short bit!");
 
-	let cmd = m.content.split(" ")[0].slice(prefix.length);
-	let args = m.content.split(" ").splice(1);
+	//let cmd = m.content.split(" ")[0].slice(prefix.length);
+	let cmd = m.content.slice(prefix.length).split(" ")[0];
+	//let args = m.content.split(" ").splice(1);
+	let args = m.content.slice(prefix.length).split(" ").splice(1);
 
 	if (self.commands.has(cmd.toLowerCase())) {
 		args.unshift(m);

@@ -1,5 +1,10 @@
 # Changelog papi-3
 
+## September 6, 2019 - Papi 3.7.4
+* Fixed a typo in the setprefix command
+* Enabled support for prefixes that contain a space
+> To-Do: Enable setprefix to support that too
+
 ## August 11, 2019 - Papi 3.7.3
 - Fuck you goblino
 
