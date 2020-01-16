@@ -1,5 +1,8 @@
 # Changelog papi-3
 
+## January 16th, 2020 - Papi 3.8.0
++ Added //scp and //marv, both of which link to SCPs on the SCP wiki
+
 ## September 6, 2019 - Papi 3.7.4
 * Fixed a typo in the setprefix command
 * Enabled support for prefixes that contain a space

@@ -22,8 +22,8 @@ dbl.on("error", err => { log("Error posting server count: " + err) });
 
 self.version = {
 	major: 3,
-	minor: 7,
-	patch: 4
+	minor: 8,
+	patch: 0
 };
 
 self.inviteURL = "https://discordapp.com/oauth2/authorize?client_id=337217642660233217&scope=bot&permissions=70642758";
@@ -43,7 +43,8 @@ async function init() {
 		try {
 			self.commands.set(cmds[i].slice(0, cmds[i].length - 3).toLowerCase(), require("./commands/" + cmds[i]));
 		} catch (err) {
-			console.error(err);
+			//console.error(err);
+			throw err;
 			self.failed++;
 		}
 	}
