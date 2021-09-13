@@ -13,6 +13,9 @@ const commands = [];
 const commandFiles = fs.readdirSync(__dirname + "/../src/commands").filter(file => file.endsWith(".js"));
 
 for (const file of commandFiles) {
+    if (file == "template.js")
+        continue;
+
     /** @type {SlashCommandBuilder} */
     const commandData = require(`./../src/commands/${file}`).getCommand();
     commands.push(commandData.toJSON());
