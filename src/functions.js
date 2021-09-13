@@ -48,8 +48,17 @@ String.prototype.rightpad = function (padCharacter, length) {
 Number.prototype.leftpad = String.prototype.leftpad;
 Number.prototype.rightpad = String.prototype.rightpad;
 
+/**
+ * @param {number} max 
+ * @returns {number}
+ */
+function randomInt(max) {
+    return Math.floor(Math.random() * max);
+}
+
 module.exports = {
     log,
     warn,
-    error
+    error,
+    randomInt
 }
