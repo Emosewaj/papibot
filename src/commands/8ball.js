@@ -24,7 +24,7 @@ const REPLIES_NEGATIVE = [
     "My sources say no."
 ];
 
-const REPLIES_INCONCLUSIVE = [,
+const REPLIES_INCONCLUSIVE = [
     "Reply hazy, try again...",
     "Concentrate and ask again.",
     "Cannot predict now.",
